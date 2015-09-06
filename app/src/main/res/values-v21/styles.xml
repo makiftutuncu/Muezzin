@@ -1,0 +1,7 @@
+<resources>
+
+    <style name="Theme.Muezzin" parent="Theme.Muezzin.Base">
+        <item name="android:navigationBarColor">@color/primary</item>
+    </style>
+
+</resources>

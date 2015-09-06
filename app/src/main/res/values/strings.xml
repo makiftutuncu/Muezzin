@@ -1,6 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+
 <resources>
+    <!-- Application name -->
     <string name="app_name">Muezzin</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <!-- Common phrases -->
+    <string name="common_loading">Loading, please wait</string>
+    <string name="common_noContent">There is nothing to see here.</string>
+    <string name="common_error">An error occurred.</string>
 </resources>
