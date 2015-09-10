@@ -7,7 +7,7 @@
     <include layout="@layout/toolbar"/>
 
     <FrameLayout
-        android:id="@+id/frameLayout_countryListContainer"
+        android:id="@+id/frameLayout_locationContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar" />

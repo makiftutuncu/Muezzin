@@ -20,6 +20,16 @@ public class Conf {
 
         /** URL of countries API */
         public static final String countries = SERVER + "/prayertimes/countries";
+
+        /** URL of cities API */
+        public static String cities(int countryId) {
+            return SERVER + "/prayertimes/cities/" + countryId;
+        }
+
+        /** URL of districts API */
+        public static String districts(int cityId) {
+            return SERVER + "/prayertimes/districts/" + cityId;
+        }
     }
 
     /** Timeout values for HTTP requests */

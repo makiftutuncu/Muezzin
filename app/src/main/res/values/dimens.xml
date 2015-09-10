@@ -1,5 +1,6 @@
 <resources>
     <!-- Margin and padding values -->
+    <dimen name="spacing_extraExtraSmall">2dp</dimen>
     <dimen name="spacing_extraSmall">4dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_medium">16dp</dimen>

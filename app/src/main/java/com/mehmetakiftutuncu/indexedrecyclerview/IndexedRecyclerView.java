@@ -11,6 +11,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -189,7 +190,7 @@ public class IndexedRecyclerView extends RecyclerView {
     private void initialize() {
         Set<String> indexKeySet = ((Indices) getAdapter()).getIndicesMap().keySet();
         List<String> indexKeyList = new ArrayList<>(indexKeySet);
-        Collections.sort(indexKeyList);
+        Collections.sort(indexKeyList, LocaleUtils.getCollator());
 
         indices = new String[indexKeyList.size()];
         for (int i = 0, size = indices.length; i < size; i++) {

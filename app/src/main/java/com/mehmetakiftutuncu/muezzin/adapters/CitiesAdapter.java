@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnItemClickedListener;
-import com.mehmetakiftutuncu.muezzin.models.Country;
+import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 
 import java.text.Collator;
@@ -18,19 +18,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> implements IndexedRecyclerView.Indices {
-    private List<Country> countries;
+public class CitiesAdapter extends RecyclerView.Adapter<CitiesAndDistrictsViewHolder> implements IndexedRecyclerView.Indices {
+    private List<City> cities;
     private LinkedHashMap<String, Integer> mapIndex;
     private OnItemClickedListener onItemClickedListener;
 
-    public CountriesAdapter(List<Country> countries, OnItemClickedListener onItemClickedListener) {
-        this.countries = countries;
+    public CitiesAdapter(List<City> cities, OnItemClickedListener onItemClickedListener) {
+        this.cities = cities;
 
         final Collator collator = LocaleUtils.getCollator();
-        Collections.sort(this.countries, new Comparator<Country>() {
+        Collections.sort(this.cities, new Comparator<City>() {
             @Override
-            public int compare(Country lhs, Country rhs) {
-                return collator.compare(lhs.getLocalizedName(), rhs.getLocalizedName());
+            public int compare(City lhs, City rhs) {
+                return collator.compare(lhs.name(), rhs.name());
             }
         });
 
@@ -40,24 +40,24 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> 
     }
 
     @Override
-    public CountriesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View countryItemLayout = LayoutInflater
+    public CitiesAndDistrictsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View cityItemLayout = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.list_item_twolines, parent, false);
 
-        return new CountriesViewHolder(countryItemLayout, onItemClickedListener);
+        return new CitiesAndDistrictsViewHolder(cityItemLayout, onItemClickedListener);
     }
 
     @Override
-    public void onBindViewHolder(CountriesViewHolder holder, int position) {
+    public void onBindViewHolder(CitiesAndDistrictsViewHolder holder, int position) {
         if (holder != null) {
-            holder.setCountry(countries.get(position));
+            holder.setCity(cities.get(position));
         }
     }
 
     @Override
     public int getItemCount() {
-        return countries != null ? countries.size() : 0;
+        return cities != null ? cities.size() : 0;
     }
 
     @Override
@@ -68,9 +68,9 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> 
     private void generateMapIndex() {
         mapIndex = new LinkedHashMap<>(256);
 
-        for (int i = 0, size = countries.size(); i < size; i++) {
-            Country country = countries.get(i);
-            String key = String.valueOf(country.getLocalizedName().substring(0, 1));
+        for (int i = 0, size = cities.size(); i < size; i++) {
+            City city = cities.get(i);
+            String key = String.valueOf(city.name().substring(0, 1));
 
             if (!mapIndex.containsKey(key)) {
                 mapIndex.put(key, i);

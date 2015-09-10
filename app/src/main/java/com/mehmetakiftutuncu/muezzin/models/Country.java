@@ -1,5 +1,7 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
+import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
+
 public class Country {
     private int id;
     private String name;
@@ -27,5 +29,13 @@ public class Country {
 
     public String nativeName() {
         return nativeName;
+    }
+
+    public String getLocalizedName() {
+        if (LocaleUtils.isLanguageTr()) {
+            return trName;
+        } else {
+            return name;
+        }
     }
 }

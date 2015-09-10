@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnItemClickedListener;
-import com.mehmetakiftutuncu.muezzin.models.Country;
+import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 
 import java.text.Collator;
@@ -18,19 +18,19 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> implements IndexedRecyclerView.Indices {
-    private List<Country> countries;
+public class DistrictsAdapter extends RecyclerView.Adapter<CitiesAndDistrictsViewHolder> implements IndexedRecyclerView.Indices {
+    private List<District> districts;
     private LinkedHashMap<String, Integer> mapIndex;
     private OnItemClickedListener onItemClickedListener;
 
-    public CountriesAdapter(List<Country> countries, OnItemClickedListener onItemClickedListener) {
-        this.countries = countries;
+    public DistrictsAdapter(List<District> districts, OnItemClickedListener onItemClickedListener) {
+        this.districts = districts;
 
         final Collator collator = LocaleUtils.getCollator();
-        Collections.sort(this.countries, new Comparator<Country>() {
+        Collections.sort(this.districts, new Comparator<District>() {
             @Override
-            public int compare(Country lhs, Country rhs) {
-                return collator.compare(lhs.getLocalizedName(), rhs.getLocalizedName());
+            public int compare(District lhs, District rhs) {
+                return collator.compare(lhs.name(), rhs.name());
             }
         });
 
@@ -40,24 +40,24 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> 
     }
 
     @Override
-    public CountriesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View countryItemLayout = LayoutInflater
+    public CitiesAndDistrictsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View districtItemLayout = LayoutInflater
                 .from(parent.getContext())
                 .inflate(R.layout.list_item_twolines, parent, false);
 
-        return new CountriesViewHolder(countryItemLayout, onItemClickedListener);
+        return new CitiesAndDistrictsViewHolder(districtItemLayout, onItemClickedListener);
     }
 
     @Override
-    public void onBindViewHolder(CountriesViewHolder holder, int position) {
+    public void onBindViewHolder(CitiesAndDistrictsViewHolder holder, int position) {
         if (holder != null) {
-            holder.setCountry(countries.get(position));
+            holder.setDistrict(districts.get(position));
         }
     }
 
     @Override
     public int getItemCount() {
-        return countries != null ? countries.size() : 0;
+        return districts != null ? districts.size() : 0;
     }
 
     @Override
@@ -68,9 +68,9 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> 
     private void generateMapIndex() {
         mapIndex = new LinkedHashMap<>(256);
 
-        for (int i = 0, size = countries.size(); i < size; i++) {
-            Country country = countries.get(i);
-            String key = String.valueOf(country.getLocalizedName().substring(0, 1));
+        for (int i = 0, size = districts.size(); i < size; i++) {
+            District district = districts.get(i);
+            String key = String.valueOf(district.name().substring(0, 1));
 
             if (!mapIndex.containsKey(key)) {
                 mapIndex.put(key, i);

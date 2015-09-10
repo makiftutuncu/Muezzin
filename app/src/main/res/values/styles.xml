@@ -6,10 +6,29 @@
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
         <item name="colorAccent">@color/accent</item>
+
+        <!-- Toolbar style -->
+        <item name="toolbarStyle">@style/Theme.Muezzin.Toolbar</item>
         <item name="windowNoTitle">true</item>
         <item name="android:textColorPrimary">@color/primaryText</item>
         <item name="android:textColorSecondary">@color/secondaryText</item>
         <item name="android:windowBackground">@color/background</item>
+    </style>
+
+    <!-- Customized toolbar style -->
+    <style name="Theme.Muezzin.Toolbar" parent="Widget.AppCompat.Toolbar">
+        <item name="titleTextAppearance">@style/Theme.Muezzin.Toolbar.Title</item>
+        <item name="subtitleTextAppearance">@style/Theme.Muezzin.Toolbar.Subtitle</item>
+    </style>
+
+    <!-- Customized toolbar title style -->
+    <style name="Theme.Muezzin.Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textColor">@color/inversePrimaryText</item>
+    </style>
+
+    <!-- Customized toolbar subtitle style -->
+    <style name="Theme.Muezzin.Toolbar.Subtitle" parent="TextAppearance.Widget.AppCompat.Toolbar.Subtitle">
+        <item name="android:textColor">@color/inversePrimaryText</item>
     </style>
 
 </resources>

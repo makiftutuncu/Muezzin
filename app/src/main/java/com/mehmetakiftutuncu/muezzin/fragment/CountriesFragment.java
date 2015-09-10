@@ -1,20 +1,11 @@
 package com.mehmetakiftutuncu.muezzin.fragment;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.LinearLayoutManager;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView;
-import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerViewDecoration;
-import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.CountriesAdapter;
-import com.mehmetakiftutuncu.muezzin.interfaces.WithContentStates;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.ContentStates;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.utilities.Conf;
@@ -32,99 +23,69 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.vang.progressswitcher.ProgressWidget;
+public class CountriesFragment extends LocationsFragment<Country> {
+    private OnCountrySelectedListener onCountrySelectedListener;
 
-public class CountriesFragment extends Fragment implements WithContentStates, Web.OnRequestFailure, Web.OnResponse {
-    private ProgressWidget progressWidget;
-    private IndexedRecyclerView recyclerView;
-    private ContentStates state;
+    public static CountriesFragment newInstance(OnCountrySelectedListener onCountrySelectedListener) {
+        CountriesFragment countriesFragment = new CountriesFragment();
+        countriesFragment.setOnCountrySelectedListener(onCountrySelectedListener);
 
-    public static CountriesFragment newInstance() {
-        return new CountriesFragment();
+        return countriesFragment;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View layout = inflater.inflate(R.layout.fragment_countries, container, false);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+    public void setItems(List<Country> countries, boolean saveData) {
+        items = countries;
 
-        progressWidget = (ProgressWidget) layout.findViewById(R.id.progressWidget_countries);
-
-        recyclerView = (IndexedRecyclerView) layout.findViewById(R.id.recyclerView_countries);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
-
-        IndexedRecyclerViewDecoration decoration = new IndexedRecyclerViewDecoration();
-        recyclerView.addItemDecoration(decoration);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-
-        return layout;
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        loadCountries();
-    }
-
-    @Override
-    public void changeStateTo(ContentStates newState) {
-        if (state == null || !state.equals(newState)) {
-            state = newState;
-
-            switch (newState) {
-                case LOADING:
-                    progressWidget.showProgress(true);
-                    break;
-                case ERROR:
-                    progressWidget.showError(true);
-                    break;
-                case CONTENT:
-                    progressWidget.showContent(true);
-                    break;
-                case NO_CONTENT:
-                    progressWidget.showEmpty(true);
-                    break;
-            }
-        }
-    }
-
-    public void setCountries(List<Country> countries) {
         if (countries == null || countries.isEmpty()) {
             Log.error(this, "Failed to set countries, countries object is empty!");
 
             changeStateTo(ContentStates.ERROR);
         } else {
-            Data.saveCountries(countries);
-            CountriesAdapter countriesAdapter = new CountriesAdapter(countries);
+            if (saveData) {
+                Data.saveCountries(countries);
+            }
+
+            CountriesAdapter countriesAdapter = new CountriesAdapter(countries, this);
             recyclerView.setAdapter(countriesAdapter);
 
             changeStateTo(ContentStates.CONTENT);
         }
     }
 
-    private void loadCountries() {
+    @Override
+    public void loadItems(boolean forceDownload) {
         changeStateTo(ContentStates.LOADING);
 
-        List<Country> countriesFromDisk = Data.loadCountries();
+        if (!forceDownload) {
+            List<Country> countriesFromDisk = Data.loadCountries();
 
-        if (countriesFromDisk != null && !countriesFromDisk.isEmpty()) {
-            setCountries(countriesFromDisk);
-        } else {
-            if (!Web.hasInternet(getContext())) {
-                Log.error(this, "Failed to load countries, there is no internet connection!");
-
-                changeStateTo(ContentStates.ERROR);
+            if (countriesFromDisk != null && !countriesFromDisk.isEmpty()) {
+                setItems(countriesFromDisk, false);
             } else {
-                Web.instance().get(Conf.Url.countries, this, this);
+                downloadItems();
             }
+        } else {
+            downloadItems();
+        }
+    }
+
+    @Override
+    public void downloadItems() {
+        if (!Web.hasInternet(getContext())) {
+            Log.error(this, "Failed to load countries, there is no internet connection!");
+
+            changeStateTo(ContentStates.ERROR);
+        } else {
+            Web.instance().get(Conf.Url.countries, this, this);
         }
     }
 
     @Override
     public void onFailure(Request request, IOException e) {
         Log.error(this, "Failed to get countries from Web!", e);
+
+        setItems(null, false);
     }
 
     @Override
@@ -144,7 +105,7 @@ public class CountriesFragment extends Fragment implements WithContentStates, We
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        setCountries(countries);
+                        setItems(countries, true);
                     }
                 });
             } catch (IOException e) {
@@ -153,5 +114,16 @@ public class CountriesFragment extends Fragment implements WithContentStates, We
                 Log.error(this, "Failed to parse Web response to get countries!", e);
             }
         }
+    }
+
+    @Override
+    public void onItemClicked(View itemLayout, int position) {
+        Country country = items.get(position);
+
+        onCountrySelectedListener.onCountrySelected(country);
+    }
+
+    public void setOnCountrySelectedListener(OnCountrySelectedListener onCountrySelectedListener) {
+        this.onCountrySelectedListener = onCountrySelectedListener;
     }
 }

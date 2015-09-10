@@ -11,4 +11,6 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
     <color name="transparent">#00000000</color>
+    <color name="indexedRecyclerView_preview">#AA4CAF50</color>
+    <color name="indexedRecyclerView_handle">#AA4CAF50</color>
 </resources>
