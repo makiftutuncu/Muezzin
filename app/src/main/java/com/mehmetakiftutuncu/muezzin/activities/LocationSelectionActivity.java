@@ -9,6 +9,7 @@ import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.fragment.CitiesFragment;
 import com.mehmetakiftutuncu.muezzin.fragment.CountriesFragment;
 import com.mehmetakiftutuncu.muezzin.fragment.DistrictsFragment;
+import com.mehmetakiftutuncu.muezzin.fragment.LocationsFragment;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
@@ -27,24 +28,20 @@ public class LocationSelectionActivity extends AppCompatActivity implements With
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location_selection);
+        setContentView(R.layout.activity_locationselection);
 
         initializeToolbar();
 
         fragmentManager = getSupportFragmentManager();
 
         CountriesFragment countriesFragment = CountriesFragment.newInstance(this);
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.frameLayout_locationContainer, countriesFragment)
-                .commit();
+        replaceFragment(countriesFragment, R.string.locationSelection_country);
     }
 
     @Override
     public void initializeToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle(R.string.app_name);
     }
 
     @Override
@@ -55,25 +52,26 @@ public class LocationSelectionActivity extends AppCompatActivity implements With
     @Override
     public void onCountrySelected(Country country) {
         CitiesFragment citiesFragment = CitiesFragment.newInstance(country.id(), this);
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.frameLayout_locationContainer, citiesFragment)
-                .addToBackStack("countryToCity")
-                .commit();
+        replaceFragment(citiesFragment, R.string.locationSelection_city);
     }
 
     @Override
     public void onCitySelected(City city, int countryId) {
         DistrictsFragment districtsFragment = DistrictsFragment.newInstance(countryId, city.id(), this);
-        fragmentManager
-                .beginTransaction()
-                .replace(R.id.frameLayout_locationContainer, districtsFragment)
-                .addToBackStack("cityToDistrict")
-                .commit();
+        replaceFragment(districtsFragment, R.string.locationSelection_district);
     }
 
     @Override
     public void onDistrictSelected(District district, int countryId, int cityId) {
 
+    }
+
+    private void replaceFragment(LocationsFragment fragment, int titleResource) {
+        fragmentManager
+            .beginTransaction()
+            .replace(R.id.frameLayout_locationContainer, fragment)
+            .commit();
+
+        toolbar.setTitle(titleResource);
     }
 }

@@ -7,12 +7,15 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name="com.mehmetakiftutuncu.MuezzinApplication"
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Muezzin">
+
         <activity
-            android:name=".activities.LocationSelectionActivity"
+            android:name=".activities.PrayerTimesActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -20,6 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".activities.LocationSelectionActivity"
+            android:label="@string/locationSelection_country">
+        </activity>
+
+        <activity android:name=".activities.WelcomeActivity" />
     </application>
 
 </manifest>

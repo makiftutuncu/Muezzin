@@ -77,7 +77,7 @@ public class CountriesFragment extends LocationsFragment<Country> {
 
             changeStateTo(ContentStates.ERROR);
         } else {
-            Web.instance().get(Conf.Url.countries, this, this);
+            Web.instance().get(Conf.Url.countries(), this, this);
         }
     }
 

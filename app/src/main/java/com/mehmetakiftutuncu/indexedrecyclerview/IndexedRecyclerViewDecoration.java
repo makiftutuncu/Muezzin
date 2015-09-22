@@ -3,6 +3,7 @@ package com.mehmetakiftutuncu.indexedrecyclerview;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 public class IndexedRecyclerViewDecoration extends RecyclerView.ItemDecoration {
@@ -12,7 +13,18 @@ public class IndexedRecyclerViewDecoration extends RecyclerView.ItemDecoration {
 
         IndexedRecyclerView indexedRecyclerView = (IndexedRecyclerView) parent;
 
-        String[] indices        = indexedRecyclerView.getIndices();
+        String[] indices = indexedRecyclerView.getIndices();
+
+        LinearLayoutManager layoutManager = (LinearLayoutManager) indexedRecyclerView.getLayoutManager();
+        int visibleItemCount = layoutManager.findLastVisibleItemPosition() - layoutManager.findFirstVisibleItemPosition();
+        int itemCount        = layoutManager.getItemCount();
+
+        if (visibleItemCount * 2 >= itemCount || indices.length <= 5) {
+            // Too few items, do not draw at all!
+            indexedRecyclerView.setIsPreviewAndIndicesEnabled(false);
+            return;
+        }
+
         int currentIndex        = indexedRecyclerView.getCurrentIndex();
         String currentIndexText = indexedRecyclerView.getCurrentIndexText();
 

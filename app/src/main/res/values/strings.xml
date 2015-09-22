@@ -8,4 +8,23 @@
     <string name="common_loading">Loading, please wait</string>
     <string name="common_noContent">There is nothing to see here.</string>
     <string name="common_error">An error occurred.</string>
+
+    <!-- Prayer time names -->
+    <string name="prayerTime_fajr">Fajr</string>
+    <string name="prayerTime_shuruq">Shuruq</string>
+    <string name="prayerTime_dhuhr">Dhuhr</string>
+    <string name="prayerTime_asr">Asr</string>
+    <string name="prayerTime_maghrib">Maghrib</string>
+    <string name="prayerTime_isha">Isha</string>
+    <string name="prayerTime_qibla">Qibla</string>
+
+    <!-- Welcome -->
+    <string name="welcome_header">Welcome to Muezzin!</string>
+    <string name="welcome_message">Please select the location for which you would like to see prayer times in the next screen.</string>
+    <string name="welcome_begin">Let\'s Begin!</string>
+
+    <!-- Location selection -->
+    <string name="locationSelection_country">Select a Country</string>
+    <string name="locationSelection_city">Select a City</string>
+    <string name="locationSelection_district">Select a District</string>
 </resources>

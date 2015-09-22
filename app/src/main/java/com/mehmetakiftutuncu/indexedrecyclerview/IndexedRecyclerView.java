@@ -38,6 +38,8 @@ public class IndexedRecyclerView extends RecyclerView {
     private float        previewTextSize;
     private PreviewStyle previewStyle;
 
+    private boolean isPreviewAndIndicesEnabled = true;
+
     private boolean isInitialized = false;
     private boolean isShowingPreview = false;
     private String[] indices;
@@ -126,40 +128,42 @@ public class IndexedRecyclerView extends RecyclerView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        float x = event.getX();
-        float y = event.getY();
+        if (isPreviewAndIndicesEnabled) {
+            float x = event.getX();
+            float y = event.getY();
 
-        HashMap<String, Integer> indicesMap = ((Indices) getAdapter()).getIndicesMap();
+            HashMap<String, Integer> indicesMap = ((Indices) getAdapter()).getIndicesMap();
 
-        int currentIndexPosition = (int) Math.floor((y / (indicesBackgroundBottom - indicesBackgroundTop)) * indices.length);
+            int currentIndexPosition = (int) Math.floor((y / (indicesBackgroundBottom - indicesBackgroundTop)) * indices.length);
 
-        if (currentIndexPosition < 0) {
-            currentIndexPosition = 0;
-        } else if (currentIndexPosition >= indices.length) {
-            currentIndexPosition = indices.length - 1;
-        }
+            if (currentIndexPosition < 0) {
+                currentIndexPosition = 0;
+            } else if (currentIndexPosition >= indices.length) {
+                currentIndexPosition = indices.length - 1;
+            }
 
-        currentIndex = currentIndexPosition;
-        currentIndexText = indices[currentIndexPosition];
+            currentIndex = currentIndexPosition;
+            currentIndexText = indices[currentIndexPosition];
 
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (isTouchingIndices(x, y)) {
-                    showPreview(indicesMap, currentIndexText);
-                    return true;
-                }
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    if (isTouchingIndices(x, y)) {
+                        showPreview(indicesMap, currentIndexText);
+                        return true;
+                    }
 
-            case MotionEvent.ACTION_MOVE:
-                if (isShowingPreview || isTouchingIndices(x, y)) {
-                    showPreview(indicesMap, currentIndexText);
-                    return true;
-                }
+                case MotionEvent.ACTION_MOVE:
+                    if (isShowingPreview || isTouchingIndices(x, y)) {
+                        showPreview(indicesMap, currentIndexText);
+                        return true;
+                    }
 
-            case MotionEvent.ACTION_UP:
-                if (isShowingPreview) {
-                    hidePreview();
-                    return true;
-                }
+                case MotionEvent.ACTION_UP:
+                    if (isShowingPreview) {
+                        hidePreview();
+                        return true;
+                    }
+            }
         }
 
         return super.onTouchEvent(event);
@@ -241,6 +245,28 @@ public class IndexedRecyclerView extends RecyclerView {
 
     public boolean isPreviewCircle() {
         return previewStyle.ordinal() == PreviewStyle.CIRCLE.ordinal();
+    }
+
+    public boolean isPreviewAndIndicesEnabled() {
+        return isPreviewAndIndicesEnabled;
+    }
+
+    public void setIsPreviewAndIndicesEnabled(boolean isPreviewAndIndicesEnabled) {
+        if (this.isPreviewAndIndicesEnabled && !isPreviewAndIndicesEnabled) {
+            if (isIndicesOnRight()) {
+                setPadding(getPaddingLeft(), getPaddingTop(), (int) (getPaddingRight() - indicesBackgroundWidth), getPaddingBottom());
+            } else {
+                setPadding((int) (getPaddingLeft() - indicesBackgroundWidth), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            }
+        } else if (!this.isPreviewAndIndicesEnabled && isPreviewAndIndicesEnabled) {
+            if (isIndicesOnRight()) {
+                setPadding(getPaddingLeft(), getPaddingTop(), (int) (getPaddingRight() + indicesBackgroundWidth), getPaddingBottom());
+            } else {
+                setPadding((int) (getPaddingLeft() + indicesBackgroundWidth), getPaddingTop(), getPaddingRight(), getPaddingBottom());
+            }
+        }
+
+        this.isPreviewAndIndicesEnabled = isPreviewAndIndicesEnabled;
     }
 
     public int getIndexBackgroundColor() {

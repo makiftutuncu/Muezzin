@@ -41,10 +41,14 @@ public class DistrictsFragment extends LocationsFragment<District> {
     public void setItems(List<District> districts, boolean saveData) {
         items = districts;
 
-        if (districts == null || districts.isEmpty()) {
+        if (districts == null) {
             Log.error(this, "Failed to set districts for country " + countryId + " and city " + cityId + ", districts object is empty!");
 
             changeStateTo(ContentStates.ERROR);
+        } else if (districts.isEmpty()) {
+            Log.error(this, "Failed to set districts for country " + countryId + " and city " + cityId + ", no districts found!");
+
+            changeStateTo(ContentStates.NO_CONTENT);
         } else {
             if (saveData) {
                 Data.saveDistricts(districts, countryId, cityId);

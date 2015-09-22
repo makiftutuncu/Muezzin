@@ -4,6 +4,7 @@
     <dimen name="spacing_extraSmall">4dp</dimen>
     <dimen name="spacing_small">8dp</dimen>
     <dimen name="spacing_medium">16dp</dimen>
+    <dimen name="spacing_biggerMedium">24dp</dimen>
     <dimen name="spacing_large">32dp</dimen>
     <dimen name="spacing_extraLarge">64dp</dimen>
 
@@ -14,5 +15,6 @@
     <dimen name="textSize_biggerMedium">20sp</dimen>
     <dimen name="textSize_large">24sp</dimen>
     <dimen name="textSize_extraLarge">36sp</dimen>
+    <dimen name="textSize_extraExtraLarge">48sp</dimen>
     <dimen name="textSize_huge">64sp</dimen>
 </resources>
