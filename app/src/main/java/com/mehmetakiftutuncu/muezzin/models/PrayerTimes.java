@@ -4,17 +4,17 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 public class PrayerTimes {
-    private int countryId;
-    private int cityId;
-    private int districtId;
-    private DateTime dayDate;
-    private DateTime fajr;
-    private DateTime shuruq;
-    private DateTime dhuhr;
-    private DateTime asr;
-    private DateTime maghrib;
-    private DateTime isha;
-    private DateTime qibla;
+    public final int countryId;
+    public final int cityId;
+    public final int districtId;
+    public final DateTime dayDate;
+    public final DateTime fajr;
+    public final DateTime shuruq;
+    public final DateTime dhuhr;
+    public final DateTime asr;
+    public final DateTime maghrib;
+    public final DateTime isha;
+    public final DateTime qibla;
 
     public PrayerTimes(int countryId, int cityId, int districtId, DateTime dayDate, DateTime fajr, DateTime shuruq, DateTime dhuhr, DateTime asr, DateTime maghrib, DateTime isha, DateTime qibla) {
         this.countryId  = countryId;
@@ -42,49 +42,5 @@ public class PrayerTimes {
         this.maghrib    = new DateTime(maghrib, DateTimeZone.UTC);
         this.isha       = new DateTime(isha,    DateTimeZone.UTC);
         this.qibla      = new DateTime(qibla,   DateTimeZone.UTC);
-    }
-
-    public int countryId() {
-        return countryId;
-    }
-
-    public int cityId() {
-        return cityId;
-    }
-
-    public int districtId() {
-        return districtId;
-    }
-
-    public DateTime dayDate() {
-        return dayDate;
-    }
-
-    public DateTime fajr() {
-        return fajr;
-    }
-
-    public DateTime shuruq() {
-        return shuruq;
-    }
-
-    public DateTime dhuhr() {
-        return dhuhr;
-    }
-
-    public DateTime asr() {
-        return asr;
-    }
-
-    public DateTime maghrib() {
-        return maghrib;
-    }
-
-    public DateTime isha() {
-        return isha;
-    }
-
-    public DateTime qibla() {
-        return qibla;
     }
 }

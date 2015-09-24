@@ -30,7 +30,7 @@ public class DistrictsAdapter extends RecyclerView.Adapter<CitiesAndDistrictsVie
         Collections.sort(this.districts, new Comparator<District>() {
             @Override
             public int compare(District lhs, District rhs) {
-                return collator.compare(lhs.name(), rhs.name());
+                return collator.compare(lhs.name, rhs.name);
             }
         });
 
@@ -70,7 +70,7 @@ public class DistrictsAdapter extends RecyclerView.Adapter<CitiesAndDistrictsVie
 
         for (int i = 0, size = districts.size(); i < size; i++) {
             District district = districts.get(i);
-            String key = String.valueOf(district.name().substring(0, 1));
+            String key = String.valueOf(district.name.substring(0, 1));
 
             if (!mapIndex.containsKey(key)) {
                 mapIndex.put(key, i);

@@ -34,7 +34,7 @@ public class CitiesAndDistrictsViewHolder extends RecyclerView.ViewHolder {
     public void setCity(City city) {
         if (city != null) {
             if (primary != null) {
-                primary.setText(city.name());
+                primary.setText(city.name);
             }
         }
     }
@@ -42,7 +42,7 @@ public class CitiesAndDistrictsViewHolder extends RecyclerView.ViewHolder {
     public void setDistrict(District district) {
         if (district != null) {
             if (primary != null) {
-                primary.setText(district.name());
+                primary.setText(district.name);
             }
         }
     }

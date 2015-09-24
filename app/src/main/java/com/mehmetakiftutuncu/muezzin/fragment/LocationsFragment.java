@@ -18,6 +18,7 @@ import com.mehmetakiftutuncu.muezzin.interfaces.WithContentStates;
 import com.mehmetakiftutuncu.muezzin.models.ContentStates;
 import com.mehmetakiftutuncu.muezzin.utilities.Web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.vang.progressswitcher.ProgressWidget;
@@ -92,7 +93,7 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
         }
     }
 
-    public abstract void setItems(List<T> items, boolean saveData);
+    public abstract void setItems(ArrayList<T> items, boolean saveData);
 
     public abstract void loadItems(boolean forceDownload);
 

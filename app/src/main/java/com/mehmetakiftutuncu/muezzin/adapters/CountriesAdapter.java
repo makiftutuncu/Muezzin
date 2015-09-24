@@ -30,7 +30,7 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> 
         Collections.sort(this.countries, new Comparator<Country>() {
             @Override
             public int compare(Country lhs, Country rhs) {
-                return collator.compare(lhs.getLocalizedName(), rhs.getLocalizedName());
+                return collator.compare(lhs.localizedName(), rhs.localizedName());
             }
         });
 
@@ -70,7 +70,7 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountriesViewHolder> 
 
         for (int i = 0, size = countries.size(); i < size; i++) {
             Country country = countries.get(i);
-            String key = String.valueOf(country.getLocalizedName().substring(0, 1));
+            String key = String.valueOf(country.localizedName().substring(0, 1));
 
             if (!mapIndex.containsKey(key)) {
                 mapIndex.put(key, i);

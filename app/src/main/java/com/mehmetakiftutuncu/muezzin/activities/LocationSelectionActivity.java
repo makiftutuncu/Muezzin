@@ -51,13 +51,13 @@ public class LocationSelectionActivity extends AppCompatActivity implements With
 
     @Override
     public void onCountrySelected(Country country) {
-        CitiesFragment citiesFragment = CitiesFragment.newInstance(country.id(), this);
+        CitiesFragment citiesFragment = CitiesFragment.newInstance(country.id, this);
         replaceFragment(citiesFragment, R.string.locationSelection_city);
     }
 
     @Override
     public void onCitySelected(City city, int countryId) {
-        DistrictsFragment districtsFragment = DistrictsFragment.newInstance(countryId, city.id(), this);
+        DistrictsFragment districtsFragment = DistrictsFragment.newInstance(countryId, city.id, this);
         replaceFragment(districtsFragment, R.string.locationSelection_district);
     }
 

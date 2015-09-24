@@ -2,16 +2,14 @@ package com.mehmetakiftutuncu.muezzin.fragment;
 
 import android.view.View;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.ContentStates;
 import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.utilities.Conf;
-import com.mehmetakiftutuncu.muezzin.utilities.Data;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.Web;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -21,7 +19,6 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DistrictsFragment extends LocationsFragment<District> {
     private int countryId;
@@ -38,26 +35,28 @@ public class DistrictsFragment extends LocationsFragment<District> {
     }
 
     @Override
-    public void setItems(List<District> districts, boolean saveData) {
+    public void setItems(ArrayList<District> districts, boolean saveData) {
         items = districts;
 
-        if (districts == null) {
-            Log.error(this, "Failed to set districts for country " + countryId + " and city " + cityId + ", districts object is empty!");
+        DistrictsAdapter districtsAdapter = new DistrictsAdapter(districts, this);
+        recyclerView.setAdapter(districtsAdapter);
 
+        if (items == null) {
             changeStateTo(ContentStates.ERROR);
-        } else if (districts.isEmpty()) {
-            Log.error(this, "Failed to set districts for country " + countryId + " and city " + cityId + ", no districts found!");
-
+        } else if (items.isEmpty()) {
             changeStateTo(ContentStates.NO_CONTENT);
         } else {
             if (saveData) {
-                Data.saveDistricts(districts, countryId, cityId);
+                boolean successful = District.saveAll(districts, countryId, cityId);
+
+                if (!successful) {
+                    changeStateTo(ContentStates.ERROR);
+                } else {
+                    changeStateTo(ContentStates.CONTENT);
+                }
+            } else {
+                changeStateTo(ContentStates.CONTENT);
             }
-
-            DistrictsAdapter districtsAdapter = new DistrictsAdapter(districts, this);
-            recyclerView.setAdapter(districtsAdapter);
-
-            changeStateTo(ContentStates.CONTENT);
         }
     }
 
@@ -66,10 +65,10 @@ public class DistrictsFragment extends LocationsFragment<District> {
         changeStateTo(ContentStates.LOADING);
 
         if (!forceDownload) {
-            List<District> districtsFromDisk = Data.loadDistricts(countryId, cityId);
+            Option<ArrayList<District>> districtsFromDisk = District.loadAll(countryId, cityId);
 
-            if (districtsFromDisk != null && !districtsFromDisk.isEmpty()) {
-                setItems(districtsFromDisk, false);
+            if (districtsFromDisk.isDefined) {
+                setItems(districtsFromDisk.get(), false);
             } else {
                 downloadItems();
             }
@@ -81,7 +80,7 @@ public class DistrictsFragment extends LocationsFragment<District> {
     @Override
     public void downloadItems() {
         if (!Web.hasInternet(getContext())) {
-            Log.error(this, "Failed to load districts for country " + countryId + " and city " + cityId + ", there is no internet connection!");
+            Log.error(this, "Failed to download districts for country " + countryId + " and city " + cityId + ", there is no internet connection!");
 
             changeStateTo(ContentStates.ERROR);
         } else {
@@ -93,34 +92,38 @@ public class DistrictsFragment extends LocationsFragment<District> {
     public void onFailure(Request request, IOException e) {
         Log.error(this, "Failed to get districts for country " + countryId + " and city " + cityId + " from Web!", e);
 
-        setItems(null, false);
+        changeStateTo(ContentStates.ERROR);
     }
 
     @Override
     public void onResponse(Response response) {
         if (!Web.isResponseSuccessfulAndJson(response)) {
             Log.error(this, "Failed to process Web response to get districts for country " + countryId + " and city " + cityId + ", response is not a Json response!");
+
+            changeStateTo(ContentStates.ERROR);
         } else {
             try {
                 String districtsJsonString = response.body().string();
 
-                JSONObject districtsJson     = new JSONObject(districtsJsonString);
+                JSONObject districtsJson = new JSONObject(districtsJsonString);
                 JSONArray districtsJsonArray = districtsJson.getJSONArray("districts");
 
-                Gson gson = new Gson();
-                final List<District> districts = gson.fromJson(districtsJsonArray.toString(), new TypeToken<ArrayList<District>>() {
-                }.getType());
+                final Option<ArrayList<District>> districts = District.fromJsonArray(districtsJsonArray);
 
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        setItems(districts, true);
+                        setItems(districts.get(), true);
                     }
                 });
             } catch (IOException e) {
                 Log.error(this, "Failed to process Web response to get districts for country " + countryId + " and city " + cityId + "!", e);
+
+                changeStateTo(ContentStates.ERROR);
             } catch (JSONException e) {
                 Log.error(this, "Failed to parse Web response to get districts for country " + countryId + " and city " + cityId + "!", e);
+
+                changeStateTo(ContentStates.ERROR);
             }
         }
     }

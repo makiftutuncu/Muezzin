@@ -30,14 +30,13 @@ public class CountriesViewHolder extends RecyclerView.ViewHolder {
 
     public void setCountry(Country country) {
         if (country != null) {
-            String localizedName = country.getLocalizedName();
 
             if (name != null) {
-                name.setText(localizedName);
+                name.setText(country.localizedName());
             }
 
             if (details != null) {
-                details.setText(country.nativeName());
+                details.setText(country.nativeName);
             }
         }
     }

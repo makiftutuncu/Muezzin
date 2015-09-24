@@ -2,6 +2,10 @@ package com.mehmetakiftutuncu.muezzin.utilities;
 
 import android.os.Environment;
 
+import com.mehmetakiftutuncu.muezzin.utilities.option.None;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Some;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,30 +21,30 @@ public class FileUtils {
     /** Full path of data folder to store data in external storage of device */
     private static final String DATA_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + Conf.DATA_PATH;
 
-    /** A File object pointing to {@link com.mehmetakiftutuncu.muezzin.utilities.FileUtils#DATA_PATH} */
-    public static File dataPath = getDataPath();
+    /** An optional File object pointing to {@link com.mehmetakiftutuncu.muezzin.utilities.FileUtils#DATA_PATH} */
+    public static Option<File> dataPath = getDataPath();
 
     /**
      * Reads a file with given name from data folder into a String
      *
      * @param fileName Name of the file in data folder to read
      *
-     * @return A String with contents of the file with given name or null if any error occurs
+     * @return A Some&lt;String&gt; with contents of the file with given name or None if any error occurs
      */
-    public static String readFile(String fileName) {
+    public static Option<String> readFile(String fileName) {
         if (StringUtils.isEmpty(fileName)) {
             Log.error(FileUtils.class, "Failed to read file, file name is empty!");
-            return null;
+            return new None<>();
         } else {
-            if (dataPath == null) {
-                Log.error(FileUtils.class, "Failed to read file, data path is null! fileName: " + fileName);
-                return null;
+            if (dataPath.isEmpty) {
+                Log.error(FileUtils.class, "Failed to read file " + fileName + ", data path is None!");
+                return new None<>();
             } else {
-                File file = new File(dataPath.getAbsolutePath() + "/" + fileName);
+                File file = new File(dataPath.get().getAbsolutePath() + "/" + fileName);
 
                 if (!file.exists() || !file.canRead()) {
-                    Log.error(FileUtils.class, "Failed to read file, file cannot be accessed! file: " + file);
-                    return null;
+                    Log.error(FileUtils.class, "Failed to read file " + file + ", it cannot be accessed!");
+                    return new None<>();
                 } else {
                     try {
                         FileReader fileReader = new FileReader(file);
@@ -52,10 +56,10 @@ public class FileUtils {
                         }
                         bufferedReader.close();
 
-                        return stringBuilder.toString();
+                        return new Some<>(stringBuilder.toString());
                     } catch (Exception e) {
-                        Log.error(FileUtils.class, "Failed to read file! file: " + file, e);
-                        return null;
+                        Log.error(FileUtils.class, "Failed to read file " + file + "!", e);
+                        return new None<>();
                     }
                 }
             }
@@ -72,17 +76,20 @@ public class FileUtils {
      */
     public static boolean writeFile(String data, String fileName) {
         if (StringUtils.isEmpty(data)) {
-            Log.error(FileUtils.class, "Failed to write file, data is empty! fileName: " + fileName);
+            Log.error(FileUtils.class, "Failed to write file " + fileName + ", data is empty!");
+
             return false;
         } else if (StringUtils.isEmpty(fileName)) {
-            Log.error(FileUtils.class, "Failed to write file, file name is empty! data: " + data);
+            Log.error(FileUtils.class, "Failed to write " + data + " to file, file name is empty!");
+
             return false;
         } else {
-            if (dataPath == null) {
-                Log.error(FileUtils.class, "Failed to write file, data path is null! data: " + data + ", fileName: " + fileName);
+            if (dataPath.isEmpty) {
+                Log.error(FileUtils.class, "Failed to write " + data + " to " + fileName + ", data path is None!");
+
                 return false;
             } else {
-                File file = new File(dataPath.getAbsolutePath() + "/" + fileName);
+                File file = new File(dataPath.get().getAbsolutePath() + "/" + fileName);
                 try {
                     FileWriter fileWriter = new FileWriter(file);
                     BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
@@ -94,7 +101,8 @@ public class FileUtils {
 
                     return true;
                 } catch (Exception e) {
-                    Log.error(FileUtils.class, "Failed to write file! data: " + data + ", file: " + file, e);
+                    Log.error(FileUtils.class, "Failed to write " + data + " to " + file + "!", e);
+
                     return false;
                 }
             }
@@ -105,16 +113,16 @@ public class FileUtils {
      * Gets a File object pointing to {@link com.mehmetakiftutuncu.muezzin.utilities.FileUtils#DATA_PATH}
      * making sure that all folders in the path exist
      *
-     * @return A File object pointing to data folder or null if any error occurs
+     * @return A Some&lt;File&gt; object pointing to data folder or None if any error occurs
      */
-    public static File getDataPath() {
+    public static Option<File> getDataPath() {
         File path = new File(DATA_PATH);
 
         if ((!path.exists() && !path.mkdirs()) || !path.canRead()) {
             Log.error(FileUtils.class, "Failed to get data path, data directory cannot be accessed!");
-            return null;
+            return new None<>();
         } else {
-            return path;
+            return new Some<>(path);
         }
     }
 }
