@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class District {
+    private static final String TAG = "District";
+
     public final int id;
     public final String name;
 
@@ -25,19 +27,23 @@ public class District {
         this.name = name;
     }
 
-    public static Option<ArrayList<District>> loadAll(int countryId, int cityId) {
-        Log.info(District.class, "Loading all districts for country " + countryId + " and city " + cityId + "...");
+    public static Option<ArrayList<District>> load(int countryId, int cityId) {
+        Log.info(TAG, "Loading districts for country " + countryId + " and city " + cityId + "...");
 
-        if (FileUtils.dataPath == null) {
-            Log.error(District.class, "Failed to load all districts for country " + countryId + " and city " + cityId + ", data path is null!");
+        if (FileUtils.dataPath.isEmpty) {
+            Log.error(TAG, "Failed to load districts for country " + countryId + " and city " + cityId + ", data path is None!");
 
             return new None<>();
         }
 
         Option<String> data = FileUtils.readFile(fileName(countryId, cityId));
 
-        if (StringUtils.isEmpty(data.getOrElse(""))) {
-            Log.error(District.class, "Failed to load all districts for country " + countryId + " and city " + cityId + ", loaded data is None or empty!");
+        if (data.isEmpty) {
+            return new None<>();
+        }
+
+        if (StringUtils.isEmpty(data.get())) {
+            Log.error(TAG, "Failed to load districts for country " + countryId + " and city " + cityId + ", loaded data is None or empty!");
 
             return new None<>();
         }
@@ -57,17 +63,17 @@ public class District {
 
             return new Some<>(districts);
         } catch (Throwable t) {
-            Log.error(District.class, "Failed to load all districts for country " + countryId + " and city " + cityId + ", cannot construct districts from " + data.get() + "!", t);
+            Log.error(TAG, "Failed to load districts for country " + countryId + " and city " + cityId + ", cannot construct districts from " + data.get() + "!", t);
 
             return new None<>();
         }
     }
 
-    public static boolean saveAll(ArrayList<District> districts, int countryId, int cityId) {
-        Log.info(District.class, "Saving all districts for country " + countryId + "...");
+    public static boolean save(ArrayList<District> districts, int countryId, int cityId) {
+        Log.info(TAG, "Saving districts for country " + countryId + "...");
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(District.class, "Failed to save all districts for country " + countryId + " and city " + cityId + ", data path is None!");
+            Log.error(TAG, "Failed to save districts for country " + countryId + " and city " + cityId + ", data path is None!");
 
             return false;
         }
@@ -102,7 +108,7 @@ public class District {
 
             return new Some<>(result);
         } catch (Throwable t) {
-            Log.error(this, "Failed to convert " + toString() + " to Json!", t);
+            Log.error(TAG, "Failed to convert " + toString() + " to Json!", t);
 
             return new None<>();
         }
@@ -115,7 +121,7 @@ public class District {
 
             return new Some<>(new District(id, name));
         } catch (Throwable t) {
-            Log.error(District.class, "Failed to create district from Json " + json.toString() + "!", t);
+            Log.error(TAG, "Failed to create district from Json " + json.toString() + "!", t);
 
             return new None<>();
         }
@@ -136,7 +142,7 @@ public class District {
 
             return new Some<>(districts);
         } catch (Throwable t) {
-            Log.error(District.class, "Failed to create districts from Json array " + jsonArray.toString() + "!", t);
+            Log.error(TAG, "Failed to create districts from Json array " + jsonArray.toString() + "!", t);
 
             return new None<>();
         }

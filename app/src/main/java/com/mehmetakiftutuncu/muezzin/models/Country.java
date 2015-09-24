@@ -14,6 +14,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Country {
+    private static final String TAG = "Country";
+
     public final int id;
     public final String name;
     public final String trName;
@@ -36,19 +38,23 @@ public class Country {
         return name;
     }
 
-    public static Option<ArrayList<Country>> loadAll() {
-        Log.info(Country.class, "Loading all countries...");
+    public static Option<ArrayList<Country>> load() {
+        Log.info(TAG, "Loading countries...");
 
-        if (FileUtils.dataPath == null) {
-            Log.error(Country.class, "Failed to load all countries, data path is null!");
+        if (FileUtils.dataPath.isEmpty) {
+            Log.error(TAG, "Failed to load countries, data path is None!");
 
             return new None<>();
         }
 
         Option<String> data = FileUtils.readFile(fileName);
 
-        if (StringUtils.isEmpty(data.getOrElse(""))) {
-            Log.error(Country.class, "Failed to load all countries, loaded data is None or empty!");
+        if (data.isEmpty) {
+            return new None<>();
+        }
+
+        if (StringUtils.isEmpty(data.get())) {
+            Log.error(TAG, "Failed to load countries, loaded data is empty!");
 
             return new None<>();
         }
@@ -68,17 +74,17 @@ public class Country {
 
             return new Some<>(countries);
         } catch (Throwable t) {
-            Log.error(Country.class, "Failed to load all countries, cannot construct countries from " + data.get() + "!", t);
+            Log.error(TAG, "Failed to load countries, cannot construct countries from " + data.get() + "!", t);
 
             return new None<>();
         }
     }
 
-    public static boolean saveAll(ArrayList<Country> countries) {
-        Log.info(Country.class, "Saving all countries...");
+    public static boolean save(ArrayList<Country> countries) {
+        Log.info(TAG, "Saving countries...");
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(Country.class, "Failed to save all countries, data path is None!");
+            Log.error(TAG, "Failed to save countries, data path is None!");
 
             return false;
         }
@@ -115,7 +121,7 @@ public class Country {
 
             return new Some<>(result);
         } catch (Throwable t) {
-            Log.error(this, "Failed to convert " + toString() + " to Json!", t);
+            Log.error(TAG, "Failed to convert " + toString() + " to Json!", t);
 
             return new None<>();
         }
@@ -130,7 +136,7 @@ public class Country {
 
             return new Some<>(new Country(id, name, trName, nativeName));
         } catch (Throwable t) {
-            Log.error(Country.class, "Failed to create country from Json " + json.toString() + "!", t);
+            Log.error(TAG, "Failed to create country from Json " + json.toString() + "!", t);
 
             return new None<>();
         }
@@ -151,7 +157,7 @@ public class Country {
 
             return new Some<>(countries);
         } catch (Throwable t) {
-            Log.error(Country.class, "Failed to create countries from Json array " + jsonArray.toString() + "!", t);
+            Log.error(TAG, "Failed to create countries from Json array " + jsonArray.toString() + "!", t);
 
             return new None<>();
         }

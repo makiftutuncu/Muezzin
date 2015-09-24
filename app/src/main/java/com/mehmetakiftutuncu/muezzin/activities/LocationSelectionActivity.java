@@ -1,5 +1,6 @@
 package com.mehmetakiftutuncu.muezzin.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,10 @@ import com.mehmetakiftutuncu.muezzin.interfaces.WithToolbar;
 import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
+import com.mehmetakiftutuncu.muezzin.utilities.Pref;
+import com.mehmetakiftutuncu.muezzin.utilities.option.None;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Some;
 
 public class LocationSelectionActivity extends AppCompatActivity implements WithToolbar,
                                                                             OnCountrySelectedListener,
@@ -62,8 +67,11 @@ public class LocationSelectionActivity extends AppCompatActivity implements With
     }
 
     @Override
-    public void onDistrictSelected(District district, int countryId, int cityId) {
+    public void onDistrictSelected(int countryId, int cityId, Option<District> district) {
+        Pref.CurrentLocation.set(countryId, cityId, district.isDefined ? new Some<Integer>(district.get().id) : new None<Integer>());
 
+        finish();
+        startActivity(new Intent(this, PrayerTimesActivity.class));
     }
 
     private void replaceFragment(LocationsFragment fragment, int titleResource) {

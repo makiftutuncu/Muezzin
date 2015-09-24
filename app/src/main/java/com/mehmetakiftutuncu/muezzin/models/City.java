@@ -13,6 +13,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class City {
+    private static final String TAG = "City";
+
     public final int id;
     public final String name;
 
@@ -25,19 +27,23 @@ public class City {
         this.name = name;
     }
 
-    public static Option<ArrayList<City>> loadAll(int countryId) {
-        Log.info(City.class, "Loading all cities for country " + countryId + "...");
+    public static Option<ArrayList<City>> load(int countryId) {
+        Log.info(TAG, "Loading cities for country " + countryId + "...");
 
-        if (FileUtils.dataPath == null) {
-            Log.error(City.class, "Failed to load all cities for country " + countryId + ", data path is null!");
+        if (FileUtils.dataPath.isEmpty) {
+            Log.error(TAG, "Failed to load cities for country " + countryId + ", data path is None!");
 
             return new None<>();
         }
 
         Option<String> data = FileUtils.readFile(fileName(countryId));
 
-        if (StringUtils.isEmpty(data.getOrElse(""))) {
-            Log.error(City.class, "Failed to load all cities for country " + countryId + ", loaded data is None or empty!");
+        if (data.isEmpty) {
+            return new None<>();
+        }
+
+        if (StringUtils.isEmpty(data.get())) {
+            Log.error(TAG, "Failed to load cities for country " + countryId + ", loaded data is empty!");
 
             return new None<>();
         }
@@ -57,17 +63,17 @@ public class City {
 
             return new Some<>(cities);
         } catch (Throwable t) {
-            Log.error(City.class, "Failed to load all cities for country " + countryId + ", cannot construct cities from " + data.get() + "!", t);
+            Log.error(TAG, "Failed to load cities for country " + countryId + ", cannot construct cities from " + data.get() + "!", t);
 
             return new None<>();
         }
     }
 
-    public static boolean saveAll(ArrayList<City> cities, int countryId) {
-        Log.info(City.class, "Saving all cities for country " + countryId + "...");
+    public static boolean save(ArrayList<City> cities, int countryId) {
+        Log.info(TAG, "Saving cities for country " + countryId + "...");
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(City.class, "Failed to save all cities for country " + countryId + ", data path is None!");
+            Log.error(TAG, "Failed to save cities for country " + countryId + ", data path is None!");
 
             return false;
         }
@@ -102,7 +108,7 @@ public class City {
 
             return new Some<>(result);
         } catch (Throwable t) {
-            Log.error(this, "Failed to convert " + toString() + " to Json!", t);
+            Log.error(TAG, "Failed to convert " + toString() + " to Json!", t);
 
             return new None<>();
         }
@@ -115,7 +121,7 @@ public class City {
 
             return new Some<>(new City(id, name));
         } catch (Throwable t) {
-            Log.error(City.class, "Failed to create city from Json " + json.toString() + "!", t);
+            Log.error(TAG, "Failed to create city from Json " + json.toString() + "!", t);
 
             return new None<>();
         }
@@ -136,7 +142,7 @@ public class City {
 
             return new Some<>(cities);
         } catch (Throwable t) {
-            Log.error(City.class, "Failed to create cities from Json array " + jsonArray.toString() + "!", t);
+            Log.error(TAG, "Failed to create cities from Json array " + jsonArray.toString() + "!", t);
 
             return new None<>();
         }

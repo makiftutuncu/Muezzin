@@ -9,47 +9,36 @@ import com.mehmetakiftutuncu.muezzin.BuildConfig;
  */
 public class Log {
     /**
-     * Generates a tag for the logging using given reference to the object calling this logger
-     *
-     * @param loggingObject A reference to the object calling this logger
-     *
-     * @return A tag for the logging containing information about the caller of this logger
-     */
-    private static String getTag(Object loggingObject) {
-        return String.format("[Muezzin.%s]", loggingObject.getClass().getSimpleName());
-    }
-
-    /**
      * Logs given message with {@link android.util.Log#INFO} logging level
      *
-     * @param loggingObject A reference to the object calling this logger
-     * @param message       Message to log
+     * @param tag     A reference to the object calling this logger
+     * @param message Message to log
      */
-    public static void info(Object loggingObject, String message) {
+    public static void info(String tag, String message) {
         if (BuildConfig.DEBUG) {
-            android.util.Log.i(getTag(loggingObject), message);
+            android.util.Log.i("[" + tag + "]", message);
         }
     }
 
     /**
      * Logs an error with given message with {@link android.util.Log#ERROR} logging level
      *
-     * @param loggingObject A reference to the object calling this logger
-     * @param message       Error message to log
+     * @param tag     A reference to the object calling this logger
+     * @param message Error message to log
      */
-    public static void error(Object loggingObject, String message) {
-        android.util.Log.e(getTag(loggingObject), message);
+    public static void error(String tag, String message) {
+        android.util.Log.e("[" + tag + "]", message);
     }
 
     /**
      * Logs an error with given message with {@link android.util.Log#ERROR} logging level,
      * including the stack trace of the error
      *
-     * @param loggingObject A reference to the object calling this logger
-     * @param message       Error message to log
-     * @param error         Throwable object of the error for getting stack trace
+     * @param tag     A reference to the object calling this logger
+     * @param message Error message to log
+     * @param error   Throwable object of the error for getting stack trace
      */
-    public static void error(Object loggingObject, String message, Throwable error) {
-        android.util.Log.e(getTag(loggingObject), message, error);
+    public static void error(String tag, String message, Throwable error) {
+        android.util.Log.e("[" + tag + "]", message, error);
     }
 }

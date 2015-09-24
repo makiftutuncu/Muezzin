@@ -18,6 +18,8 @@ import java.io.FileWriter;
  * @author mehmetakiftutuncu
  */
 public class FileUtils {
+    private static final String TAG = "FileUtils";
+
     /** Full path of data folder to store data in external storage of device */
     private static final String DATA_PATH = Environment.getExternalStorageDirectory().getAbsolutePath() + Conf.DATA_PATH;
 
@@ -33,17 +35,19 @@ public class FileUtils {
      */
     public static Option<String> readFile(String fileName) {
         if (StringUtils.isEmpty(fileName)) {
-            Log.error(FileUtils.class, "Failed to read file, file name is empty!");
+            Log.error(TAG, "Failed to read file, file name is empty!");
             return new None<>();
         } else {
             if (dataPath.isEmpty) {
-                Log.error(FileUtils.class, "Failed to read file " + fileName + ", data path is None!");
+                Log.error(TAG, "Failed to read file " + fileName + ", data path is None!");
                 return new None<>();
             } else {
                 File file = new File(dataPath.get().getAbsolutePath() + "/" + fileName);
 
-                if (!file.exists() || !file.canRead()) {
-                    Log.error(FileUtils.class, "Failed to read file " + file + ", it cannot be accessed!");
+                if (!file.exists()) {
+                    return new None<>();
+                } else if (!file.canRead()) {
+                    Log.error(TAG, "Failed to read file " + file + ", it cannot be accessed!");
                     return new None<>();
                 } else {
                     try {
@@ -58,7 +62,7 @@ public class FileUtils {
 
                         return new Some<>(stringBuilder.toString());
                     } catch (Exception e) {
-                        Log.error(FileUtils.class, "Failed to read file " + file + "!", e);
+                        Log.error(TAG, "Failed to read file " + file + "!", e);
                         return new None<>();
                     }
                 }
@@ -76,16 +80,16 @@ public class FileUtils {
      */
     public static boolean writeFile(String data, String fileName) {
         if (StringUtils.isEmpty(data)) {
-            Log.error(FileUtils.class, "Failed to write file " + fileName + ", data is empty!");
+            Log.error(TAG, "Failed to write file " + fileName + ", data is empty!");
 
             return false;
         } else if (StringUtils.isEmpty(fileName)) {
-            Log.error(FileUtils.class, "Failed to write " + data + " to file, file name is empty!");
+            Log.error(TAG, "Failed to write " + data + " to file, file name is empty!");
 
             return false;
         } else {
             if (dataPath.isEmpty) {
-                Log.error(FileUtils.class, "Failed to write " + data + " to " + fileName + ", data path is None!");
+                Log.error(TAG, "Failed to write " + data + " to " + fileName + ", data path is None!");
 
                 return false;
             } else {
@@ -101,7 +105,7 @@ public class FileUtils {
 
                     return true;
                 } catch (Exception e) {
-                    Log.error(FileUtils.class, "Failed to write " + data + " to " + file + "!", e);
+                    Log.error(TAG, "Failed to write " + data + " to " + file + "!", e);
 
                     return false;
                 }
@@ -111,7 +115,7 @@ public class FileUtils {
 
     /**
      * Gets a File object pointing to {@link com.mehmetakiftutuncu.muezzin.utilities.FileUtils#DATA_PATH}
-     * making sure that all folders in the path exist
+     * making sure that folders in the path exist
      *
      * @return A Some&lt;File&gt; object pointing to data folder or None if any error occurs
      */
@@ -119,7 +123,7 @@ public class FileUtils {
         File path = new File(DATA_PATH);
 
         if ((!path.exists() && !path.mkdirs()) || !path.canRead()) {
-            Log.error(FileUtils.class, "Failed to get data path, data directory cannot be accessed!");
+            Log.error(TAG, "Failed to get data path, data directory cannot be accessed!");
             return new None<>();
         } else {
             return new Some<>(path);

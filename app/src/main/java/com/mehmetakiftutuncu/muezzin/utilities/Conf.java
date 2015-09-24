@@ -1,5 +1,8 @@
 package com.mehmetakiftutuncu.muezzin.utilities;
 
+import com.mehmetakiftutuncu.muezzin.utilities.option.None;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
+
 /**
  * A utility class containing constant definitions used throughout the application,
  * mostly configuration-like stuff
@@ -49,23 +52,23 @@ public class Conf {
         }
 
         /** URL of prayer times API */
-        public static String prayerTimes(int countryId, int cityId, Integer districtId, boolean force) {
-            return SERVER + "/prayertimes/" + countryId + "/" + cityId + "/" + (districtId != null ? districtId : "None") + (force ? "/force" : "");
+        public static String prayerTimes(int countryId, int cityId, Option<Integer> districtId, boolean force) {
+            return SERVER + "/prayertimes/" + countryId + "/" + cityId + "/" + (districtId.isDefined ? districtId.get() : "None") + (force ? "/force" : "");
         }
 
         /** URL of prayer times API */
-        public static String prayerTimes(int countryId, int cityId, Integer districtId) {
+        public static String prayerTimes(int countryId, int cityId, Option<Integer> districtId) {
             return prayerTimes(countryId, cityId, districtId, false);
         }
 
         /** URL of prayer times API */
         public static String prayerTimes(int countryId, int cityId, boolean force) {
-            return prayerTimes(countryId, cityId, null, force);
+            return prayerTimes(countryId, cityId, new None<Integer>(), force);
         }
 
         /** URL of prayer times API */
         public static String prayerTimes(int countryId, int cityId) {
-            return prayerTimes(countryId, cityId, null, false);
+            return prayerTimes(countryId, cityId, new None<Integer>(), false);
         }
     }
 

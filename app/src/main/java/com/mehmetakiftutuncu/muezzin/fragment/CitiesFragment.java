@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class CitiesFragment extends LocationsFragment<City> {
+    private static final String TAG = "CitiesFragment";
+
     private int countryId;
     private OnCitySelectedListener onCitySelectedListener;
 
@@ -45,7 +47,7 @@ public class CitiesFragment extends LocationsFragment<City> {
             changeStateTo(ContentStates.NO_CONTENT);
         } else {
             if (saveData) {
-                boolean successful = City.saveAll(cities, countryId);
+                boolean successful = City.save(cities, countryId);
 
                 if (!successful) {
                     changeStateTo(ContentStates.ERROR);
@@ -63,7 +65,7 @@ public class CitiesFragment extends LocationsFragment<City> {
         changeStateTo(ContentStates.LOADING);
 
         if (!forceDownload) {
-            Option<ArrayList<City>> citiesFromDisk = City.loadAll(countryId);
+            Option<ArrayList<City>> citiesFromDisk = City.load(countryId);
 
             if (citiesFromDisk.isDefined) {
                 setItems(citiesFromDisk.get(), false);
@@ -77,8 +79,10 @@ public class CitiesFragment extends LocationsFragment<City> {
 
     @Override
     public void downloadItems() {
+        Log.info(TAG, "Downloading cities for country " + countryId + "...");
+
         if (!Web.hasInternet(getContext())) {
-            Log.error(this, "Failed to download cities for country " + countryId + ", there is no internet connection!");
+            Log.error(TAG, "Failed to download cities for country " + countryId + ", there is no internet connection!");
 
             changeStateTo(ContentStates.ERROR);
         } else {
@@ -88,7 +92,7 @@ public class CitiesFragment extends LocationsFragment<City> {
 
     @Override
     public void onFailure(Request request, IOException e) {
-        Log.error(this, "Failed to get cities for country " + countryId + " from Web!", e);
+        Log.error(TAG, "Failed to get cities for country " + countryId + " from Web!", e);
 
         changeStateTo(ContentStates.ERROR);
     }
@@ -96,7 +100,7 @@ public class CitiesFragment extends LocationsFragment<City> {
     @Override
     public void onResponse(Response response) {
         if (!Web.isResponseSuccessfulAndJson(response)) {
-            Log.error(this, "Failed to process Web response to get cities for country " + countryId + ", response is not a Json response!");
+            Log.error(TAG, "Failed to process Web response to get cities for country " + countryId + ", response is not a Json response!");
 
             changeStateTo(ContentStates.ERROR);
         } else {
@@ -115,11 +119,11 @@ public class CitiesFragment extends LocationsFragment<City> {
                     }
                 });
             } catch (IOException e) {
-                Log.error(this, "Failed to process Web response to get cities for country " + countryId + "!", e);
+                Log.error(TAG, "Failed to process Web response to get cities for country " + countryId + "!", e);
 
                 changeStateTo(ContentStates.ERROR);
             } catch (JSONException e) {
-                Log.error(this, "Failed to parse Web response to get cities for country " + countryId + "!", e);
+                Log.error(TAG, "Failed to parse Web response to get cities for country " + countryId + "!", e);
 
                 changeStateTo(ContentStates.ERROR);
             }

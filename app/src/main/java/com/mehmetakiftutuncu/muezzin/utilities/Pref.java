@@ -1,5 +1,6 @@
 package com.mehmetakiftutuncu.muezzin.utilities;
 
+import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
 import com.pixplicity.easyprefs.library.Prefs;
 
 public class Pref {
@@ -10,8 +11,8 @@ public class Pref {
             return Prefs.getString(KEY, "");
         }
 
-        public static void set(int countryId, int cityId, Integer districtId) {
-            Prefs.putString(KEY, countryId + "." + cityId + "." + (districtId != null ? districtId : "None"));
+        public static void set(int countryId, int cityId, Option<Integer> districtId) {
+            Prefs.putString(KEY, countryId + "." + cityId + "." + (districtId.isDefined ? districtId.get() : "None"));
         }
     }
 }

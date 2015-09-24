@@ -9,7 +9,9 @@ import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.utilities.Conf;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.Web;
+import com.mehmetakiftutuncu.muezzin.utilities.option.None;
 import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
+import com.mehmetakiftutuncu.muezzin.utilities.option.Some;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
@@ -21,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class DistrictsFragment extends LocationsFragment<District> {
+    private static final String TAG = "DistrictsFragment";
+
     private int countryId;
     private int cityId;
     private OnDistrictSelectedListener onDistrictSelectedListener;
@@ -44,10 +48,10 @@ public class DistrictsFragment extends LocationsFragment<District> {
         if (items == null) {
             changeStateTo(ContentStates.ERROR);
         } else if (items.isEmpty()) {
-            changeStateTo(ContentStates.NO_CONTENT);
+            onDistrictSelectedListener.onDistrictSelected(countryId, cityId, new None<District>());
         } else {
             if (saveData) {
-                boolean successful = District.saveAll(districts, countryId, cityId);
+                boolean successful = District.save(districts, countryId, cityId);
 
                 if (!successful) {
                     changeStateTo(ContentStates.ERROR);
@@ -65,7 +69,7 @@ public class DistrictsFragment extends LocationsFragment<District> {
         changeStateTo(ContentStates.LOADING);
 
         if (!forceDownload) {
-            Option<ArrayList<District>> districtsFromDisk = District.loadAll(countryId, cityId);
+            Option<ArrayList<District>> districtsFromDisk = District.load(countryId, cityId);
 
             if (districtsFromDisk.isDefined) {
                 setItems(districtsFromDisk.get(), false);
@@ -79,8 +83,10 @@ public class DistrictsFragment extends LocationsFragment<District> {
 
     @Override
     public void downloadItems() {
+        Log.info(TAG, "Downloading districts for country " + countryId + " and city " + cityId + "...");
+
         if (!Web.hasInternet(getContext())) {
-            Log.error(this, "Failed to download districts for country " + countryId + " and city " + cityId + ", there is no internet connection!");
+            Log.error(TAG, "Failed to download districts for country " + countryId + " and city " + cityId + ", there is no internet connection!");
 
             changeStateTo(ContentStates.ERROR);
         } else {
@@ -90,7 +96,7 @@ public class DistrictsFragment extends LocationsFragment<District> {
 
     @Override
     public void onFailure(Request request, IOException e) {
-        Log.error(this, "Failed to get districts for country " + countryId + " and city " + cityId + " from Web!", e);
+        Log.error(TAG, "Failed to get districts for country " + countryId + " and city " + cityId + " from Web!", e);
 
         changeStateTo(ContentStates.ERROR);
     }
@@ -98,7 +104,7 @@ public class DistrictsFragment extends LocationsFragment<District> {
     @Override
     public void onResponse(Response response) {
         if (!Web.isResponseSuccessfulAndJson(response)) {
-            Log.error(this, "Failed to process Web response to get districts for country " + countryId + " and city " + cityId + ", response is not a Json response!");
+            Log.error(TAG, "Failed to process Web response to get districts for country " + countryId + " and city " + cityId + ", response is not a Json response!");
 
             changeStateTo(ContentStates.ERROR);
         } else {
@@ -117,11 +123,11 @@ public class DistrictsFragment extends LocationsFragment<District> {
                     }
                 });
             } catch (IOException e) {
-                Log.error(this, "Failed to process Web response to get districts for country " + countryId + " and city " + cityId + "!", e);
+                Log.error(TAG, "Failed to process Web response to get districts for country " + countryId + " and city " + cityId + "!", e);
 
                 changeStateTo(ContentStates.ERROR);
             } catch (JSONException e) {
-                Log.error(this, "Failed to parse Web response to get districts for country " + countryId + " and city " + cityId + "!", e);
+                Log.error(TAG, "Failed to parse Web response to get districts for country " + countryId + " and city " + cityId + "!", e);
 
                 changeStateTo(ContentStates.ERROR);
             }
@@ -132,7 +138,7 @@ public class DistrictsFragment extends LocationsFragment<District> {
     public void onItemClicked(View itemLayout, int position) {
         District district = items.get(position);
 
-        onDistrictSelectedListener.onDistrictSelected(district, countryId, cityId);
+        onDistrictSelectedListener.onDistrictSelected(countryId, cityId, new Some<District>(district));
     }
 
     public void setCountryId(int countryId) {
