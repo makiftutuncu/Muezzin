@@ -6,7 +6,7 @@
 
     <!-- Common phrases -->
     <string name="common_loading">Loading, please wait</string>
-    <string name="common_noContent">There is nothing to see here.</string>
+    <string name="common_noData">No data found!</string>
     <string name="common_error">Oops! Something went wrong.</string>
     <string name="common_noInternet">There is no internet connection!</string>
     <string name="common_retry">Retry</string>
@@ -49,5 +49,8 @@
     <string name="locationSelection_district">Select a District</string>
 
     <!-- Prayer times -->
-    <string name="prayerTimes_remainingTimeInfo">Remaining Time to %1$s</string>
+    <string name="prayerTimes_cardTitle_dates">Today</string>
+    <string name="prayerTimes_cardTitle_remainingTime">Remaining Time</string>
+    <string name="prayerTimes_cardTitle_prayerTimes">Prayer Times</string>
+    <string name="prayerTimes_remainingTimeInfo">%1$s to %2$s</string>
 </resources>

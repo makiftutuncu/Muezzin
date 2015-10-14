@@ -32,10 +32,6 @@ public class PrayerTimes {
     public final DateTime isha;
     public final DateTime qibla;
 
-    private final DateTime[] times;
-
-    private static final String[] names = new String[] {"fajr", "shuruq", "dhuhr", "asr", "maghrib", "isha"};
-
     public static String fileName(int countryId, int cityId, Option<Integer> districtId) {
         return TAG + "." + countryId + "." + cityId + "." + (districtId.isDefined ? districtId.get() : "None");
     }
@@ -51,8 +47,6 @@ public class PrayerTimes {
         this.qibla      = qibla;
 
         this.hijriDayDate = this.dayDate.withChronology(IslamicChronology.getInstance(DateTimeZone.UTC));
-
-        this.times = new DateTime[] {this.fajr, this.shuruq, this.dhuhr, this.asr, this.maghrib, this.isha};
     }
 
     public PrayerTimes(long dayDate, long fajr, long shuruq, long dhuhr, long asr, long maghrib, long isha, long qibla) {
@@ -204,47 +198,48 @@ public class PrayerTimes {
         }
     }
 
-    public Option<DateTime> getNextPrayerTime() {
+    public DateTime getNextPrayerTime() {
         DateTime now = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
 
-        if (now.isBefore(dayDate)) {
-            return new None<>();
-        } else if (now.isBefore(fajr)) {
-            return new Some<>(fajr);
+        if (now.isBefore(fajr)) {
+            return fajr;
         } else if (now.isBefore(shuruq)) {
-            return new Some<>(shuruq);
+            return shuruq;
         } else if (now.isBefore(dhuhr)) {
-            return new Some<>(dhuhr);
+            return dhuhr;
         } else if (now.isBefore(asr)) {
-            return new Some<>(asr);
+            return asr;
         } else if (now.isBefore(maghrib)) {
-            return new Some<>(maghrib);
+            return maghrib;
         } else if (now.isBefore(isha)) {
-            return new Some<>(isha);
+            return isha;
         } else {
-            return new None<>();
+            /* After isha, so next day's fajr is next prayer time.
+             * I just assume time fajr time will be the same next day too,
+             * HOWEVER it may/will vary a few minutes. It is still better than
+             * not knowing the time at all. */
+            return fajr.plusDays(1);
         }
     }
 
-    public Option<String> getNextPrayerTimeName(Context context) {
+    public String getNextPrayerTimeName(Context context) {
         DateTime now = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
 
-        if (now.isBefore(dayDate)) {
-            return new None<>();
-        } else if (now.isBefore(fajr)) {
-            return new Some<>(context.getString(R.string.prayerTime_fajr));
+        if (now.isBefore(fajr)) {
+            return context.getString(R.string.prayerTime_fajr);
         } else if (now.isBefore(shuruq)) {
-            return new Some<>(context.getString(R.string.prayerTime_shuruq));
+            return context.getString(R.string.prayerTime_shuruq);
         } else if (now.isBefore(dhuhr)) {
-            return new Some<>(context.getString(R.string.prayerTime_dhuhr));
+            return context.getString(R.string.prayerTime_dhuhr);
         } else if (now.isBefore(asr)) {
-            return new Some<>(context.getString(R.string.prayerTime_asr));
+            return context.getString(R.string.prayerTime_asr);
         } else if (now.isBefore(maghrib)) {
-            return new Some<>(context.getString(R.string.prayerTime_maghrib));
+            return context.getString(R.string.prayerTime_maghrib);
         } else if (now.isBefore(isha)) {
-            return new Some<>(context.getString(R.string.prayerTime_isha));
+            return context.getString(R.string.prayerTime_isha);
         } else {
-            return new None<>();
+            // Same logic as in getNextPrayerTime(), return fajr.
+            return context.getString(R.string.prayerTime_fajr);
         }
     }
 

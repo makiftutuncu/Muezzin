@@ -15,4 +15,16 @@ public class Pref {
             Prefs.putString(KEY, countryId + "." + cityId + "." + (districtId.isDefined ? districtId.get() : "None"));
         }
     }
+
+    public static class HijriDate {
+        private static final String KEY = "hijriDate";
+
+        public static Boolean get() {
+            return Prefs.getBoolean(KEY, false);
+        }
+
+        public static void set(boolean hijriDate) {
+            Prefs.putBoolean(KEY, hijriDate);
+        }
+    }
 }
