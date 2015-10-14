@@ -1,7 +1,9 @@
 package com.mehmetakiftutuncu.muezzin.fragment;
 
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.CitiesAdapter;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.City;
@@ -14,7 +16,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class CitiesFragment extends LocationsFragment<City> {
             changeStateTo(ContentStates.NO_CONTENT);
         } else {
             if (saveData) {
-                boolean successful = City.save(cities, countryId);
+                boolean successful = City.saveAll(cities, countryId);
 
                 if (!successful) {
                     changeStateTo(ContentStates.ERROR);
@@ -65,7 +66,7 @@ public class CitiesFragment extends LocationsFragment<City> {
         changeStateTo(ContentStates.LOADING);
 
         if (!forceDownload) {
-            Option<ArrayList<City>> citiesFromDisk = City.load(countryId);
+            Option<ArrayList<City>> citiesFromDisk = City.loadAll(countryId);
 
             if (citiesFromDisk.isDefined) {
                 setItems(citiesFromDisk.get(), false);
@@ -85,8 +86,10 @@ public class CitiesFragment extends LocationsFragment<City> {
             Log.error(TAG, "Failed to download cities for country " + countryId + ", there is no internet connection!");
 
             changeStateTo(ContentStates.ERROR);
+
+            Snackbar.make(progressWidget, R.string.common_noInternet, Snackbar.LENGTH_LONG).show();
         } else {
-            Web.instance().get(Conf.Url.cities(countryId), this, this);
+            Web.instance().get(Conf.Url.cities(countryId), this);
         }
     }
 
@@ -118,12 +121,8 @@ public class CitiesFragment extends LocationsFragment<City> {
                         setItems(cities.get(), true);
                     }
                 });
-            } catch (IOException e) {
-                Log.error(TAG, "Failed to process Web response to get cities for country " + countryId + "!", e);
-
-                changeStateTo(ContentStates.ERROR);
-            } catch (JSONException e) {
-                Log.error(TAG, "Failed to parse Web response to get cities for country " + countryId + "!", e);
+            } catch (Throwable t) {
+                Log.error(TAG, "Failed to parse Web response to get cities for country " + countryId + "!", t);
 
                 changeStateTo(ContentStates.ERROR);
             }

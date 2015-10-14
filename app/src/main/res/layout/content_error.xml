@@ -10,5 +10,16 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/textSize_medium"
         android:text="@string/common_error"/>
+
+    <Button
+        android:id="@+id/button_error_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/spacing_medium"
+        android:padding="@dimen/spacing_biggerMedium"
+        android:text="@string/common_retry"
+        android:textColor="@color/inversePrimaryText"/>
 </LinearLayout>

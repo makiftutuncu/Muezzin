@@ -19,7 +19,7 @@ public class Conf {
     /** Url definitions to the endpoints of Muezzin API web service */
     public static class Url {
         /** URL of the root of Muezzin API web service */
-        public static final String SERVER = "http://31.210.55.81:9000";
+        public static final String SERVER = "https://muezzin.herokuapp.com";
 
         /** URL of countries API */
         public static String countries(boolean force) {

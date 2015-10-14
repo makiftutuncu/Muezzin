@@ -1,5 +1,6 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
+import com.mehmetakiftutuncu.muezzin.utilities.Cache;
 import com.mehmetakiftutuncu.muezzin.utilities.FileUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.StringUtils;
@@ -13,13 +14,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class District {
-    private static final String TAG = "District";
+    public static final String TAG = "District";
 
     public final int id;
     public final String name;
 
-    private static String fileName(int countryId, int cityId) {
-        return "districts." + countryId + "." + cityId;
+    public static String fileName(int countryId, int cityId) {
+        return TAG + "." + countryId + "." + cityId;
     }
 
     public District(int id, String name) {
@@ -27,11 +28,17 @@ public class District {
         this.name = name;
     }
 
-    public static Option<ArrayList<District>> load(int countryId, int cityId) {
-        Log.info(TAG, "Loading districts for country " + countryId + " and city " + cityId + "...");
+    public static Option<ArrayList<District>> loadAll(int countryId, int cityId) {
+        Log.info(TAG, "Loading all districts for country " + countryId + " and city " + cityId + "...");
+
+        Option<ArrayList<District>> fromCache = Cache.District.getList(countryId, cityId);
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(TAG, "Failed to load districts for country " + countryId + " and city " + cityId + ", data path is None!");
+            Log.error(TAG, "Failed to load all districts for country " + countryId + " and city " + cityId + ", data path is None!");
 
             return new None<>();
         }
@@ -43,7 +50,7 @@ public class District {
         }
 
         if (StringUtils.isEmpty(data.get())) {
-            Log.error(TAG, "Failed to load districts for country " + countryId + " and city " + cityId + ", loaded data is None or empty!");
+            Log.error(TAG, "Failed to load all districts for country " + countryId + " and city " + cityId + ", loaded data are None or empty!");
 
             return new None<>();
         }
@@ -61,19 +68,57 @@ public class District {
                 }
             }
 
+            Cache.District.setList(countryId, cityId, districts);
+
             return new Some<>(districts);
         } catch (Throwable t) {
-            Log.error(TAG, "Failed to load districts for country " + countryId + " and city " + cityId + ", cannot construct districts from " + data.get() + "!", t);
+            Log.error(TAG, "Failed to load all districts for country " + countryId + " and city " + cityId + ", cannot construct districts from " + data.get() + "!", t);
 
             return new None<>();
         }
     }
 
-    public static boolean save(ArrayList<District> districts, int countryId, int cityId) {
-        Log.info(TAG, "Saving districts for country " + countryId + "...");
+    public static Option<District> get(int countryId, int cityId, int districtId) {
+        Log.info(TAG, "Getting district " + districtId + " for city " + cityId + " and country " + countryId + "...");
+
+        Option<District> fromCache = Cache.District.get(countryId, cityId, districtId);
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
+
+        Option<ArrayList<District>> districtsOption = loadAll(countryId, cityId);
+
+        if (districtsOption.isEmpty) {
+            return new None<>();
+        }
+
+        try {
+            ArrayList<District> districts = districtsOption.get();
+
+            for (int i = 0, size = districts.size(); i < size; i++) {
+                District district = districts.get(i);
+
+                if (district.id == districtId) {
+                    Cache.District.set(countryId, cityId, district);
+
+                    return new Some<>(district);
+                }
+            }
+
+            return new None<>();
+        } catch (Throwable t) {
+            Log.error(TAG, "Failed to get district " + districtId + "for city " + cityId + " and country " + countryId + "!", t);
+
+            return new None<>();
+        }
+    }
+
+    public static boolean saveAll(ArrayList<District> districts, int countryId, int cityId) {
+        Log.info(TAG, "Saving all districts for country " + countryId + " and city " + cityId + "...");
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(TAG, "Failed to save districts for country " + countryId + " and city " + cityId + ", data path is None!");
+            Log.error(TAG, "Failed to save all districts for country " + countryId + " and city " + cityId + ", data path is None!");
 
             return false;
         }
@@ -95,6 +140,10 @@ public class District {
         stringBuilder.append("]");
 
         boolean result = FileUtils.writeFile(stringBuilder.toString(), fileName(countryId, cityId));
+
+        if (result) {
+            Cache.District.setList(countryId, cityId, districts);
+        }
 
         return result;
     }

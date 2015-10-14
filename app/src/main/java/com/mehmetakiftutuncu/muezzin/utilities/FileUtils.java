@@ -61,8 +61,8 @@ public class FileUtils {
                         bufferedReader.close();
 
                         return new Some<>(stringBuilder.toString());
-                    } catch (Exception e) {
-                        Log.error(TAG, "Failed to read file " + file + "!", e);
+                    } catch (Throwable t) {
+                        Log.error(TAG, "Failed to read file " + file + "!", t);
                         return new None<>();
                     }
                 }
@@ -80,7 +80,7 @@ public class FileUtils {
      */
     public static boolean writeFile(String data, String fileName) {
         if (StringUtils.isEmpty(data)) {
-            Log.error(TAG, "Failed to write file " + fileName + ", data is empty!");
+            Log.error(TAG, "Failed to write file " + fileName + ", data are empty!");
 
             return false;
         } else if (StringUtils.isEmpty(fileName)) {
@@ -104,8 +104,8 @@ public class FileUtils {
                     bufferedWriter.close();
 
                     return true;
-                } catch (Exception e) {
-                    Log.error(TAG, "Failed to write " + data + " to " + file + "!", e);
+                } catch (Throwable t) {
+                    Log.error(TAG, "Failed to write " + data + " to " + file + "!", t);
 
                     return false;
                 }

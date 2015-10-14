@@ -2,13 +2,12 @@ package com.mehmetakiftutuncu.muezzin.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView;
 import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerViewDecoration;
@@ -17,22 +16,19 @@ import com.mehmetakiftutuncu.muezzin.interfaces.OnItemClickedListener;
 import com.mehmetakiftutuncu.muezzin.interfaces.WithContentStates;
 import com.mehmetakiftutuncu.muezzin.models.ContentStates;
 import com.mehmetakiftutuncu.muezzin.utilities.Web;
+import com.squareup.okhttp.Callback;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import ru.vang.progressswitcher.ProgressWidget;
 
 public abstract class LocationsFragment<T> extends Fragment implements WithContentStates,
-                                                                       Web.OnRequestFailure,
-                                                                       Web.OnResponse,
-                                                                       SwipeRefreshLayout.OnRefreshListener,
+                                                                       Callback,
                                                                        OnItemClickedListener {
     protected ProgressWidget progressWidget;
-    protected SwipeRefreshLayout swipeRefreshLayout;
     protected IndexedRecyclerView recyclerView;
     protected ContentStates state;
-    protected List<T> items;
+    protected ArrayList<T> items;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,14 +37,6 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
 
         progressWidget = (ProgressWidget) layout.findViewById(R.id.progressWidget_locations);
 
-        swipeRefreshLayout = (SwipeRefreshLayout) layout.findViewById(R.id.swipeRefreshLayout_locations);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        swipeRefreshLayout.setColorSchemeColors(
-                ContextCompat.getColor(getContext(), R.color.primary),
-                ContextCompat.getColor(getContext(), R.color.primaryDark),
-                ContextCompat.getColor(getContext(), R.color.accent)
-        );
-
         recyclerView = (IndexedRecyclerView) layout.findViewById(R.id.recyclerView_locations);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -56,6 +44,13 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
         IndexedRecyclerViewDecoration decoration = new IndexedRecyclerViewDecoration();
         recyclerView.addItemDecoration(decoration);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        ((Button) progressWidget.findViewById(R.id.button_error_retry)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                retryOnError(v);
+            }
+        });
 
         return layout;
     }
@@ -68,29 +63,35 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
     }
 
     @Override
-    public void changeStateTo(ContentStates newState) {
-        if (state == null || !state.equals(newState)) {
-            state = newState;
+    public void changeStateTo(final ContentStates newState) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (state == null || !state.equals(newState)) {
+                    state = newState;
 
-            switch (newState) {
-                case LOADING:
-                    progressWidget.showProgress(true);
-                    swipeRefreshLayout.setRefreshing(true);
-                    break;
-                case ERROR:
-                    progressWidget.showError(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    break;
-                case CONTENT:
-                    progressWidget.showContent(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    break;
-                case NO_CONTENT:
-                    progressWidget.showEmpty(true);
-                    swipeRefreshLayout.setRefreshing(false);
-                    break;
+                    switch (newState) {
+                        case LOADING:
+                            progressWidget.showProgress(true);
+                            break;
+                        case ERROR:
+                            progressWidget.showError(true);
+                            break;
+                        case CONTENT:
+                            progressWidget.showContent(true);
+                            break;
+                        case NO_CONTENT:
+                            progressWidget.showEmpty(true);
+                            break;
+                    }
+                }
             }
-        }
+        });
+    }
+
+    @Override
+    public void retryOnError(View retryButton) {
+        loadItems(false);
     }
 
     public abstract void setItems(ArrayList<T> items, boolean saveData);
@@ -98,9 +99,4 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
     public abstract void loadItems(boolean forceDownload);
 
     public abstract void downloadItems();
-
-    @Override
-    public void onRefresh() {
-        loadItems(true);
-    }
 }

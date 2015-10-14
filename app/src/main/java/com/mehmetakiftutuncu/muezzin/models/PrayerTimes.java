@@ -1,21 +1,29 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
+import android.content.Context;
+
+import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.utilities.Cache;
+import com.mehmetakiftutuncu.muezzin.utilities.FileUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
+import com.mehmetakiftutuncu.muezzin.utilities.StringUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.option.None;
 import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
 import com.mehmetakiftutuncu.muezzin.utilities.option.Some;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.chrono.IslamicChronology;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 public class PrayerTimes {
-    private static final String TAG = "PrayerTimes";
+    public static final String TAG = "PrayerTimes";
 
     public final DateTime dayDate;
+    public final DateTime hijriDayDate;
     public final DateTime fajr;
     public final DateTime shuruq;
     public final DateTime dhuhr;
@@ -23,6 +31,14 @@ public class PrayerTimes {
     public final DateTime maghrib;
     public final DateTime isha;
     public final DateTime qibla;
+
+    private final DateTime[] times;
+
+    private static final String[] names = new String[] {"fajr", "shuruq", "dhuhr", "asr", "maghrib", "isha"};
+
+    public static String fileName(int countryId, int cityId, Option<Integer> districtId) {
+        return TAG + "." + countryId + "." + cityId + "." + (districtId.isDefined ? districtId.get() : "None");
+    }
 
     public PrayerTimes(DateTime dayDate, DateTime fajr, DateTime shuruq, DateTime dhuhr, DateTime asr, DateTime maghrib, DateTime isha, DateTime qibla) {
         this.dayDate    = dayDate;
@@ -33,31 +49,112 @@ public class PrayerTimes {
         this.maghrib    = maghrib;
         this.isha       = isha;
         this.qibla      = qibla;
+
+        this.hijriDayDate = this.dayDate.withChronology(IslamicChronology.getInstance(DateTimeZone.UTC));
+
+        this.times = new DateTime[] {this.fajr, this.shuruq, this.dhuhr, this.asr, this.maghrib, this.isha};
     }
 
     public PrayerTimes(long dayDate, long fajr, long shuruq, long dhuhr, long asr, long maghrib, long isha, long qibla) {
-        this.dayDate    = new DateTime(dayDate, DateTimeZone.UTC);
-        this.fajr       = new DateTime(fajr,    DateTimeZone.UTC);
-        this.shuruq     = new DateTime(shuruq,  DateTimeZone.UTC);
-        this.dhuhr      = new DateTime(dhuhr,   DateTimeZone.UTC);
-        this.asr        = new DateTime(asr,     DateTimeZone.UTC);
-        this.maghrib    = new DateTime(maghrib, DateTimeZone.UTC);
-        this.isha       = new DateTime(isha,    DateTimeZone.UTC);
-        this.qibla      = new DateTime(qibla,   DateTimeZone.UTC);
+        this(new DateTime(dayDate, DateTimeZone.UTC), new DateTime(fajr, DateTimeZone.UTC), new DateTime(shuruq, DateTimeZone.UTC), new DateTime(dhuhr, DateTimeZone.UTC), new DateTime(asr, DateTimeZone.UTC), new DateTime(maghrib, DateTimeZone.UTC), new DateTime(isha, DateTimeZone.UTC), new DateTime(qibla, DateTimeZone.UTC));
+    }
+
+    public static Option<ArrayList<PrayerTimes>> load(int countryId, int cityId, Option<Integer> districtId) {
+        Log.info(TAG, "Loading prayer times for country " + countryId + ", city " + cityId + " and district " + districtId + "...");
+
+        Option<ArrayList<PrayerTimes>> fromCache = Cache.PrayerTimes.getList(countryId, cityId, districtId);
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
+
+        if (FileUtils.dataPath.isEmpty) {
+            Log.error(TAG, "Failed to load prayer times for country " + countryId + ", city " + cityId + " and district " + districtId + ", data path is None!");
+
+            return new None<>();
+        }
+
+        Option<String> data = FileUtils.readFile(fileName(countryId, cityId, districtId));
+
+        if (data.isEmpty) {
+            return new None<>();
+        }
+
+        if (StringUtils.isEmpty(data.get())) {
+            Log.error(TAG, "Failed to load prayer times for country " + countryId + ", city " + cityId + " and district " + districtId + ", loaded data are None or empty!");
+
+            return new None<>();
+        }
+
+        try {
+            ArrayList<PrayerTimes> prayerTimesList = new ArrayList<>();
+            JSONArray jsonArray = new JSONArray(data.get());
+
+            for (int i = 0, size = jsonArray.length(); i < size; i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                Option<PrayerTimes> prayerTimes = fromJson(jsonObject);
+
+                if (prayerTimes.isDefined) {
+                    prayerTimesList.add(prayerTimes.get());
+                }
+            }
+
+            Cache.PrayerTimes.setList(countryId, cityId, districtId, prayerTimesList);
+
+            return new Some<>(prayerTimesList);
+        } catch (Throwable t) {
+            Log.error(TAG, "Failed to load prayer times for country " + countryId + ", city " + cityId + " and district " + districtId + ", cannot construct prayer times from " + data.get() + "!", t);
+
+            return new None<>();
+        }
+    }
+
+    public static boolean save(ArrayList<PrayerTimes> prayerTimesList, int countryId, int cityId, Option<Integer> districtId) {
+        Log.info(TAG, "Saving prayer times for country " + countryId + ", city " + cityId + " and district " + districtId + "...");
+
+        if (FileUtils.dataPath.isEmpty) {
+            Log.error(TAG, "Failed to save prayer times for country " + countryId + ", city " + cityId + " and district " + districtId + ", data path is None!");
+
+            return false;
+        }
+
+        StringBuilder stringBuilder = new StringBuilder("[");
+
+        for (int i = 0, size = prayerTimesList.size(); i < size; i++) {
+            Option<JSONObject> json = prayerTimesList.get(i).toJson();
+
+            if (json.isDefined) {
+                stringBuilder.append(json.toString());
+
+                if (i != size - 1) {
+                    stringBuilder.append(", ");
+                }
+            }
+        }
+
+        stringBuilder.append("]");
+
+        boolean result = FileUtils.writeFile(stringBuilder.toString(), fileName(countryId, cityId, districtId));
+
+        if (result) {
+            Cache.PrayerTimes.setList(countryId, cityId, districtId, prayerTimesList);
+        }
+
+        return result;
     }
 
     public Option<JSONObject> toJson() {
         try {
             JSONObject result = new JSONObject();
 
-            result.put("dayDate", dayDate);
-            result.put("fajr",    fajr);
-            result.put("shuruq",  shuruq);
-            result.put("dhuhr",   dhuhr);
-            result.put("asr",     asr);
-            result.put("maghrib", maghrib);
-            result.put("isha",    isha);
-            result.put("qibla",   qibla);
+            result.put("dayDate", dayDate.getMillis());
+            result.put("fajr",    fajr.getMillis());
+            result.put("shuruq",  shuruq.getMillis());
+            result.put("dhuhr",   dhuhr.getMillis());
+            result.put("asr",     asr.getMillis());
+            result.put("maghrib", maghrib.getMillis());
+            result.put("isha",    isha.getMillis());
+            result.put("qibla",   qibla.getMillis());
 
             return new Some<>(result);
         } catch (Throwable t) {
@@ -103,6 +200,50 @@ public class PrayerTimes {
         } catch (Throwable t) {
             Log.error(TAG, "Failed to create prayer times list from Json array " + jsonArray.toString() + "!", t);
 
+            return new None<>();
+        }
+    }
+
+    public Option<DateTime> getNextPrayerTime() {
+        DateTime now = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
+
+        if (now.isBefore(dayDate)) {
+            return new None<>();
+        } else if (now.isBefore(fajr)) {
+            return new Some<>(fajr);
+        } else if (now.isBefore(shuruq)) {
+            return new Some<>(shuruq);
+        } else if (now.isBefore(dhuhr)) {
+            return new Some<>(dhuhr);
+        } else if (now.isBefore(asr)) {
+            return new Some<>(asr);
+        } else if (now.isBefore(maghrib)) {
+            return new Some<>(maghrib);
+        } else if (now.isBefore(isha)) {
+            return new Some<>(isha);
+        } else {
+            return new None<>();
+        }
+    }
+
+    public Option<String> getNextPrayerTimeName(Context context) {
+        DateTime now = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
+
+        if (now.isBefore(dayDate)) {
+            return new None<>();
+        } else if (now.isBefore(fajr)) {
+            return new Some<>(context.getString(R.string.prayerTime_fajr));
+        } else if (now.isBefore(shuruq)) {
+            return new Some<>(context.getString(R.string.prayerTime_shuruq));
+        } else if (now.isBefore(dhuhr)) {
+            return new Some<>(context.getString(R.string.prayerTime_dhuhr));
+        } else if (now.isBefore(asr)) {
+            return new Some<>(context.getString(R.string.prayerTime_asr));
+        } else if (now.isBefore(maghrib)) {
+            return new Some<>(context.getString(R.string.prayerTime_maghrib));
+        } else if (now.isBefore(isha)) {
+            return new Some<>(context.getString(R.string.prayerTime_isha));
+        } else {
             return new None<>();
         }
     }

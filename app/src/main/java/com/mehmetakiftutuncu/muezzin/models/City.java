@@ -1,5 +1,6 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
+import com.mehmetakiftutuncu.muezzin.utilities.Cache;
 import com.mehmetakiftutuncu.muezzin.utilities.FileUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.StringUtils;
@@ -13,13 +14,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class City {
-    private static final String TAG = "City";
+    public static final String TAG = "City";
 
     public final int id;
     public final String name;
 
-    private static String fileName(int countryId) {
-        return "cities." + countryId;
+    public static String fileName(int countryId) {
+        return TAG + "." + countryId;
     }
 
     public City(int id, String name) {
@@ -27,11 +28,17 @@ public class City {
         this.name = name;
     }
 
-    public static Option<ArrayList<City>> load(int countryId) {
-        Log.info(TAG, "Loading cities for country " + countryId + "...");
+    public static Option<ArrayList<City>> loadAll(int countryId) {
+        Log.info(TAG, "Loading all cities for country " + countryId + "...");
+
+        Option<ArrayList<City>> fromCache = Cache.City.getList(countryId);
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(TAG, "Failed to load cities for country " + countryId + ", data path is None!");
+            Log.error(TAG, "Failed to load all cities for country " + countryId + ", data path is None!");
 
             return new None<>();
         }
@@ -43,7 +50,7 @@ public class City {
         }
 
         if (StringUtils.isEmpty(data.get())) {
-            Log.error(TAG, "Failed to load cities for country " + countryId + ", loaded data is empty!");
+            Log.error(TAG, "Failed to load all cities for country " + countryId + ", loaded data are empty!");
 
             return new None<>();
         }
@@ -61,19 +68,57 @@ public class City {
                 }
             }
 
+            Cache.City.setList(countryId, cities);
+
             return new Some<>(cities);
         } catch (Throwable t) {
-            Log.error(TAG, "Failed to load cities for country " + countryId + ", cannot construct cities from " + data.get() + "!", t);
+            Log.error(TAG, "Failed to load all cities for country " + countryId + ", cannot construct cities from " + data.get() + "!", t);
 
             return new None<>();
         }
     }
 
-    public static boolean save(ArrayList<City> cities, int countryId) {
-        Log.info(TAG, "Saving cities for country " + countryId + "...");
+    public static Option<City> get(int countryId, int cityId) {
+        Log.info(TAG, "Getting city " + cityId + " for country " + countryId + "...");
+
+        Option<City> fromCache = Cache.City.get(countryId, cityId);
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
+
+        Option<ArrayList<City>> citiesOption = loadAll(countryId);
+
+        if (citiesOption.isEmpty) {
+            return new None<>();
+        }
+
+        try {
+            ArrayList<City> cities = citiesOption.get();
+
+            for (int i = 0, size = cities.size(); i < size; i++) {
+                City city = cities.get(i);
+
+                if (city.id == cityId) {
+                    Cache.City.set(countryId, cityId, city);
+
+                    return new Some<>(city);
+                }
+            }
+
+            return new None<>();
+        } catch (Throwable t) {
+            Log.error(TAG, "Failed to get city " + cityId + " for country " + countryId + "!", t);
+
+            return new None<>();
+        }
+    }
+
+    public static boolean saveAll(ArrayList<City> cities, int countryId) {
+        Log.info(TAG, "Saving all cities for country " + countryId + "...");
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(TAG, "Failed to save cities for country " + countryId + ", data path is None!");
+            Log.error(TAG, "Failed to save all cities for country " + countryId + ", data path is None!");
 
             return false;
         }
@@ -95,6 +140,10 @@ public class City {
         stringBuilder.append("]");
 
         boolean result = FileUtils.writeFile(stringBuilder.toString(), fileName(countryId));
+
+        if (result) {
+            Cache.City.setList(countryId, cities);
+        }
 
         return result;
     }

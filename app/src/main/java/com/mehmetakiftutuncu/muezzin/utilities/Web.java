@@ -13,14 +13,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class Web {
-    public interface OnResponse {
-        void onResponse(Response response);
-    }
-
-    public interface OnRequestFailure {
-        void onFailure(Request request, IOException e);
-    }
-
     private static Web instance;
     private OkHttpClient client;
 
@@ -38,20 +30,10 @@ public class Web {
         return instance;
     }
 
-    public void get(String url, final OnRequestFailure onRequestFailureListener, final OnResponse onResponseListener) {
+    public void get(String url, final Callback requestCallbackListener) {
         Request request = new Request.Builder().url(url).build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                onRequestFailureListener.onFailure(request, e);
-            }
-
-            @Override
-            public void onResponse(Response response) throws IOException {
-                onResponseListener.onResponse(response);
-            }
-        });
+        client.newCall(request).enqueue(requestCallbackListener);
     }
 
     /**

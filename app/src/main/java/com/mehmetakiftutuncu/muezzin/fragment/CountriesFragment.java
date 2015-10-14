@@ -1,7 +1,9 @@
 package com.mehmetakiftutuncu.muezzin.fragment;
 
+import android.support.design.widget.Snackbar;
 import android.view.View;
 
+import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.CountriesAdapter;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.ContentStates;
@@ -14,7 +16,6 @@ import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -45,7 +46,7 @@ public class CountriesFragment extends LocationsFragment<Country> {
             changeStateTo(ContentStates.NO_CONTENT);
         } else {
             if (saveData) {
-                boolean successful = Country.save(countries);
+                boolean successful = Country.saveAll(countries);
 
                 if (!successful) {
                     changeStateTo(ContentStates.ERROR);
@@ -63,7 +64,7 @@ public class CountriesFragment extends LocationsFragment<Country> {
         changeStateTo(ContentStates.LOADING);
 
         if (!forceDownload) {
-            Option<ArrayList<Country>> countriesFromDisk = Country.load();
+            Option<ArrayList<Country>> countriesFromDisk = Country.loadAll();
 
             if (countriesFromDisk.isDefined) {
                 setItems(countriesFromDisk.get(), false);
@@ -83,8 +84,10 @@ public class CountriesFragment extends LocationsFragment<Country> {
             Log.error(TAG, "Failed to download countries, there is no internet connection!");
 
             changeStateTo(ContentStates.ERROR);
+
+            Snackbar.make(progressWidget, R.string.common_noInternet, Snackbar.LENGTH_LONG).show();
         } else {
-            Web.instance().get(Conf.Url.countries(), this, this);
+            Web.instance().get(Conf.Url.countries(), this);
         }
     }
 
@@ -116,12 +119,8 @@ public class CountriesFragment extends LocationsFragment<Country> {
                         setItems(countries.get(), true);
                     }
                 });
-            } catch (IOException e) {
-                Log.error(TAG, "Failed to process Web response to get countries!", e);
-
-                changeStateTo(ContentStates.ERROR);
-            } catch (JSONException e) {
-                Log.error(TAG, "Failed to parse Web response to get countries!", e);
+            } catch (Throwable t) {
+                Log.error(TAG, "Failed to parse Web response to get countries!", t);
 
                 changeStateTo(ContentStates.ERROR);
             }

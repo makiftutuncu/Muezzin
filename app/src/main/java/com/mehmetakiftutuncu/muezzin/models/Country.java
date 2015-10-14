@@ -1,5 +1,6 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
+import com.mehmetakiftutuncu.muezzin.utilities.Cache;
 import com.mehmetakiftutuncu.muezzin.utilities.FileUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
@@ -14,14 +15,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Country {
-    private static final String TAG = "Country";
+    public static final String TAG = "Country";
 
     public final int id;
     public final String name;
     public final String trName;
     public final String nativeName;
 
-    private static String fileName = "countries";
+    public static String fileName = TAG;
 
     public Country(int id, String name, String trName, String nativeName) {
         this.id         = id;
@@ -38,11 +39,17 @@ public class Country {
         return name;
     }
 
-    public static Option<ArrayList<Country>> load() {
-        Log.info(TAG, "Loading countries...");
+    public static Option<ArrayList<Country>> loadAll() {
+        Log.info(TAG, "Loading all countries...");
+
+        Option<ArrayList<Country>> fromCache = Cache.Country.getList();
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(TAG, "Failed to load countries, data path is None!");
+            Log.error(TAG, "Failed to load all countries, data path is None!");
 
             return new None<>();
         }
@@ -54,7 +61,7 @@ public class Country {
         }
 
         if (StringUtils.isEmpty(data.get())) {
-            Log.error(TAG, "Failed to load countries, loaded data is empty!");
+            Log.error(TAG, "Failed to load all countries, loaded data are empty!");
 
             return new None<>();
         }
@@ -72,19 +79,57 @@ public class Country {
                 }
             }
 
+            Cache.Country.setList(countries);
+
             return new Some<>(countries);
         } catch (Throwable t) {
-            Log.error(TAG, "Failed to load countries, cannot construct countries from " + data.get() + "!", t);
+            Log.error(TAG, "Failed to load all countries, cannot construct countries from " + data.get() + "!", t);
 
             return new None<>();
         }
     }
 
-    public static boolean save(ArrayList<Country> countries) {
-        Log.info(TAG, "Saving countries...");
+    public static Option<Country> get(int id) {
+        Log.info(TAG, "Getting country " + id + "...");
+
+        Option<Country> fromCache = Cache.Country.get(id);
+
+        if (fromCache.isDefined) {
+            return fromCache;
+        }
+
+        Option<ArrayList<Country>> countriesOption = loadAll();
+
+        if (countriesOption.isEmpty) {
+            return new None<>();
+        }
+
+        try {
+            ArrayList<Country> countries = countriesOption.get();
+
+            for (int i = 0, size = countries.size(); i < size; i++) {
+                Country country = countries.get(i);
+
+                if (country.id == id) {
+                    Cache.Country.set(country);
+
+                    return new Some<>(country);
+                }
+            }
+
+            return new None<>();
+        } catch (Throwable t) {
+            Log.error(TAG, "Failed to get country " + id + "!", t);
+
+            return new None<>();
+        }
+    }
+
+    public static boolean saveAll(ArrayList<Country> countries) {
+        Log.info(TAG, "Saving all countries...");
 
         if (FileUtils.dataPath.isEmpty) {
-            Log.error(TAG, "Failed to save countries, data path is None!");
+            Log.error(TAG, "Failed to save all countries, data path is None!");
 
             return false;
         }
@@ -106,6 +151,10 @@ public class Country {
         stringBuilder.append("]");
 
         boolean result = FileUtils.writeFile(stringBuilder.toString(), fileName);
+
+        if (result) {
+            Cache.Country.setList(countries);
+        }
 
         return result;
     }

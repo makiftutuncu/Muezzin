@@ -9,30 +9,23 @@
     progress:errorViewLayout="@layout/content_error"
     progress:progressViewLayout="@layout/content_loading">
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout_locations"
+    <com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView xmlns:indexedRecylerView="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/recyclerView_locations"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView xmlns:indexedRecylerView="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/recyclerView_locations"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="@dimen/spacing_extraSmall"
-            android:paddingEnd="@dimen/spacing_small"
-            android:paddingLeft="@dimen/spacing_small"
-            android:paddingRight="@dimen/spacing_small"
-            android:paddingTop="@dimen/spacing_extraSmall"
-            indexedRecylerView:indexScrollHandleColor="@color/indexedRecyclerView_handle"
-            indexedRecylerView:indexTextColor="@color/secondaryText"
-            indexedRecylerView:indexTextSize="@dimen/textSize_extraSmall"
-            indexedRecylerView:indexVerticalMargin="@dimen/spacing_small"
-            indexedRecylerView:previewBackgroundColor="@color/indexedRecyclerView_preview"
-            indexedRecylerView:previewBackgroundStrokeColor="@color/primary"
-            indexedRecylerView:previewBackgroundStrokeWidth="@dimen/spacing_extraSmall"
-            indexedRecylerView:previewTextColor="@color/inversePrimaryText"
-            indexedRecylerView:previewTextSize="@dimen/textSize_huge" />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/spacing_extraSmall"
+        android:paddingEnd="@dimen/spacing_small"
+        android:paddingLeft="@dimen/spacing_small"
+        android:paddingRight="@dimen/spacing_small"
+        android:paddingTop="@dimen/spacing_extraSmall"
+        indexedRecylerView:indexScrollHandleColor="@color/indexedRecyclerView_handle"
+        indexedRecylerView:indexTextColor="@color/secondaryText"
+        indexedRecylerView:indexTextSize="@dimen/textSize_extraSmall"
+        indexedRecylerView:indexVerticalMargin="@dimen/spacing_small"
+        indexedRecylerView:previewBackgroundColor="@color/indexedRecyclerView_preview"
+        indexedRecylerView:previewBackgroundStrokeColor="@color/primary"
+        indexedRecylerView:previewBackgroundStrokeWidth="@dimen/spacing_extraSmall"
+        indexedRecylerView:previewTextColor="@color/inversePrimaryText"
+        indexedRecylerView:previewTextSize="@dimen/textSize_huge" />
 
 </ru.vang.progressswitcher.ProgressWidget>
