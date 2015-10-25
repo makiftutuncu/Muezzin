@@ -6,7 +6,8 @@
     <dimen name="spacing_medium">16dp</dimen>
     <dimen name="spacing_biggerMedium">24dp</dimen>
     <dimen name="spacing_large">32dp</dimen>
-    <dimen name="spacing_extraLarge">64dp</dimen>
+    <dimen name="spacing_extraLarge">48dp</dimen>
+    <dimen name="spacing_extraExtraLarge">64dp</dimen>
 
     <!-- Text size values values -->
     <dimen name="textSize_extraSmall">10sp</dimen>

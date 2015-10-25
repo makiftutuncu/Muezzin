@@ -17,12 +17,12 @@
 
     <!-- Prayer time names -->
     <string name="prayerTime_fajr">Fajr</string>
-    <string name="prayerTime_shuruq">Shuruq</string>
     <string name="prayerTime_dhuhr">Dhuhr</string>
     <string name="prayerTime_asr">Asr</string>
     <string name="prayerTime_maghrib">Maghrib</string>
     <string name="prayerTime_isha">Isha</string>
-    <string name="prayerTime_qibla">Qibla</string>
+    <string name="prayerTime_shuruq">Shuruq:\u00A0</string>
+    <string name="prayerTime_qibla">Qibla:\u00A0</string>
 
     <!-- Hijri Month Names -->
     <string name="hijriMonth_1">Muharram</string>
@@ -49,8 +49,6 @@
     <string name="locationSelection_district">Select a District</string>
 
     <!-- Prayer times -->
-    <string name="prayerTimes_cardTitle_dates">Today</string>
-    <string name="prayerTimes_cardTitle_remainingTime">Remaining Time</string>
     <string name="prayerTimes_cardTitle_prayerTimes">Prayer Times</string>
-    <string name="prayerTimes_remainingTimeInfo">%1$s to %2$s</string>
+    <string name="prayerTimes_cardTitle_remainingTime">Remaining Time to %1$s:</string>
 </resources>

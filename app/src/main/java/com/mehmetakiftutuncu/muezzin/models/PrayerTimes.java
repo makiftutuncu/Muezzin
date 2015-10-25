@@ -17,9 +17,10 @@ import org.joda.time.chrono.IslamicChronology;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PrayerTimes {
+public class PrayerTimes implements Serializable {
     public static final String TAG = "PrayerTimes";
 
     public final DateTime dayDate;

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- AppBar -->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/primary" />
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabLayout"
+            style="@style/Theme.Muezzin.TabLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.design.widget.AppBarLayout>
+
+    <!-- Main content -->
+    <ru.vang.progressswitcher.ProgressWidget
+        xmlns:pw="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/progressWidget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        pw:emptyViewLayout="@layout/content_empty"
+        pw:errorViewLayout="@layout/content_error"
+        pw:progressViewLayout="@layout/content_loading">
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </ru.vang.progressswitcher.ProgressWidget>
+</LinearLayout>

@@ -69,10 +69,10 @@ public class LocationSelectionActivity extends AppCompatActivity implements With
 
     @Override
     public void onDistrictSelected(int countryId, int cityId, Option<District> district) {
-        Pref.CurrentLocation.set(countryId, cityId, district.isDefined ? new Some<Integer>(district.get().id) : new None<Integer>());
+        Pref.CurrentLocation.set(countryId, cityId, district.isDefined ? new Some<>(district.get().id) : new None<Integer>());
 
         finish();
-        startActivity(new Intent(this, PrayerTimesActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
     }
 
     private void replaceFragment(LocationsFragment fragment, int titleResource) {

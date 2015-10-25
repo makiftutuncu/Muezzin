@@ -17,12 +17,12 @@
 
     <!-- Prayer time names -->
     <string name="prayerTime_fajr">İmsak</string>
-    <string name="prayerTime_shuruq">Güneş</string>
     <string name="prayerTime_dhuhr">Öğle</string>
     <string name="prayerTime_asr">İkindi</string>
     <string name="prayerTime_maghrib">Akşam</string>
     <string name="prayerTime_isha">Yatsı</string>
-    <string name="prayerTime_qibla">Kıble</string>
+    <string name="prayerTime_shuruq">Güneş:\u00A0</string>
+    <string name="prayerTime_qibla">Kıble:\u00A0</string>
 
     <!-- Hijri Month Names -->
     <string name="hijriMonth_1">Muharrem</string>
@@ -49,8 +49,6 @@
     <string name="locationSelection_district">Bir İlçe/Bölge Seçin</string>
 
     <!-- Prayer times -->
-    <string name="prayerTimes_cardTitle_dates">Bugün</string>
-    <string name="prayerTimes_cardTitle_remainingTime">Kalan Zaman</string>
     <string name="prayerTimes_cardTitle_prayerTimes">Namaz Vakitleri</string>
-    <string name="prayerTimes_remainingTimeInfo">%2$s Vaktine %1$s</string>
+    <string name="prayerTimes_cardTitle_remainingTime">%1$s Vaktine Kalan Zaman:</string>
 </resources>
