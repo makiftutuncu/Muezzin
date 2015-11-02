@@ -2,20 +2,17 @@ package com.mehmetakiftutuncu.muezzin.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView;
-import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerViewDecoration;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnItemClickedListener;
 import com.mehmetakiftutuncu.muezzin.interfaces.WithContentStates;
 import com.mehmetakiftutuncu.muezzin.models.ContentStates;
-import com.mehmetakiftutuncu.muezzin.utilities.Web;
+import com.pluscubed.recyclerfastscroll.RecyclerFastScroller;
 import com.squareup.okhttp.Callback;
 
 import java.util.ArrayList;
@@ -26,7 +23,8 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
                                                                        Callback,
                                                                        OnItemClickedListener {
     protected ProgressWidget progressWidget;
-    protected IndexedRecyclerView recyclerView;
+    protected RecyclerView recyclerView;
+    protected RecyclerFastScroller recyclerFastScroller;
     protected ContentStates state;
     protected ArrayList<T> items;
 
@@ -37,15 +35,14 @@ public abstract class LocationsFragment<T> extends Fragment implements WithConte
 
         progressWidget = (ProgressWidget) layout.findViewById(R.id.progressWidget_locations);
 
-        recyclerView = (IndexedRecyclerView) layout.findViewById(R.id.recyclerView_locations);
+        recyclerView = (RecyclerView) layout.findViewById(R.id.recyclerView_locations);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        IndexedRecyclerViewDecoration decoration = new IndexedRecyclerViewDecoration();
-        recyclerView.addItemDecoration(decoration);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerFastScroller = (RecyclerFastScroller) layout.findViewById(R.id.recyclerFastScroller_locations);
+        recyclerFastScroller.setRecyclerView(recyclerView);
 
-        ((Button) progressWidget.findViewById(R.id.button_error_retry)).setOnClickListener(new View.OnClickListener() {
+        progressWidget.findViewById(R.id.button_error_retry).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 retryOnError(v);

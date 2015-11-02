@@ -5,7 +5,11 @@
     android:id="@+id/cardView_remainingTime"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/spacing_extraSmall"
+    android:layout_marginTop="@dimen/spacing_medium"
+    android:layout_marginLeft="@dimen/spacing_medium"
+    android:layout_marginStart="@dimen/spacing_medium"
+    android:layout_marginRight="@dimen/spacing_medium"
+    android:layout_marginEnd="@dimen/spacing_medium"
     card_view:cardElevation="@dimen/spacing_extraExtraSmall"
     card_view:cardUseCompatPadding="true">
 

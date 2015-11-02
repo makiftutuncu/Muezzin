@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mehmetakiftutuncu.indexedrecyclerview.IndexedRecyclerView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnItemClickedListener;
 import com.mehmetakiftutuncu.muezzin.models.City;
@@ -14,13 +13,10 @@ import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 import java.text.Collator;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
-public class CitiesAdapter extends RecyclerView.Adapter<CitiesAndDistrictsViewHolder> implements IndexedRecyclerView.Indices {
+public class CitiesAdapter extends RecyclerView.Adapter<CitiesAndDistrictsViewHolder> {
     private List<City> cities;
-    private LinkedHashMap<String, Integer> mapIndex;
     private OnItemClickedListener onItemClickedListener;
 
     public CitiesAdapter(List<City> cities, OnItemClickedListener onItemClickedListener) {
@@ -33,8 +29,6 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAndDistrictsViewHo
                 return collator.compare(lhs.name, rhs.name);
             }
         });
-
-        generateMapIndex();
 
         this.onItemClickedListener = onItemClickedListener;
     }
@@ -58,23 +52,5 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAndDistrictsViewHo
     @Override
     public int getItemCount() {
         return cities != null ? cities.size() : 0;
-    }
-
-    @Override
-    public HashMap<String, Integer> getIndicesMap() {
-        return mapIndex;
-    }
-
-    private void generateMapIndex() {
-        mapIndex = new LinkedHashMap<>(256);
-
-        for (int i = 0, size = cities.size(); i < size; i++) {
-            City city = cities.get(i);
-            String key = String.valueOf(city.name.substring(0, 1));
-
-            if (!mapIndex.containsKey(key)) {
-                mapIndex.put(key, i);
-            }
-        }
     }
 }

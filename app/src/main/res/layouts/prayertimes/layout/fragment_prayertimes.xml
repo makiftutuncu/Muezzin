@@ -11,9 +11,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <include layout="@layout/card_prayertimes" />
-
         <include layout="@layout/card_remainingtime" />
+
+        <include layout="@layout/card_prayertimes" />
     </LinearLayout>
 
 </ScrollView>

@@ -42,7 +42,7 @@ public class PrayerTimesFragment extends Fragment {
     private TimerTask mTimerTask;
 
     private static final String sTodayIndicator         = "\u26AB ";
-    private static final String sShortDateFormatter     = "dd MMMM";
+    private static final String sShortDateFormatter     = "dd MMM";
     private static final String sFullDateFormatter      = "dd MMMM yyyy, EEEE";
     private static final String sTimeFormatter          = "HH:mm";
     private static final String sRemainingTimeFormatter = "HH:mm:ss";
