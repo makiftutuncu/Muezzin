@@ -1,7 +1,9 @@
-package com.mehmetakiftutuncu.muezzin;
+package com.mehmetakiftutuncu.muezzin.activities;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
+import com.mehmetakiftutuncu.muezzin.R;
 
 public class CountrySelectionActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
