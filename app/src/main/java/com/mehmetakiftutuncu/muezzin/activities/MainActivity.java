@@ -26,6 +26,15 @@ import com.mehmetakiftutuncu.muezzin.utilities.Web;
 import com.mehmetakiftutuncu.muezzin.utilities.option.None;
 import com.mehmetakiftutuncu.muezzin.utilities.option.Option;
 import com.mehmetakiftutuncu.muezzin.utilities.option.Some;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -64,12 +73,47 @@ public class MainActivity extends AppCompatActivity implements WithContentStates
         setContentView(R.layout.activity_main);
 
         bindViews();
+        initializeDrawer();
         initialize();
     }
 
-    private void initialize() {
-        setSupportActionBar(mToolbar);
+    private void initializeDrawer() {
+        ProfileDrawerItem izmirProfile = new ProfileDrawerItem()
+            .withEmail("İzmir, İzmir, Turkey");
 
+        ProfileDrawerItem bursaProfile = new ProfileDrawerItem()
+            .withEmail("Yıldırım, Bursa, Turkey");
+
+        AccountHeader accountHeader = new AccountHeaderBuilder()
+            .withActivity(this)
+            .addProfiles(izmirProfile, bursaProfile)
+            .withHeaderBackground(R.color.primaryDark)
+            .build();
+
+        PrimaryDrawerItem prayerTimesItem = new PrimaryDrawerItem()
+            .withName(R.string.drawer_prayerTimes)
+            .withIcon(GoogleMaterial.Icon.gmd_access_time)
+            .withSelectable(false);
+
+        SecondaryDrawerItem aboutItem = new SecondaryDrawerItem()
+            .withName(R.string.drawer_about)
+            .withIcon(GoogleMaterial.Icon.gmd_info)
+            .withSelectable(false);
+
+        Drawer drawer = new DrawerBuilder()
+            .withActivity(this)
+            .withToolbar(mToolbar)
+            .withAccountHeader(accountHeader)
+            .addDrawerItems(prayerTimesItem, new DividerDrawerItem(), aboutItem)
+            .build();
+
+        drawer.setSelection(0);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        drawer.getActionBarDrawerToggle().setDrawerIndicatorEnabled(true);
+    }
+
+    private void initialize() {
         String currentLocation = Pref.CurrentLocation.get();
 
         if (!StringUtils.isEmpty(currentLocation)) {
@@ -91,6 +135,8 @@ public class MainActivity extends AppCompatActivity implements WithContentStates
         mTabLayout      = (TabLayout)      findViewById(R.id.tabLayout);
         mProgressWidget = (ProgressWidget) findViewById(R.id.progressWidget);
         mViewPager      = (ViewPager)      findViewById(R.id.viewPager);
+
+        setSupportActionBar(mToolbar);
     }
 
     public void loadPrayerTimes() {

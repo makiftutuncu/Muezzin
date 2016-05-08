@@ -51,4 +51,8 @@
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_prayerTimes">Namaz Vakitleri</string>
     <string name="prayerTimes_cardTitle_remainingTime">%1$s Vaktine Kalan Zaman:</string>
+
+    <!-- Drawer -->
+    <string name="drawer_prayerTimes">Namaz Vakitleri</string>
+    <string name="drawer_about">Hakkında</string>
 </resources>
