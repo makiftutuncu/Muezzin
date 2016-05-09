@@ -51,6 +51,6 @@ public class DistrictSelectionFragment extends Fragment implements MuezzinAPICli
     }
 
     @Override public void onDistrictsDownloadFailed() {
-        Log.error(String.format("Failed to download districts for city '%d'!", 574), getClass(), "onDistrictsDownloadFailed");
+        Log.error(getClass(), "Failed to download districts for city '%d'!", 574);
     }
 }

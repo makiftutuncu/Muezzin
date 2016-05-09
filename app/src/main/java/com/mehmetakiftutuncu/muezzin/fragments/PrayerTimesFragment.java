@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.mehmetakiftutuncu.muezzin.R;
-import com.mehmetakiftutuncu.muezzin.models.PrayerTime;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
@@ -41,10 +41,10 @@ public class PrayerTimesFragment extends Fragment implements MuezzinAPIClient.On
         return layout;
     }
 
-    @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTime> prayerTimes) {
+    @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes) {
         StringBuilder builder = new StringBuilder();
 
-        for (PrayerTime p : prayerTimes) {
+        for (PrayerTimes p : prayerTimes) {
             builder.append(p.toString()).append("\n");
         }
 
@@ -52,6 +52,6 @@ public class PrayerTimesFragment extends Fragment implements MuezzinAPIClient.On
     }
 
     @Override public void onPrayerTimesDownloadFailed() {
-        Log.error(String.format("Failed to download prayer times for country '%d', city '%d' and district '%s'!", 2, 574, 9901), getClass(), "onPrayerTimesDownloadFailed");
+        Log.error(getClass(), "Failed to download prayer times for country '%d', city '%d' and district '%s'!", 2, 574, 9901);
     }
 }

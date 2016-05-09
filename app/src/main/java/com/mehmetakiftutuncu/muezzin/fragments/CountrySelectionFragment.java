@@ -49,6 +49,6 @@ public class CountrySelectionFragment extends Fragment implements MuezzinAPIClie
     }
 
     @Override public void onCountriesDownloadFailed() {
-        Log.error("Failed to download countries!", getClass(), "onCountriesDownloadFailed");
+        Log.error(getClass(), "Failed to download countries!");
     }
 }

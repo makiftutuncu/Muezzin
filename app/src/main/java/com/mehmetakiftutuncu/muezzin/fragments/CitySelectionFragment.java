@@ -51,6 +51,6 @@ public class CitySelectionFragment extends Fragment implements MuezzinAPIClient.
     }
 
     @Override public void onCitiesDownloadFailed() {
-        Log.error(String.format("Failed to download cities for country '%d'!", 2), getClass(), "onCitiesDownloadFailed");
+        Log.error(getClass(), "Failed to download cities for country '%d'!", 2);
     }
 }

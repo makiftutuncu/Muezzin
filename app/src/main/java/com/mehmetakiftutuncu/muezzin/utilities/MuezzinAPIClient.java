@@ -10,7 +10,7 @@ import com.loopj.android.http.RequestParams;
 import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
-import com.mehmetakiftutuncu.muezzin.models.PrayerTime;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
 import org.json.JSONArray;
@@ -47,14 +47,14 @@ public class MuezzinAPIClient {
     }
 
     public static void getCountries(@NonNull final OnCountriesDownloadedListener listener) {
-        Log.debug("Getting countries...", MuezzinAPIClient.class, "getCountries");
+        Log.debug(MuezzinAPIClient.class, "Getting countries...");
 
         String path = COUNTRIES_API;
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (statusCode != 200) {
-                    Log.error(String.format("Failed to get countries, Muezzin API returned invalid status '%d'!", statusCode), MuezzinAPIClient.class, "getCountries");
+                    Log.error(MuezzinAPIClient.class, "Failed to get countries, Muezzin API returned invalid status '%d'!", statusCode);
                     listener.onCountriesDownloadFailed();
 
                     return;
@@ -76,22 +76,22 @@ public class MuezzinAPIClient {
                     }
 
                     if (countries.size() != numberOfCountries) {
-                        Log.error(String.format("Failed to parse some of the countries from Json '%s'!", response), MuezzinAPIClient.class, "getCountries");
+                        Log.error(MuezzinAPIClient.class, "Failed to parse some of the countries from Json '%s'!", response);
                         listener.onCountriesDownloadFailed();
 
                         return;
                     }
 
-                    Log.debug("Successfully got countries!", MuezzinAPIClient.class, "getCountries");
+                    Log.debug(MuezzinAPIClient.class, "Successfully got countries!");
                     listener.onCountriesDownloaded(countries);
                 } catch (Throwable t) {
-                    Log.error("Failed to get countries!", t, MuezzinAPIClient.class, "getCountries");
+                    Log.error(MuezzinAPIClient.class, t, "Failed to get countries!");
                     listener.onCountriesDownloadFailed();
                 }
             }
 
             @Override public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.error(String.format("Failed to get countries, Muezzin API response status '%d' and body '%s'", statusCode, responseString), throwable, MuezzinAPIClient.class, "getCountries");
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get countries, Muezzin API response status '%d' and body '%s'", statusCode, responseString);
                 listener.onCountriesDownloadFailed();
             }
         });
@@ -103,14 +103,14 @@ public class MuezzinAPIClient {
     }
 
     public static void getCities(final int countryId, @NonNull final OnCitiesDownloadedListener listener) {
-        Log.debug(String.format("Getting cities for country '%d'...", countryId), MuezzinAPIClient.class, "getCities");
+        Log.debug(MuezzinAPIClient.class, "Getting cities for country '%d'...", countryId);
 
         String path = String.format(CITIES_API, countryId);
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (statusCode != 200) {
-                    Log.error(String.format("Failed to get cities for country '%d', Muezzin API returned invalid status '%d'!", countryId, statusCode), MuezzinAPIClient.class, "getCities");
+                    Log.error(MuezzinAPIClient.class, "Failed to get cities for country '%d', Muezzin API returned invalid status '%d'!", countryId, statusCode);
                     listener.onCitiesDownloadFailed();
 
                     return;
@@ -132,22 +132,22 @@ public class MuezzinAPIClient {
                     }
 
                     if (cities.size() != numberOfCities) {
-                        Log.error(String.format("Failed to parse some of the cities for country '%d' from Json '%s'!", countryId, response), MuezzinAPIClient.class, "getCities");
+                        Log.error(MuezzinAPIClient.class, "Failed to parse some of the cities for country '%d' from Json '%s'!", countryId, response);
                         listener.onCitiesDownloadFailed();
 
                         return;
                     }
 
-                    Log.debug(String.format("Successfully got cities for country '%d'!", countryId), MuezzinAPIClient.class, "getCities");
+                    Log.debug(MuezzinAPIClient.class, "Successfully got cities for country '%d'!", countryId);
                     listener.onCitiesDownloaded(cities);
                 } catch (Throwable t) {
-                    Log.error(String.format("Failed to get cities for country '%d'!", countryId), t, MuezzinAPIClient.class, "getCities");
+                    Log.error(MuezzinAPIClient.class, t, "Failed to get cities for country '%d'!", countryId);
                     listener.onCitiesDownloadFailed();
                 }
             }
 
             @Override public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.error(String.format("Failed to get cities for country '%d', Muezzin API response status '%d' and body '%s'", countryId, statusCode, responseString), throwable, MuezzinAPIClient.class, "getCities");
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get cities for country '%d', Muezzin API response status '%d' and body '%s'", countryId, statusCode, responseString);
                 listener.onCitiesDownloadFailed();
             }
         });
@@ -159,14 +159,14 @@ public class MuezzinAPIClient {
     }
 
     public static void getDistricts(final int cityId, @NonNull final OnDistrictsDownloadedListener listener) {
-        Log.debug(String.format("Getting districts for city '%d'...", cityId), MuezzinAPIClient.class, "getDistricts");
+        Log.debug(MuezzinAPIClient.class, "Getting districts for city '%d'...", cityId);
 
         String path = String.format(DISTRICTS_API, cityId);
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (statusCode != 200) {
-                    Log.error(String.format("Failed to get districts for city '%d', Muezzin API returned invalid status '%d'!", cityId, statusCode), MuezzinAPIClient.class, "getDistricts");
+                    Log.error(MuezzinAPIClient.class, "Failed to get districts for city '%d', Muezzin API returned invalid status '%d'!", cityId, statusCode);
                     listener.onDistrictsDownloadFailed();
 
                     return;
@@ -188,41 +188,41 @@ public class MuezzinAPIClient {
                     }
 
                     if (districts.size() != numberOfDistricts) {
-                        Log.error(String.format("Failed to parse some of the districts for city '%d' from Json '%s'!", cityId, response), MuezzinAPIClient.class, "getDistricts");
+                        Log.error(MuezzinAPIClient.class, "Failed to parse some of the districts for city '%d' from Json '%s'!", cityId, response);
                         listener.onDistrictsDownloadFailed();
 
                         return;
                     }
 
-                    Log.debug(String.format("Successfully got districts for city '%d'!", cityId), MuezzinAPIClient.class, "getDistricts");
+                    Log.debug(MuezzinAPIClient.class, "Successfully got districts for city '%d'!", cityId);
                     listener.onDistrictsDownloaded(districts);
                 } catch (Throwable t) {
-                    Log.error(String.format("Failed to get districts for city '%d'!", cityId), t, MuezzinAPIClient.class, "getDistricts");
+                    Log.error(MuezzinAPIClient.class, t, "Failed to get districts for city '%d'!", cityId);
                     listener.onDistrictsDownloadFailed();
                 }
             }
 
             @Override public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.error(String.format("Failed to get districts for city '%d', Muezzin API response status '%d' and body '%s'", cityId, statusCode, responseString), throwable, MuezzinAPIClient.class, "getDistricts");
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get districts for city '%d', Muezzin API response status '%d' and body '%s'", cityId, statusCode, responseString);
                 listener.onDistrictsDownloadFailed();
             }
         });
     }
 
     public interface OnPrayerTimesDownloadedListener {
-        void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTime> prayerTimes);
+        void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes);
         void onPrayerTimesDownloadFailed();
     }
 
     public static void getPrayerTimes(final int countryId, final int cityId, final Optional<Integer> districtId, @NonNull final OnPrayerTimesDownloadedListener listener) {
-        Log.debug(String.format("Getting prayer times for country '%d', city '%d' and district '%s'...", countryId, cityId, districtId), MuezzinAPIClient.class, "getPrayerTimes");
+        Log.debug(MuezzinAPIClient.class, "Getting prayer times for country '%d', city '%d' and district '%s'...", countryId, cityId, districtId);
 
         String path = String.format(PRAYER_TIMES_API, countryId, cityId, districtId.toString());
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 if (statusCode != 200) {
-                    Log.error(String.format("Failed to get prayer times for country '%d', city '%d' and district '%s', Muezzin API returned invalid status '%d'!", countryId, cityId, districtId, statusCode), MuezzinAPIClient.class, "getPrayerTimes");
+                    Log.error(MuezzinAPIClient.class, "Failed to get prayer times for country '%d', city '%d' and district '%s', Muezzin API returned invalid status '%d'!", countryId, cityId, districtId, statusCode);
                     listener.onPrayerTimesDownloadFailed();
 
                     return;
@@ -232,11 +232,11 @@ public class MuezzinAPIClient {
                     JSONArray prayerTimesJsonArray = response.getJSONArray("times");
                     int numberOfTimes              = prayerTimesJsonArray.length();
 
-                    ArrayList<PrayerTime> prayerTimes = new ArrayList<>();
+                    ArrayList<PrayerTimes> prayerTimes = new ArrayList<>();
 
                     for (int i = 0; i < numberOfTimes; i++) {
                         JSONObject prayerTimeJson            = prayerTimesJsonArray.getJSONObject(i);
-                        Optional<PrayerTime> maybePrayerTime = PrayerTime.fromJson(countryId, cityId, districtId, prayerTimeJson);
+                        Optional<PrayerTimes> maybePrayerTime = PrayerTimes.fromJson(countryId, cityId, districtId, prayerTimeJson);
 
                         if (maybePrayerTime.isDefined) {
                             prayerTimes.add(maybePrayerTime.get());
@@ -244,22 +244,22 @@ public class MuezzinAPIClient {
                     }
 
                     if (prayerTimes.size() != numberOfTimes) {
-                        Log.error(String.format("Failed to parse some of the prayer times for country '%d', city '%d' and district '%s' from Json '%s'!", countryId, cityId, districtId, response), MuezzinAPIClient.class, "getPrayerTimes");
+                        Log.error(MuezzinAPIClient.class, "Failed to parse some of the prayer times for country '%d', city '%d' and district '%s' from Json '%s'!", countryId, cityId, districtId, response);
                         listener.onPrayerTimesDownloadFailed();
 
                         return;
                     }
 
-                    Log.debug(String.format("Successfully got prayer times for country '%d', city '%d' and district '%s'!", countryId, cityId, districtId), MuezzinAPIClient.class, "getPrayerTimes");
+                    Log.debug(MuezzinAPIClient.class, "Successfully got prayer times for country '%d', city '%d' and district '%s'!", countryId, cityId, districtId);
                     listener.onPrayerTimesDownloaded(prayerTimes);
                 } catch (Throwable t) {
-                    Log.error(String.format("Failed to get prayer times for country '%d', city '%d' and district '%s'!", countryId, cityId, districtId), t, MuezzinAPIClient.class, "getPrayerTimes");
+                    Log.error(MuezzinAPIClient.class, t, "Failed to get prayer times for country '%d', city '%d' and district '%s'!", countryId, cityId, districtId);
                     listener.onPrayerTimesDownloadFailed();
                 }
             }
 
             @Override public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Log.error(String.format("Failed to get prayer times for country '%d', city '%d' and district '%s', Muezzin API response status '%d' and body '%s'", countryId, cityId, districtId, statusCode, responseString), throwable, MuezzinAPIClient.class, "getPrayerTimes");
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get prayer times for country '%d', city '%d' and district '%s', Muezzin API response status '%d' and body '%s'", countryId, cityId, districtId, statusCode, responseString);
                 listener.onPrayerTimesDownloadFailed();
             }
         });
