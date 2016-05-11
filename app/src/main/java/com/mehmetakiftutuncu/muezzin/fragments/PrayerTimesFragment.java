@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.fragments;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class PrayerTimesFragment extends Fragment implements MuezzinAPIClient.OnPrayerTimesDownloadedListener {
     private TextView text;
 

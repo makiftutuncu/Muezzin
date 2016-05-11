@@ -1,56 +1,93 @@
 package com.mehmetakiftutuncu.muezzin.fragments;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
 import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
+import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
 import java.util.ArrayList;
 
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class DistrictSelectionFragment extends Fragment implements MuezzinAPIClient.OnDistrictsDownloadedListener {
-    private TextView text;
+    private RecyclerView recyclerViewDistrictSelection;
+
+    private LinearLayoutManager linearLayoutManager;
+    private DistrictsAdapter districtsAdapter;
+
+    private int cityId = 574;
 
     public DistrictSelectionFragment() {}
 
     @Override public void onStart() {
         super.onStart();
 
-        MuezzinAPIClient.getDistricts(574, this);
+        linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerViewDistrictSelection.setLayoutManager(linearLayoutManager);
+
+        loadDistricts();
     }
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_districtselection, container, false);
 
-        text = (TextView) layout.findViewById(R.id.text);
+        recyclerViewDistrictSelection = (RecyclerView) layout.findViewById(R.id.recyclerView_districtSelection);
 
         return layout;
     }
 
     @Override public void onDistrictsDownloaded(@NonNull ArrayList<District> districts) {
-        StringBuilder builder = new StringBuilder();
+        Log.debug(getClass(), "Saving districts for city '%d' to database...", cityId);
 
-        for (District d : districts) {
-            builder.append(d.id).append(": ").append(d.name).append("\n");
+        if (!District.saveDistricts(getContext(), cityId, districts)) {
+            Snackbar.make(recyclerViewDistrictSelection, "Failed to save districts to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
         }
 
-        text.setText(builder.toString());
+        setDistricts(districts);
     }
 
     @Override public void onDistrictsDownloadFailed() {
-        Log.error(getClass(), "Failed to download districts for city '%d'!", 574);
+        Snackbar.make(recyclerViewDistrictSelection, "Failed to download districts!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+    }
+
+    private void loadDistricts() {
+        Log.debug(getClass(), "Loading districts for city '%d' from database...", cityId);
+
+        Optional<ArrayList<District>> maybeDistrictsFromDatabase = District.getDistricts(getContext(), cityId);
+
+        if (maybeDistrictsFromDatabase.isEmpty) {
+            Snackbar.make(recyclerViewDistrictSelection, "Failed to load districts from database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+        } else {
+            ArrayList<District> districtsFromDatabase = maybeDistrictsFromDatabase.get();
+
+            if (districtsFromDatabase.isEmpty()) {
+                Log.debug(getClass(), "No districts for city '%d' were found on database! Downloading...", cityId);
+
+                MuezzinAPIClient.getDistricts(cityId, this);
+            } else {
+                Log.debug(getClass(), "Loaded districts for city '%d' from database!", cityId);
+
+                setDistricts(districtsFromDatabase);
+            }
+        }
+    }
+
+    private void setDistricts(@NonNull ArrayList<District> districts) {
+        districtsAdapter = new DistrictsAdapter(districts);
+        recyclerViewDistrictSelection.setAdapter(districtsAdapter);
     }
 }

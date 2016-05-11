@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -17,11 +16,11 @@ import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class PrayerTimes {
     public final int countryId;
     public final int cityId;
@@ -60,7 +59,7 @@ public class PrayerTimes {
 
             String query;
             if (districtId.isDefined) {
-                query = String.format(
+                query = String.format(Locale.ENGLISH,
                         "SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = %d ORDER BY %s",
                         Database.PrayerTimesTable.TABLE_NAME,
                         Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
@@ -72,7 +71,7 @@ public class PrayerTimes {
                         Database.PrayerTimesTable.COLUMN_DAY
                 );
             } else {
-                query = String.format(
+                query = String.format(Locale.ENGLISH,
                         "SELECT * FROM %s WHERE %s = %d AND %s = %d ORDER BY %s",
                         Database.PrayerTimesTable.TABLE_NAME,
                         Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
@@ -161,7 +160,7 @@ public class PrayerTimes {
 
             String deleteQuery;
             if (districtId.isDefined) {
-                deleteQuery = String.format(
+                deleteQuery = String.format(Locale.ENGLISH,
                         "DELETE FROM %s WHERE %s = %d AND %s = %d AND %s = %d ORDER BY %s",
                         Database.PrayerTimesTable.TABLE_NAME,
                         Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
@@ -173,7 +172,7 @@ public class PrayerTimes {
                         Database.PrayerTimesTable.COLUMN_DAY
                 );
             } else {
-                deleteQuery = String.format(
+                deleteQuery = String.format(Locale.ENGLISH,
                         "DELETE FROM %s WHERE %s = %d AND %s = %d ORDER BY %s",
                         Database.PrayerTimesTable.TABLE_NAME,
                         Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
@@ -210,7 +209,7 @@ public class PrayerTimes {
     @NonNull public String toJson() {
         String districtIdString = districtId.isDefined ? districtId.toString() : null;
 
-        return String.format(
+        return String.format(Locale.ENGLISH,
                 "{\"countryId\":%d,\"cityId\":%d, \"districtId\":%s, \"day\":\"%s\", \"fajr\":\"%s\", \"shuruq\":\"%s\", \"dhuhr\":\"%s\",\"asr\":\"%s\",\"maghrib\":\"%s\",\"isha\":\"%s\",\"qibla\":\"%s\"}",
                 countryId,
                 cityId,

@@ -1,12 +1,12 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.mehmetakiftutuncu.muezzin.database.Database;
+import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -15,11 +15,13 @@ import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
 
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class City {
     public final int id;
     public final int countryId;
@@ -31,14 +33,14 @@ public class City {
         this.name = name;
     }
 
-    public Optional<ArrayList<City>> getCities(Context context, int countryId) {
+    public static Optional<ArrayList<City>> getCities(final Context context, int countryId) {
         try {
             ArrayList<City> cities = new ArrayList<>();
 
             SQLiteDatabase database = Database.with(context).getReadableDatabase();
 
             Cursor cursor = database.rawQuery(
-                    String.format("SELECT * FROM %s WHERE %s = %d", Database.CityTable.TABLE_NAME, Database.CityTable.COLUMN_COUNTRY_ID, countryId),
+                    String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE %s = %d", Database.CityTable.TABLE_NAME, Database.CityTable.COLUMN_COUNTRY_ID, countryId),
                     null
             );
 
@@ -59,15 +61,21 @@ public class City {
 
             database.close();
 
+            Collections.sort(cities, new Comparator<City>() {
+                @Override public int compare(City lhs, City rhs) {
+                    return LocaleUtils.getCollator(context).compare(lhs.name, rhs.name);
+                }
+            });
+
             return new Some<>(cities);
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to get cities for country '%d' from database!", countryId);
+            Log.error(City.class, t, "Failed to get cities for country '%d' from database!", countryId);
 
             return new None<>();
         }
     }
 
-    public boolean saveCities(Context context, int countryId, ArrayList<City> cities) {
+    public static boolean saveCities(Context context, int countryId, ArrayList<City> cities) {
         try {
             int numberOfParametersToBind = 1;
 
@@ -104,7 +112,7 @@ public class City {
                 database.execSQL(insertSQLBuilder.toString(), parameters);
                 database.setTransactionSuccessful();
             } catch (Throwable t) {
-                Log.error(getClass(), t, "Failed to save cities for country '%d' to database, transaction failed!", countryId);
+                Log.error(City.class, t, "Failed to save cities for country '%d' to database, transaction failed!", countryId);
 
                 result = false;
             } finally {
@@ -115,14 +123,14 @@ public class City {
 
             return result;
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to save cities for country '%d' to database!", countryId);
+            Log.error(City.class, t, "Failed to save cities for country '%d' to database!", countryId);
 
             return false;
         }
     }
 
     @NonNull public String toJson() {
-        return String.format("{\"id\":%d,\"countryId\":%d,\"name\":\"%s\"}", id, countryId, name);
+        return String.format(Locale.ENGLISH, "{\"id\":%d,\"countryId\":%d,\"name\":\"%s\"}", id, countryId, name);
     }
 
     @NonNull public static Optional<City> fromJson(int countryId, JSONObject json) {

@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -15,11 +14,11 @@ import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class District {
     public final int id;
     public final int cityId;
@@ -31,14 +30,14 @@ public class District {
         this.name = name;
     }
 
-    public Optional<ArrayList<District>> getDistricts(Context context, int cityId) {
+    public static Optional<ArrayList<District>> getDistricts(Context context, int cityId) {
         try {
             ArrayList<District> districts = new ArrayList<>();
 
             SQLiteDatabase database = Database.with(context).getReadableDatabase();
 
             Cursor cursor = database.rawQuery(
-                    String.format("SELECT * FROM %s WHERE %s = %d", Database.DistrictTable.TABLE_NAME, Database.DistrictTable.COLUMN_CITY_ID, cityId),
+                    String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE %s = %d", Database.DistrictTable.TABLE_NAME, Database.DistrictTable.COLUMN_CITY_ID, cityId),
                     null
             );
 
@@ -61,13 +60,13 @@ public class District {
 
             return new Some<>(districts);
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to get districts for city '%d' from database!", cityId);
+            Log.error(District.class, t, "Failed to get districts for city '%d' from database!", cityId);
 
             return new None<>();
         }
     }
 
-    public boolean saveDistricts(Context context, int cityId, ArrayList<District> districts) {
+    public static boolean saveDistricts(Context context, int cityId, ArrayList<District> districts) {
         try {
             int numberOfParametersToBind = 1;
 
@@ -104,7 +103,7 @@ public class District {
                 database.execSQL(insertSQLBuilder.toString(), parameters);
                 database.setTransactionSuccessful();
             } catch (Throwable t) {
-                Log.error(getClass(), t, "Failed to save districts for city '%d' to database, transaction failed!", cityId);
+                Log.error(District.class, t, "Failed to save districts for city '%d' to database, transaction failed!", cityId);
 
                 result = false;
             } finally {
@@ -115,14 +114,14 @@ public class District {
 
             return result;
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to save districts for city '%d' to database!", cityId);
+            Log.error(District.class, t, "Failed to save districts for city '%d' to database!", cityId);
 
             return false;
         }
     }
 
     @NonNull public String toJson() {
-        return String.format("{\"id\":%d,\"cityId\":%d,\"name\":\"%s\"}", id, cityId, name);
+        return String.format(Locale.ENGLISH, "{\"id\":%d,\"cityId\":%d,\"name\":\"%s\"}", id, cityId, name);
     }
 
     @NonNull public static Optional<District> fromJson(int cityId, JSONObject json) {

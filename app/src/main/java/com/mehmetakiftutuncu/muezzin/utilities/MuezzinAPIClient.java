@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.utilities;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -17,13 +16,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class MuezzinAPIClient {
     private static final AsyncHttpClient client = new AsyncHttpClient();
 
@@ -105,7 +104,7 @@ public class MuezzinAPIClient {
     public static void getCities(final int countryId, @NonNull final OnCitiesDownloadedListener listener) {
         Log.debug(MuezzinAPIClient.class, "Getting cities for country '%d'...", countryId);
 
-        String path = String.format(CITIES_API, countryId);
+        String path = String.format(Locale.ENGLISH, CITIES_API, countryId);
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -161,7 +160,7 @@ public class MuezzinAPIClient {
     public static void getDistricts(final int cityId, @NonNull final OnDistrictsDownloadedListener listener) {
         Log.debug(MuezzinAPIClient.class, "Getting districts for city '%d'...", cityId);
 
-        String path = String.format(DISTRICTS_API, cityId);
+        String path = String.format(Locale.ENGLISH, DISTRICTS_API, cityId);
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -217,7 +216,7 @@ public class MuezzinAPIClient {
     public static void getPrayerTimes(final int countryId, final int cityId, final Optional<Integer> districtId, @NonNull final OnPrayerTimesDownloadedListener listener) {
         Log.debug(MuezzinAPIClient.class, "Getting prayer times for country '%d', city '%d' and district '%s'...", countryId, cityId, districtId);
 
-        String path = String.format(PRAYER_TIMES_API, countryId, cityId, districtId.toString());
+        String path = String.format(Locale.ENGLISH, PRAYER_TIMES_API, countryId, cityId, districtId.toString());
 
         get(path, null, new JsonHttpResponseHandler("UTF-8") {
             @Override public void onSuccess(int statusCode, Header[] headers, JSONObject response) {

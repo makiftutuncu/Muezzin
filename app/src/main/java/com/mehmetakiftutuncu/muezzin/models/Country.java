@@ -1,12 +1,12 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.mehmetakiftutuncu.muezzin.database.Database;
+import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -15,40 +15,53 @@ import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by akif on 08/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class Country {
     public final int id;
-    public final String nameEnglish;
-    public final String nameTurkish;
-    public final String nameNative;
+    public final String englishName;
+    public final String turkishName;
+    public final String nativeName;
 
-    public Country(int id, String nameEnglish, String nameTurkish, String nameNative) {
+    public Country(int id, String englishName, String turkishName, String nativeName) {
         this.id = id;
-        this.nameEnglish = nameEnglish;
-        this.nameTurkish = nameTurkish;
-        this.nameNative = nameNative;
+        this.englishName = englishName;
+        this.turkishName = turkishName;
+        this.nativeName = nativeName;
     }
 
-    public Optional<ArrayList<Country>> getCountries(Context context) {
+    public String getLocalizedName(Context context) {
+        String currentLanguage = LocaleUtils.getCurrentLanguage(context);
+
+        if (currentLanguage.contains("tr")) {
+            return turkishName;
+        } else {
+            return englishName;
+        }
+    }
+
+    public static Optional<ArrayList<Country>> getCountries(Context context) {
         try {
+            String currentLanguage = LocaleUtils.getCurrentLanguage(context);
+            String orderBy         = currentLanguage.contains("tr") ? Database.CountryTable.COLUMN_TURKISH_NAME : Database.CountryTable.COLUMN_ENGLISH_NAME;;
+
             ArrayList<Country> countries = new ArrayList<>();
 
             SQLiteDatabase database = Database.with(context).getReadableDatabase();
 
-            Cursor cursor = database.rawQuery("SELECT * FROM " + Database.CountryTable.TABLE_NAME, null);
+            Cursor cursor = database.rawQuery(String.format(Locale.ENGLISH, "SELECT * FROM %s ORDER BY %s", Database.CountryTable.TABLE_NAME, orderBy), null);
 
             if (cursor != null && cursor.moveToFirst()) {
                 while (!cursor.isAfterLast()) {
                     int id             = cursor.getInt(cursor.getColumnIndex(Database.CountryTable.COLUMN_ID));
-                    String nameEnglish = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_NAME_ENGLISH));
-                    String nameTurkish = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_NAME_TURKISH));
-                    String nameNative  = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_NAME_NATIVE));
+                    String englishName = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_ENGLISH_NAME));
+                    String turkishName = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_TURKISH_NAME));
+                    String nativeName  = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_NATIVE_NAME));
 
-                    Country country = new Country(id, nameEnglish, nameTurkish, nameNative);
+                    Country country = new Country(id, englishName, turkishName, nativeName);
 
                     countries.add(country);
 
@@ -62,13 +75,13 @@ public class Country {
 
             return new Some<>(countries);
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to get countries from database!");
+            Log.error(Country.class, t, "Failed to get countries from database!");
 
             return new None<>();
         }
     }
 
-    public boolean saveCountries(Context context, ArrayList<Country> countries) {
+    public static boolean saveCountries(Context context, ArrayList<Country> countries) {
         try {
             int numberOfParametersToBind = 3;
 
@@ -78,11 +91,11 @@ public class Country {
                     .append(" (")
                     .append(Database.CountryTable.COLUMN_ID)
                     .append(", ")
-                    .append(Database.CountryTable.COLUMN_NAME_ENGLISH)
+                    .append(Database.CountryTable.COLUMN_ENGLISH_NAME)
                     .append(", ")
-                    .append(Database.CountryTable.COLUMN_NAME_TURKISH)
+                    .append(Database.CountryTable.COLUMN_TURKISH_NAME)
                     .append(", ")
-                    .append(Database.CountryTable.COLUMN_NAME_NATIVE)
+                    .append(Database.CountryTable.COLUMN_NATIVE_NAME)
                     .append(") VALUES ");
 
             for (int i = 0, size = countries.size(); i < size; i++) {
@@ -90,9 +103,9 @@ public class Country {
 
                 insertSQLBuilder.append("(").append(country.id).append(", ?, ?, ?)");
 
-                parameters[i * numberOfParametersToBind]       = country.nameEnglish;
-                parameters[(i * numberOfParametersToBind) + 1] = country.nameTurkish;
-                parameters[(i * numberOfParametersToBind) + 2] = country.nameNative;
+                parameters[i * numberOfParametersToBind]       = country.englishName;
+                parameters[(i * numberOfParametersToBind) + 1] = country.turkishName;
+                parameters[(i * numberOfParametersToBind) + 2] = country.nativeName;
 
                 if (i < size - 1) {
                     insertSQLBuilder.append(", ");
@@ -109,7 +122,7 @@ public class Country {
                 database.execSQL(insertSQLBuilder.toString(), parameters);
                 database.setTransactionSuccessful();
             } catch (Throwable t) {
-                Log.error(getClass(), t, "Failed to save countries to database, transaction failed!");
+                Log.error(Country.class, t, "Failed to save countries to database, transaction failed!");
 
                 result = false;
             } finally {
@@ -120,24 +133,24 @@ public class Country {
 
             return result;
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to save countries to database!");
+            Log.error(Country.class, t, "Failed to save countries to database!");
 
             return false;
         }
     }
 
     @NonNull public String toJson() {
-        return String.format("{\"id\":%d,\"nameEnglish\":\"%s\",\"nameTurkish\":\"%s\",\"nameNative\":\"%s\"}", id, nameEnglish, nameTurkish, nameNative);
+        return String.format(Locale.ENGLISH, "{\"id\":%d,\"englishName\":\"%s\",\"turkishName\":\"%s\",\"nativeName\":\"%s\"}", id, englishName, turkishName, nativeName);
     }
 
     @NonNull public static Optional<Country> fromJson(JSONObject json) {
         try {
             int id             = json.getInt("id");
-            String nameEnglish = json.getString("name");
-            String nameTurkish = json.getString("trName");
-            String nameNative  = json.getString("nativeName");
+            String englishName = json.getString("name");
+            String turkishName = json.getString("trName");
+            String nativeName  = json.getString("nativeName");
 
-            return new Some<>(new Country(id, nameEnglish, nameTurkish, nameNative));
+            return new Some<>(new Country(id, englishName, turkishName, nativeName));
         } catch (Throwable t) {
             Log.error(Country.class, t, "Failed to generate country from Json '%s'!", json);
 

@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.database;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -10,7 +9,6 @@ import com.mehmetakiftutuncu.muezzin.utilities.Log;
 /**
  * Created by akif on 09/05/16.
  */
-@SuppressLint("DefaultLocale")
 public class Database extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "muezzin";
     public static final int DATABASE_VERSION = 1;
@@ -19,15 +17,15 @@ public class Database extends SQLiteOpenHelper {
         public static final String TABLE_NAME = "country";
 
         public static final String COLUMN_ID           = "id";
-        public static final String COLUMN_NAME_ENGLISH = "nameEnglish";
-        public static final String COLUMN_NAME_TURKISH = "nameTurkish";
-        public static final String COLUMN_NAME_NATIVE  = "nameNative";
+        public static final String COLUMN_ENGLISH_NAME = "englishName";
+        public static final String COLUMN_TURKISH_NAME = "turkishName";
+        public static final String COLUMN_NATIVE_NAME  = "nativeName";
 
         public static final String CREATE_TABLE_SQL = "CREATE TABLE " + TABLE_NAME + " (" +
                 COLUMN_ID           + " INTEGER PRIMARY KEY, " +
-                COLUMN_NAME_ENGLISH + " TEXT NOT NULL, " +
-                COLUMN_NAME_TURKISH + " TEXT NOT NULL, " +
-                COLUMN_NAME_NATIVE  + " TEXT NOT NULL);";
+                COLUMN_ENGLISH_NAME + " TEXT NOT NULL, " +
+                COLUMN_TURKISH_NAME + " TEXT NOT NULL, " +
+                COLUMN_NATIVE_NAME  + " TEXT NOT NULL);";
     }
 
     public class CityTable {
