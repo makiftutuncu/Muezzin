@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mehmetakiftutuncu.interfaces.OnCitiesDownloadedListener;
+import com.mehmetakiftutuncu.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.CitiesAdapter;
 import com.mehmetakiftutuncu.muezzin.models.City;
@@ -23,18 +25,35 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class CitySelectionFragment extends Fragment implements MuezzinAPIClient.OnCitiesDownloadedListener {
+public class CitySelectionFragment extends Fragment implements OnCitiesDownloadedListener {
     private RecyclerView recyclerViewCitySelection;
 
     private LinearLayoutManager linearLayoutManager;
     private CitiesAdapter citiesAdapter;
 
-    private int countryId = 2;
+    private OnCitySelectedListener onCitySelectedListener;
+
+    private int countryId;
 
     public CitySelectionFragment() {}
 
+    public static CitySelectionFragment with(int countryId, OnCitySelectedListener onCitySelectedListener) {
+        CitySelectionFragment citySelectionFragment = new CitySelectionFragment();
+        Bundle arguments = new Bundle();
+
+        arguments.putInt("countryId", countryId);
+        citySelectionFragment.setArguments(arguments);
+        citySelectionFragment.setOnCitySelectedListener(onCitySelectedListener);
+
+        return citySelectionFragment;
+    }
+
     @Override public void onStart() {
         super.onStart();
+
+        Bundle arguments = getArguments();
+
+        countryId = arguments.getInt("countryId");
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewCitySelection.setLayoutManager(linearLayoutManager);
@@ -64,6 +83,10 @@ public class CitySelectionFragment extends Fragment implements MuezzinAPIClient.
         Snackbar.make(recyclerViewCitySelection, "Failed to download cities!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
     }
 
+    public void setOnCitySelectedListener(OnCitySelectedListener onCitySelectedListener) {
+        this.onCitySelectedListener = onCitySelectedListener;
+    }
+
     private void loadCities() {
         Log.debug(getClass(), "Loading cities for country '%d' from database...", countryId);
 
@@ -87,7 +110,7 @@ public class CitySelectionFragment extends Fragment implements MuezzinAPIClient.
     }
 
     private void setCities(@NonNull ArrayList<City> cities) {
-        citiesAdapter = new CitiesAdapter(cities);
+        citiesAdapter = new CitiesAdapter(cities, onCitySelectedListener);
         recyclerViewCitySelection.setAdapter(citiesAdapter);
     }
 }

@@ -6,6 +6,10 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.mehmetakiftutuncu.interfaces.OnCitiesDownloadedListener;
+import com.mehmetakiftutuncu.interfaces.OnCountriesDownloadedListener;
+import com.mehmetakiftutuncu.interfaces.OnDistrictsDownloadedListener;
+import com.mehmetakiftutuncu.interfaces.OnPrayerTimesDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
@@ -38,11 +42,6 @@ public class MuezzinAPIClient {
 
     private static String url(String path) {
         return BASE_URL + path;
-    }
-
-    public interface OnCountriesDownloadedListener {
-        void onCountriesDownloaded(@NonNull ArrayList<Country> countries);
-        void onCountriesDownloadFailed();
     }
 
     public static void getCountries(@NonNull final OnCountriesDownloadedListener listener) {
@@ -96,11 +95,6 @@ public class MuezzinAPIClient {
         });
     }
 
-    public interface OnCitiesDownloadedListener {
-        void onCitiesDownloaded(@NonNull ArrayList<City> cities);
-        void onCitiesDownloadFailed();
-    }
-
     public static void getCities(final int countryId, @NonNull final OnCitiesDownloadedListener listener) {
         Log.debug(MuezzinAPIClient.class, "Getting cities for country '%d'...", countryId);
 
@@ -152,11 +146,6 @@ public class MuezzinAPIClient {
         });
     }
 
-    public interface OnDistrictsDownloadedListener {
-        void onDistrictsDownloaded(@NonNull ArrayList<District> districts);
-        void onDistrictsDownloadFailed();
-    }
-
     public static void getDistricts(final int cityId, @NonNull final OnDistrictsDownloadedListener listener) {
         Log.debug(MuezzinAPIClient.class, "Getting districts for city '%d'...", cityId);
 
@@ -206,11 +195,6 @@ public class MuezzinAPIClient {
                 listener.onDistrictsDownloadFailed();
             }
         });
-    }
-
-    public interface OnPrayerTimesDownloadedListener {
-        void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes);
-        void onPrayerTimesDownloadFailed();
     }
 
     public static void getPrayerTimes(final int countryId, final int cityId, final Optional<Integer> districtId, @NonNull final OnPrayerTimesDownloadedListener listener) {

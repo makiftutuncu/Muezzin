@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.mehmetakiftutuncu.interfaces.OnPrayerTimesDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class PrayerTimesFragment extends Fragment implements MuezzinAPIClient.OnPrayerTimesDownloadedListener {
+public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownloadedListener {
     private TextView text;
 
     public PrayerTimesFragment() {}

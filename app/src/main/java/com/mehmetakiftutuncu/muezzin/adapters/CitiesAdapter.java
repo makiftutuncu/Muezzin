@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mehmetakiftutuncu.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CityViewHolder;
 import com.mehmetakiftutuncu.muezzin.models.City;
@@ -18,8 +19,11 @@ import java.util.ArrayList;
 public class CitiesAdapter extends RecyclerView.Adapter<CityViewHolder> {
     private ArrayList<City> cities;
 
-    public CitiesAdapter(ArrayList<City> cities) {
+    private OnCitySelectedListener onCitySelectedListener;
+
+    public CitiesAdapter(ArrayList<City> cities, OnCitySelectedListener onCitySelectedListener) {
         this.cities = cities;
+        this.onCitySelectedListener = onCitySelectedListener;
     }
 
     @Override public CityViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -27,7 +31,7 @@ public class CitiesAdapter extends RecyclerView.Adapter<CityViewHolder> {
 
         View cityItemLayout = LayoutInflater.from(context).inflate(R.layout.item_city, parent, false);
 
-        return new CityViewHolder(cityItemLayout);
+        return new CityViewHolder(cityItemLayout, onCitySelectedListener);
     }
 
     @Override public void onBindViewHolder(CityViewHolder holder, int position) {

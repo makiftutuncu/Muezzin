@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mehmetakiftutuncu.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CountryViewHolder;
 import com.mehmetakiftutuncu.muezzin.models.Country;
@@ -18,8 +19,11 @@ import java.util.ArrayList;
 public class CountriesAdapter extends RecyclerView.Adapter<CountryViewHolder> {
     private ArrayList<Country> countries;
 
-    public CountriesAdapter(ArrayList<Country> countries) {
+    private OnCountrySelectedListener onCountrySelectedListener;
+
+    public CountriesAdapter(ArrayList<Country> countries, OnCountrySelectedListener onCountrySelectedListener) {
         this.countries = countries;
+        this.onCountrySelectedListener = onCountrySelectedListener;
     }
 
     @Override public CountryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -27,7 +31,7 @@ public class CountriesAdapter extends RecyclerView.Adapter<CountryViewHolder> {
 
         View countryItemLayout = LayoutInflater.from(context).inflate(R.layout.item_county, parent, false);
 
-        return new CountryViewHolder(context, countryItemLayout);
+        return new CountryViewHolder(context, countryItemLayout, onCountrySelectedListener);
     }
 
     @Override public void onBindViewHolder(CountryViewHolder holder, int position) {

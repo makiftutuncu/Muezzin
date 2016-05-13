@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mehmetakiftutuncu.interfaces.OnCountriesDownloadedListener;
+import com.mehmetakiftutuncu.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.CountriesAdapter;
 import com.mehmetakiftutuncu.muezzin.models.Country;
@@ -23,13 +25,22 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class CountrySelectionFragment extends Fragment implements MuezzinAPIClient.OnCountriesDownloadedListener {
+public class CountrySelectionFragment extends Fragment implements OnCountriesDownloadedListener {
     private RecyclerView recyclerViewCountrySelection;
 
     private LinearLayoutManager linearLayoutManager;
     private CountriesAdapter countriesAdapter;
 
+    private OnCountrySelectedListener onCountrySelectedListener;
+
     public CountrySelectionFragment() {}
+
+    public static CountrySelectionFragment with(OnCountrySelectedListener onCountrySelectedListener) {
+        CountrySelectionFragment countrySelectionFragment = new CountrySelectionFragment();
+        countrySelectionFragment.setOnCountrySelectedListener(onCountrySelectedListener);
+
+        return countrySelectionFragment;
+    }
 
     @Override public void onStart() {
         super.onStart();
@@ -62,6 +73,10 @@ public class CountrySelectionFragment extends Fragment implements MuezzinAPIClie
         Snackbar.make(recyclerViewCountrySelection, "Failed to download countries!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
     }
 
+    public void setOnCountrySelectedListener(OnCountrySelectedListener onCountrySelectedListener) {
+        this.onCountrySelectedListener = onCountrySelectedListener;
+    }
+
     private void loadCountries() {
         Log.debug(getClass(), "Loading countries from database...");
 
@@ -85,7 +100,7 @@ public class CountrySelectionFragment extends Fragment implements MuezzinAPIClie
     }
 
     private void setCountries(@NonNull ArrayList<Country> countries) {
-        countriesAdapter = new CountriesAdapter(countries);
+        countriesAdapter = new CountriesAdapter(countries, onCountrySelectedListener);
         recyclerViewCountrySelection.setAdapter(countriesAdapter);
     }
 }

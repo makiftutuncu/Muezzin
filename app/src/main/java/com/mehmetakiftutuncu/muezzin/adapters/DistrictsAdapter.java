@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mehmetakiftutuncu.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.DistrictViewHolder;
 import com.mehmetakiftutuncu.muezzin.models.District;
@@ -18,8 +19,11 @@ import java.util.ArrayList;
 public class DistrictsAdapter extends RecyclerView.Adapter<DistrictViewHolder> {
     private ArrayList<District> districts;
 
-    public DistrictsAdapter(ArrayList<District> districts) {
+    private OnDistrictSelectedListener onDistrictSelectedListener;
+
+    public DistrictsAdapter(ArrayList<District> districts, OnDistrictSelectedListener onDistrictSelectedListener) {
         this.districts = districts;
+        this.onDistrictSelectedListener = onDistrictSelectedListener;
     }
 
     @Override public DistrictViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -27,7 +31,7 @@ public class DistrictsAdapter extends RecyclerView.Adapter<DistrictViewHolder> {
 
         View districtItemLayout = LayoutInflater.from(context).inflate(R.layout.item_district, parent, false);
 
-        return new DistrictViewHolder(districtItemLayout);
+        return new DistrictViewHolder(districtItemLayout, onDistrictSelectedListener);
     }
 
     @Override public void onBindViewHolder(DistrictViewHolder holder, int position) {

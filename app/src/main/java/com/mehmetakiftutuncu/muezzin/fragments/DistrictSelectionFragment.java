@@ -11,6 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.mehmetakiftutuncu.interfaces.OnDistrictSelectedListener;
+import com.mehmetakiftutuncu.interfaces.OnDistrictsDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
 import com.mehmetakiftutuncu.muezzin.models.District;
@@ -23,18 +25,35 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class DistrictSelectionFragment extends Fragment implements MuezzinAPIClient.OnDistrictsDownloadedListener {
+public class DistrictSelectionFragment extends Fragment implements OnDistrictsDownloadedListener {
     private RecyclerView recyclerViewDistrictSelection;
 
     private LinearLayoutManager linearLayoutManager;
     private DistrictsAdapter districtsAdapter;
 
-    private int cityId = 574;
+    private OnDistrictSelectedListener onDistrictSelectedListener;
+
+    private int cityId;
 
     public DistrictSelectionFragment() {}
 
+    public static DistrictSelectionFragment with(int cityId, OnDistrictSelectedListener onDistrictSelectedListener) {
+        DistrictSelectionFragment districtSelectionFragment = new DistrictSelectionFragment();
+        Bundle arguments = new Bundle();
+
+        arguments.putInt("cityId", cityId);
+        districtSelectionFragment.setArguments(arguments);
+        districtSelectionFragment.setOnDistrictSelectedListener(onDistrictSelectedListener);
+
+        return districtSelectionFragment;
+    }
+
     @Override public void onStart() {
         super.onStart();
+
+        Bundle arguments = getArguments();
+
+        cityId = arguments.getInt("cityId");
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewDistrictSelection.setLayoutManager(linearLayoutManager);
@@ -64,6 +83,10 @@ public class DistrictSelectionFragment extends Fragment implements MuezzinAPICli
         Snackbar.make(recyclerViewDistrictSelection, "Failed to download districts!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
     }
 
+    public void setOnDistrictSelectedListener(OnDistrictSelectedListener onDistrictSelectedListener) {
+        this.onDistrictSelectedListener = onDistrictSelectedListener;
+    }
+
     private void loadDistricts() {
         Log.debug(getClass(), "Loading districts for city '%d' from database...", cityId);
 
@@ -87,7 +110,7 @@ public class DistrictSelectionFragment extends Fragment implements MuezzinAPICli
     }
 
     private void setDistricts(@NonNull ArrayList<District> districts) {
-        districtsAdapter = new DistrictsAdapter(districts);
+        districtsAdapter = new DistrictsAdapter(districts, onDistrictSelectedListener);
         recyclerViewDistrictSelection.setAdapter(districtsAdapter);
     }
 }
