@@ -70,13 +70,19 @@ public class DistrictSelectionFragment extends Fragment implements OnDistrictsDo
     }
 
     @Override public void onDistrictsDownloaded(@NonNull ArrayList<District> districts) {
-        Log.debug(getClass(), "Saving districts for city '%d' to database...", cityId);
+        if (districts.isEmpty()) {
+            Log.debug(getClass(), "No districts for city '%d' were found on the server!", cityId);
 
-        if (!District.saveDistricts(getContext(), cityId, districts)) {
-            Snackbar.make(recyclerViewDistrictSelection, "Failed to save districts to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+            onDistrictSelectedListener.onNoDistrictsFound();
+        } else {
+            Log.debug(getClass(), "Saving districts for city '%d' to database...", cityId);
+
+            if (!District.saveDistricts(getContext(), cityId, districts)) {
+                Snackbar.make(recyclerViewDistrictSelection, "Failed to save districts to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+            }
+
+            setDistricts(districts);
         }
-
-        setDistricts(districts);
     }
 
     @Override public void onDistrictsDownloadFailed() {

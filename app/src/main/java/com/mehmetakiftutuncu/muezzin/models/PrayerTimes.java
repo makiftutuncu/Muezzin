@@ -51,7 +51,7 @@ public class PrayerTimes {
         this.qibla      = new DateTime(qibla,   DateTimeZone.UTC);
     }
 
-    public Optional<ArrayList<PrayerTimes>> getPrayerTimes(Context context, int countryId, int cityId, Optional<Integer> districtId) {
+    public static Optional<ArrayList<PrayerTimes>> getPrayerTimes(Context context, int countryId, int cityId, Optional<Integer> districtId) {
         try {
             ArrayList<PrayerTimes> prayerTimes = new ArrayList<>();
 
@@ -109,13 +109,13 @@ public class PrayerTimes {
 
             return new Some<>(prayerTimes);
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to get prayer times for country '%d', city '%d' and district '%s' from database!", countryId, cityId, districtId);
+            Log.error(PrayerTimes.class, t, "Failed to get prayer times for country '%d', city '%d' and district '%s' from database!", countryId, cityId, districtId);
 
             return new None<>();
         }
     }
 
-    public boolean savePrayerTimes(Context context, int countryId, int cityId, Optional<Integer> districtId, ArrayList<PrayerTimes> prayerTimes) {
+    public static boolean savePrayerTimes(Context context, int countryId, int cityId, Optional<Integer> districtId, ArrayList<PrayerTimes> prayerTimes) {
         try {
             StringBuilder insertSQLBuilder = new StringBuilder("INSERT INTO ")
                     .append(Database.PrayerTimesTable.TABLE_NAME)
@@ -140,14 +140,14 @@ public class PrayerTimes {
                         .append(p.countryId).append(", ")
                         .append(p.cityId).append(", ")
                         .append(p.districtId.isDefined ? "" + p.districtId.get() : "NULL").append(", ")
-                        .append(p.day).append(", ")
-                        .append(p.fajr).append(", ")
-                        .append(p.shuruq).append(", ")
-                        .append(p.dhuhr).append(", ")
-                        .append(p.asr).append(", ")
-                        .append(p.maghrib).append(", ")
-                        .append(p.isha).append(", ")
-                        .append(p.qibla).append(")");
+                        .append(p.day.getMillis()).append(", ")
+                        .append(p.fajr.getMillis()).append(", ")
+                        .append(p.shuruq.getMillis()).append(", ")
+                        .append(p.dhuhr.getMillis()).append(", ")
+                        .append(p.asr.getMillis()).append(", ")
+                        .append(p.maghrib.getMillis()).append(", ")
+                        .append(p.isha.getMillis()).append(", ")
+                        .append(p.qibla.getMillis()).append(")");
 
                 if (i < size - 1) {
                     insertSQLBuilder.append(", ");
@@ -161,25 +161,23 @@ public class PrayerTimes {
             String deleteQuery;
             if (districtId.isDefined) {
                 deleteQuery = String.format(Locale.ENGLISH,
-                        "DELETE FROM %s WHERE %s = %d AND %s = %d AND %s = %d ORDER BY %s",
+                        "DELETE FROM %s WHERE %s = %d AND %s = %d AND %s = %d",
                         Database.PrayerTimesTable.TABLE_NAME,
                         Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
                         countryId,
                         Database.PrayerTimesTable.COLUMN_CITY_ID,
                         cityId,
                         Database.PrayerTimesTable.COLUMN_DISTRICT_ID,
-                        districtId.get(),
-                        Database.PrayerTimesTable.COLUMN_DAY
+                        districtId.get()
                 );
             } else {
                 deleteQuery = String.format(Locale.ENGLISH,
-                        "DELETE FROM %s WHERE %s = %d AND %s = %d ORDER BY %s",
+                        "DELETE FROM %s WHERE %s = %d AND %s = %d",
                         Database.PrayerTimesTable.TABLE_NAME,
                         Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
                         countryId,
                         Database.PrayerTimesTable.COLUMN_CITY_ID,
-                        cityId,
-                        Database.PrayerTimesTable.COLUMN_DAY
+                        cityId
                 );
             }
 
@@ -189,7 +187,7 @@ public class PrayerTimes {
                 database.execSQL(insertSQLBuilder.toString());
                 database.setTransactionSuccessful();
             } catch (Throwable t) {
-                Log.error(getClass(), t, "Failed to save prayer times for country '%d', city '%d' and district '%s' to database, transaction failed!", countryId, cityId, districtId);
+                Log.error(PrayerTimes.class, t, "Failed to save prayer times for country '%d', city '%d' and district '%s' to database, transaction failed!", countryId, cityId, districtId);
 
                 result = false;
             } finally {
@@ -200,7 +198,7 @@ public class PrayerTimes {
 
             return result;
         } catch (Throwable t) {
-            Log.error(getClass(), t, "Failed to save prayer times for country '%d', city '%d' and district '%s' to database!", countryId, cityId, districtId);
+            Log.error(PrayerTimes.class, t, "Failed to save prayer times for country '%d', city '%d' and district '%s' to database!", countryId, cityId, districtId);
 
             return false;
         }

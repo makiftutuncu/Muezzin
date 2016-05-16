@@ -70,7 +70,7 @@ public class Database extends SQLiteOpenHelper {
         public static final String COLUMN_QIBLA       = "qibla";
 
         public static final String CREATE_TABLE_SQL = "CREATE TABLE " + TABLE_NAME + " (" +
-                COLUMN_COUNTRY_ID  + " INTEGER PRIMARY KEY, " +
+                COLUMN_COUNTRY_ID  + " INTEGER NOT NULL, " +
                 COLUMN_CITY_ID     + " INTEGER NOT NULL, " +
                 COLUMN_DISTRICT_ID + " INTEGER, " +
                 COLUMN_DAY         + " INTEGER NOT NULL, " +
