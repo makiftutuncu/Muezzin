@@ -1,4 +1,4 @@
-package com.mehmetakiftutuncu.interfaces;
+package com.mehmetakiftutuncu.muezzin.interfaces;
 
 import com.mehmetakiftutuncu.muezzin.models.City;
 

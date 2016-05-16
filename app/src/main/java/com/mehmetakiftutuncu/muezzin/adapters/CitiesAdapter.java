@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mehmetakiftutuncu.interfaces.OnCitySelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CityViewHolder;
 import com.mehmetakiftutuncu.muezzin.models.City;

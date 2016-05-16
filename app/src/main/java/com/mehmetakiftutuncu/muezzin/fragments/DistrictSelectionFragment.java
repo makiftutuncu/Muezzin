@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mehmetakiftutuncu.interfaces.OnDistrictSelectedListener;
-import com.mehmetakiftutuncu.interfaces.OnDistrictsDownloadedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictsDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
 import com.mehmetakiftutuncu.muezzin.models.District;

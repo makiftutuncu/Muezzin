@@ -7,9 +7,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
-import com.mehmetakiftutuncu.interfaces.OnCitySelectedListener;
-import com.mehmetakiftutuncu.interfaces.OnCountrySelectedListener;
-import com.mehmetakiftutuncu.interfaces.OnDistrictSelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.fragments.CitySelectionFragment;
 import com.mehmetakiftutuncu.muezzin.fragments.CountrySelectionFragment;
@@ -17,6 +17,7 @@ import com.mehmetakiftutuncu.muezzin.fragments.DistrictSelectionFragment;
 import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
+import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -78,12 +79,12 @@ public class PlaceSelectionActivity extends AppCompatActivity implements OnCount
     }
 
     private void launchPrayerTimesActivity() {
-        Log.debug(getClass(), "Place selected for country '%d', city '%d' and district '%s'!", countryId, cityId, districtId);
+        Place place = new Place(countryId, cityId, districtId);
 
-        Bundle placeExtras = PrayerTimesActivity.getPlaceExtras(countryId, cityId, districtId);
-        Intent intent      = new Intent(this, PrayerTimesActivity.class);
+        Log.debug(getClass(), "Place '%s' is selected!", place);
 
-        intent.putExtras(placeExtras);
+        Intent intent = new Intent(this, PrayerTimesActivity.class);
+        intent.putExtras(place.toBundle());
 
         finish();
         startActivity(intent);

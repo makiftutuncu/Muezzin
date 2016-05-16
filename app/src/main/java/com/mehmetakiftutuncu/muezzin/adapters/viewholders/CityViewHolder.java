@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mehmetakiftutuncu.interfaces.OnCitySelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.models.City;
 

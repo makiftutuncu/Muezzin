@@ -11,8 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mehmetakiftutuncu.interfaces.OnCountriesDownloadedListener;
-import com.mehmetakiftutuncu.interfaces.OnCountrySelectedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCountriesDownloadedListener;
+import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.CountriesAdapter;
 import com.mehmetakiftutuncu.muezzin.models.Country;
