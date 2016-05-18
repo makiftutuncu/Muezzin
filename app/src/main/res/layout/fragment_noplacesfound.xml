@@ -21,7 +21,7 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_marginTop="16dp"
-            android:text="You haven't added any places yet.\nTouch + to add a place."/>
+            android:text="@string/placeSelection_noPlacesFound"/>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton

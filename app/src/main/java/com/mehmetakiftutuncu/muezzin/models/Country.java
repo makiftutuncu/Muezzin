@@ -34,19 +34,18 @@ public class Country {
     }
 
     public String getLocalizedName(Context context) {
-        String currentLanguage = LocaleUtils.getCurrentLanguage(context);
-
-        if (currentLanguage.contains("tr")) {
+        if (LocaleUtils.isLanguageTurkish(context)) {
+            return turkishName;
+        } else if (LocaleUtils.isLanguageEnglish(context)) {
             return turkishName;
         } else {
-            return englishName;
+            return String.format("%s (%s)", englishName, nativeName);
         }
     }
 
     public static Optional<ArrayList<Country>> getCountries(Context context) {
         try {
-            String currentLanguage = LocaleUtils.getCurrentLanguage(context);
-            String orderBy         = currentLanguage.contains("tr") ? Database.CountryTable.COLUMN_TURKISH_NAME : Database.CountryTable.COLUMN_ENGLISH_NAME;;
+            String orderBy = LocaleUtils.isLanguageTurkish(context) ? Database.CountryTable.COLUMN_TURKISH_NAME : Database.CountryTable.COLUMN_ENGLISH_NAME;;
 
             ArrayList<Country> countries = new ArrayList<>();
 

@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -57,6 +59,11 @@ public class CitySelectionFragment extends Fragment implements OnCitiesDownloade
 
         linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerViewCitySelection.setLayoutManager(linearLayoutManager);
+
+        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+        if (supportActionBar != null) {
+            supportActionBar.setTitle(getString(R.string.placeSelection_city));
+        }
 
         loadCities();
     }

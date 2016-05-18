@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
+import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.database.Database;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
@@ -12,6 +13,7 @@ import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -31,9 +33,9 @@ public class PrayerTimes {
     public final DateTime isha;
     public final DateTime qibla;
 
-    public static final String fullDateFormat = "dd MMMM YYYY";
-    public static final String dateFormat     = "YYYY.MM.dd";
-    public static final String timeFormat     = "HH:mm";
+    public static final String dateFormat          = "dd MMMM YYYY";
+    public static final String timeFormat          = "HH:mm";
+    public static final String remainingTimeFormat = "HH:mm:ss";
 
     public PrayerTimes(int countryId, int cityId, Optional<Integer> districtId, long day, long fajr, long shuruq, long dhuhr, long asr, long maghrib, long isha, long qibla) {
         this(new Place(countryId, cityId, districtId), day, fajr, shuruq, dhuhr, asr, maghrib, isha, qibla);
@@ -41,18 +43,63 @@ public class PrayerTimes {
 
     public PrayerTimes(Place place, long day, long fajr, long shuruq, long dhuhr, long asr, long maghrib, long isha, long qibla) {
         this.place   = place;
-        this.day     = new DateTime(day);
-        this.fajr    = new DateTime(fajr);
-        this.shuruq  = new DateTime(shuruq);
-        this.dhuhr   = new DateTime(dhuhr);
-        this.asr     = new DateTime(asr);
-        this.maghrib = new DateTime(maghrib);
-        this.isha    = new DateTime(isha);
-        this.qibla   = new DateTime(qibla);
+        this.day     = new DateTime(day,     DateTimeZone.UTC);
+        this.fajr    = new DateTime(fajr,    DateTimeZone.UTC);
+        this.shuruq  = new DateTime(shuruq,  DateTimeZone.UTC);
+        this.dhuhr   = new DateTime(dhuhr,   DateTimeZone.UTC);
+        this.asr     = new DateTime(asr,     DateTimeZone.UTC);
+        this.maghrib = new DateTime(maghrib, DateTimeZone.UTC);
+        this.isha    = new DateTime(isha,    DateTimeZone.UTC);
+        this.qibla   = new DateTime(qibla,   DateTimeZone.UTC);
+    }
+
+    public DateTime nextPrayerTime() {
+        DateTime now = DateTime.now().withDate(day.getYear(), day.getMonthOfYear(), day.getDayOfMonth()).withZoneRetainFields(DateTimeZone.UTC);
+
+        if (now.isBefore(fajr)) {
+            return fajr;
+        } else if (now.isBefore(shuruq)) {
+            return shuruq;
+        } else if (now.isBefore(dhuhr)) {
+            return dhuhr;
+        } else if (now.isBefore(asr)) {
+            return asr;
+        } else if (now.isBefore(maghrib)) {
+            return maghrib;
+        } else if (now.isBefore(isha)) {
+            return isha;
+        } else {
+            /* After isha, so next day's fajr is next prayer time.
+             * I just assume time fajr time will be the same next day too,
+             * HOWEVER it may/will vary a few minutes. It is still better than
+             * not knowing the time at all. */
+            return fajr.plusDays(1);
+        }
+    }
+
+    public String nextPrayerTimeName(Context context) {
+        DateTime now = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
+
+        if (now.isBefore(fajr)) {
+            return context.getString(R.string.prayerTime_fajr);
+        } else if (now.isBefore(shuruq)) {
+            return context.getString(R.string.prayerTime_shuruq);
+        } else if (now.isBefore(dhuhr)) {
+            return context.getString(R.string.prayerTime_dhuhr);
+        } else if (now.isBefore(asr)) {
+            return context.getString(R.string.prayerTime_asr);
+        } else if (now.isBefore(maghrib)) {
+            return context.getString(R.string.prayerTime_maghrib);
+        } else if (now.isBefore(isha)) {
+            return context.getString(R.string.prayerTime_isha);
+        } else {
+            // Same logic as in getNextPrayerTime(), return fajr.
+            return context.getString(R.string.prayerTime_fajr);
+        }
     }
 
     public static Optional<PrayerTimes> getPrayerTimesForToday(Context context, Place place) {
-        return getPrayerTimesForDay(context, place, DateTime.now().withTimeAtStartOfDay());
+        return getPrayerTimesForDay(context, place, DateTime.now().withZoneRetainFields(DateTimeZone.UTC).withTimeAtStartOfDay());
     }
 
     public static Optional<PrayerTimes> getPrayerTimesForDay(Context context, Place place, DateTime day) {
@@ -73,7 +120,7 @@ public class PrayerTimes {
                         Database.PrayerTimesTable.COLUMN_DISTRICT_ID,
                         place.districtId.get(),
                         Database.PrayerTimesTable.COLUMN_DAY,
-                        day.getMillis()
+                        day.withZoneRetainFields(DateTimeZone.UTC).getMillis()
                 );
             } else {
                 query = String.format(Locale.ENGLISH,
@@ -84,7 +131,7 @@ public class PrayerTimes {
                         Database.PrayerTimesTable.COLUMN_CITY_ID,
                         place.cityId,
                         Database.PrayerTimesTable.COLUMN_DAY,
-                        day.getMillis()
+                        day.withZoneRetainFields(DateTimeZone.UTC).getMillis()
                 );
             }
 

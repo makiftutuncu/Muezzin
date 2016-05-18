@@ -1,3 +1,36 @@
 <resources>
-    <string name="app_name">Müezzin</string>
+    <!-- Application name -->
+    <string name="app_name">Muezzin</string>
+
+    <!-- Prayer time names -->
+    <string name="prayerTime_fajr">Fajr</string>
+    <string name="prayerTime_dhuhr">Dhuhr</string>
+    <string name="prayerTime_asr">Asr</string>
+    <string name="prayerTime_maghrib">Maghrib</string>
+    <string name="prayerTime_isha">Isha</string>
+    <string name="prayerTime_shuruq">Shuruq</string>
+    <string name="prayerTime_qibla">Qibla</string>
+
+    <!-- Hijri Month Names -->
+    <string name="hijriMonth_1">Muharram</string>
+    <string name="hijriMonth_2">Safar</string>
+    <string name="hijriMonth_3">Rabi\' al-Awwal</string>
+    <string name="hijriMonth_4">Rabi\' al-Akhir</string>
+    <string name="hijriMonth_5">Jumada al-Ula</string>
+    <string name="hijriMonth_6">Jumada al-Akhira</string>
+    <string name="hijriMonth_7">Rajab</string>
+    <string name="hijriMonth_8">Sha\'ban</string>
+    <string name="hijriMonth_9">Ramadan</string>
+    <string name="hijriMonth_10">Shawwal</string>
+    <string name="hijriMonth_11">Dhu al-Qa\'dah</string>
+    <string name="hijriMonth_12">Dhu al-Hijjah</string>
+
+    <!-- Place selection -->
+    <string name="placeSelection_noPlacesFound">You haven\'t added any places yet.\nTouch + to add a place.</string>
+    <string name="placeSelection_country">Select a Country</string>
+    <string name="placeSelection_city">Select a City</string>
+    <string name="placeSelection_district">Select a District</string>
+
+    <!-- Prayer times -->
+    <string name="prayerTimes_cardTitle_remainingTime">Remaining Time to %1$s:</string>
 </resources>

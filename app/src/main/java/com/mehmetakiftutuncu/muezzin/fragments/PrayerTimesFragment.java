@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -20,17 +21,31 @@ import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by akif on 08/05/16.
  */
 public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownloadedListener {
-    private TextView text;
+    private TextView textViewRemainingTimeInfo;
+    private TextView textViewRemainingTime;
+    private TextView textViewFajr;
+    private TextView textViewDhuhr;
+    private TextView textViewAsr;
+    private TextView textViewMaghrib;
+    private TextView textViewIsha;
+    private TextView textViewShuruq;
+    private TextView textViewQibla;
 
     private Place place;
     private PrayerTimes prayerTimes;
+
+    private Timer timer;
+    private TimerTask timerTask;
 
     public PrayerTimesFragment() {}
 
@@ -47,10 +62,30 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
         loadTodaysPrayerTimes();
     }
 
+    @Override public void onResume() {
+        super.onResume();
+
+        scheduleRemainingTimeCounter();
+    }
+
+    @Override public void onPause() {
+        super.onPause();
+
+        cancelRemainingTimeCounter();
+    }
+
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_prayertimes, container, false);
 
-        text = (TextView) layout.findViewById(R.id.text);
+        textViewRemainingTimeInfo = (TextView) layout.findViewById(R.id.textView_prayerTimes_remainingTimeInfo);
+        textViewRemainingTime     = (TextView) layout.findViewById(R.id.textView_prayerTimes_remainingTime);
+        textViewFajr              = (TextView) layout.findViewById(R.id.textView_prayerTimes_fajrTime);
+        textViewShuruq            = (TextView) layout.findViewById(R.id.textView_prayerTimes_shuruqTime);
+        textViewDhuhr             = (TextView) layout.findViewById(R.id.textView_prayerTimes_dhuhrTime);
+        textViewAsr               = (TextView) layout.findViewById(R.id.textView_prayerTimes_asrTime);
+        textViewMaghrib           = (TextView) layout.findViewById(R.id.textView_prayerTimes_maghribTime);
+        textViewIsha              = (TextView) layout.findViewById(R.id.textView_prayerTimes_ishaTime);
+        textViewQibla             = (TextView) layout.findViewById(R.id.textView_prayerTimes_qiblaTime);
 
         Optional<Place> maybePlace = Place.fromBundle(getArguments());
 
@@ -70,7 +105,7 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
 
         this.prayerTimes = prayerTimes.get(0);
 
-        updateUI();
+        initializeUI();
     }
 
     @Override public void onPrayerTimesDownloadFailed() {
@@ -90,13 +125,11 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
             Log.debug(getClass(), "Loaded today's prayer times for place '%s' from database!", place);
 
             this.prayerTimes = maybePrayerTimesFromDatabase.get();
-            updateUI();
+            initializeUI();
         }
     }
 
-    private void updateUI() {
-        text.setText(prayerTimes.toString());
-
+    private void initializeUI() {
         Optional<String> maybePlaceName = place.getPlaceName(getContext());
 
         if (maybePlaceName.isDefined) {
@@ -104,8 +137,61 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
 
             if (supportActionBar != null) {
                 supportActionBar.setTitle(maybePlaceName.get());
-                supportActionBar.setSubtitle(DateTime.now().toString(PrayerTimes.fullDateFormat));
+                supportActionBar.setSubtitle(DateTime.now().withZoneRetainFields(DateTimeZone.UTC).toString(PrayerTimes.dateFormat));
             }
+        }
+
+        textViewFajr.setText(prayerTimes.fajr.toString(PrayerTimes.timeFormat));
+        textViewDhuhr.setText(prayerTimes.dhuhr.toString(PrayerTimes.timeFormat));
+        textViewAsr.setText(prayerTimes.asr.toString(PrayerTimes.timeFormat));
+        textViewMaghrib.setText(prayerTimes.maghrib.toString(PrayerTimes.timeFormat));
+        textViewIsha.setText(prayerTimes.isha.toString(PrayerTimes.timeFormat));
+        textViewShuruq.setText(prayerTimes.shuruq.toString(PrayerTimes.timeFormat));
+        textViewQibla.setText(prayerTimes.qibla.toString(PrayerTimes.timeFormat));
+    }
+
+    private void updateRemainingTime() {
+        if (prayerTimes != null) {
+            DateTime now              = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
+            DateTime nextPrayerTime   = prayerTimes.nextPrayerTime();
+            String nextPrayerTimeName = prayerTimes.nextPrayerTimeName(getContext());
+
+            DateTime remaining   = nextPrayerTime.minus(now.getMillis());
+            String remainingTime = remaining.toString(PrayerTimes.remainingTimeFormat);
+
+            textViewRemainingTimeInfo.setText(getString(R.string.prayerTimes_cardTitle_remainingTime, nextPrayerTimeName));
+            textViewRemainingTime.setText(remainingTime);
+        }
+    }
+
+    private void scheduleRemainingTimeCounter() {
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override public void run() {
+                FragmentActivity activity = getActivity();
+
+                if (activity != null) {
+                    activity.runOnUiThread(new Runnable() {
+                        @Override public void run() {
+                            updateRemainingTime();
+                        }
+                    });
+                }
+            }
+        };
+
+        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    private void cancelRemainingTimeCounter() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+
+        if (timerTask != null && timerTask.scheduledExecutionTime() > 0) {
+            timerTask.cancel();
         }
     }
 }

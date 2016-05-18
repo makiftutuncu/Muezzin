@@ -12,6 +12,14 @@ public class LocaleUtils {
         return context.getResources().getConfiguration().locale.getLanguage();
     }
 
+    public static boolean isLanguageTurkish(Context context) {
+        return getCurrentLanguage(context).contains("tr");
+    }
+
+    public static boolean isLanguageEnglish(Context context) {
+        return getCurrentLanguage(context).contains("en");
+    }
+
     public static Collator getCollator(Context context) {
         return Collator.getInstance(context.getResources().getConfiguration().locale);
     }
