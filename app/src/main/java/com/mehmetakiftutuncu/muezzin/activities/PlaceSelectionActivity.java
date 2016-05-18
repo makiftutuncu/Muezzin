@@ -18,6 +18,7 @@ import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.models.Place;
+import com.mehmetakiftutuncu.muezzin.utilities.Conf;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -81,6 +82,7 @@ public class PlaceSelectionActivity extends AppCompatActivity implements OnCount
     private void launchPrayerTimesActivity() {
         Place place = new Place(countryId, cityId, districtId);
 
+        Conf.Places.setCurrentPlace(this, place);
         Log.debug(getClass(), "Place '%s' is selected!", place);
 
         Intent intent = new Intent(this, PrayerTimesActivity.class);

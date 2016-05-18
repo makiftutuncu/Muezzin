@@ -31,7 +31,7 @@ public class Place {
     }
 
     @NonNull public String toJson() {
-        return String.format(Locale.ENGLISH, "{\"countryId\":%d,\"cityId\":%d%s}", countryId, cityId, districtId.isDefined ? String.format(Locale.ENGLISH, "\"districtId\":%d", districtId.get()) : "");
+        return String.format(Locale.ENGLISH, "{\"countryId\":%d,\"cityId\":%d%s}", countryId, cityId, districtId.isDefined ? String.format(Locale.ENGLISH, ",\"districtId\":%d", districtId.get()) : "");
     }
 
     @NonNull public Bundle toBundle() {
