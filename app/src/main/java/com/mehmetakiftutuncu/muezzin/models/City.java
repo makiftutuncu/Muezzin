@@ -44,16 +44,18 @@ public class City {
                     null
             );
 
-            if (cursor != null && cursor.moveToFirst()) {
-                while (!cursor.isAfterLast()) {
-                    int id      = cursor.getInt(cursor.getColumnIndex(Database.CityTable.COLUMN_ID));
-                    String name = cursor.getString(cursor.getColumnIndex(Database.CityTable.COLUMN_NAME));
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        int id      = cursor.getInt(cursor.getColumnIndex(Database.CityTable.COLUMN_ID));
+                        String name = cursor.getString(cursor.getColumnIndex(Database.CityTable.COLUMN_NAME));
 
-                    City city = new City(id, countryId, name);
+                        City city = new City(id, countryId, name);
 
-                    cities.add(city);
+                        cities.add(city);
 
-                    cursor.moveToNext();
+                        cursor.moveToNext();
+                    }
                 }
 
                 cursor.close();

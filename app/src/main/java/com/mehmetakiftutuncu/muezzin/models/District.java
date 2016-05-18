@@ -41,16 +41,18 @@ public class District {
                     null
             );
 
-            if (cursor != null && cursor.moveToFirst()) {
-                while (!cursor.isAfterLast()) {
-                    int id      = cursor.getInt(cursor.getColumnIndex(Database.DistrictTable.COLUMN_ID));
-                    String name = cursor.getString(cursor.getColumnIndex(Database.DistrictTable.COLUMN_NAME));
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        int id      = cursor.getInt(cursor.getColumnIndex(Database.DistrictTable.COLUMN_ID));
+                        String name = cursor.getString(cursor.getColumnIndex(Database.DistrictTable.COLUMN_NAME));
 
-                    District district = new District(id, cityId, name);
+                        District district = new District(id, cityId, name);
 
-                    districts.add(district);
+                        districts.add(district);
 
-                    cursor.moveToNext();
+                        cursor.moveToNext();
+                    }
                 }
 
                 cursor.close();

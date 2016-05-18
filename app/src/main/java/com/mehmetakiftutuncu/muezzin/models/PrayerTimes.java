@@ -31,8 +31,9 @@ public class PrayerTimes {
     public final DateTime isha;
     public final DateTime qibla;
 
-    private static final String dateFormat = "YYYY.MM.dd";
-    private static final String timeFormat = "HH:mm";
+    public static final String fullDateFormat = "dd MMMM YYYY";
+    public static final String dateFormat     = "YYYY.MM.dd";
+    public static final String timeFormat     = "HH:mm";
 
     public PrayerTimes(int countryId, int cityId, Optional<Integer> districtId, long day, long fajr, long shuruq, long dhuhr, long asr, long maghrib, long isha, long qibla) {
         this(new Place(countryId, cityId, districtId), day, fajr, shuruq, dhuhr, asr, maghrib, isha, qibla);
@@ -50,9 +51,66 @@ public class PrayerTimes {
         this.qibla   = new DateTime(qibla);
     }
 
-    public static Optional<ArrayList<PrayerTimes>> getPrayerTimes(Context context, Place place) {
+    public static Optional<PrayerTimes> getPrayerTimesForToday(Context context, Place place) {
+        return getPrayerTimesForDay(context, place, DateTime.now().withTimeAtStartOfDay());
+    }
+
+    public static Optional<PrayerTimes> getPrayerTimesForDay(Context context, Place place, DateTime day) {
         try {
-            ArrayList<PrayerTimes> prayerTimes = new ArrayList<>();
+            Optional<PrayerTimes> prayerTimes = new None<>();
+
+            SQLiteDatabase database = Database.with(context).getReadableDatabase();
+
+            String query;
+            if (place.districtId.isDefined) {
+                query = String.format(Locale.ENGLISH,
+                        "SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = %d AND %s = %d",
+                        Database.PrayerTimesTable.TABLE_NAME,
+                        Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
+                        place.countryId,
+                        Database.PrayerTimesTable.COLUMN_CITY_ID,
+                        place.cityId,
+                        Database.PrayerTimesTable.COLUMN_DISTRICT_ID,
+                        place.districtId.get(),
+                        Database.PrayerTimesTable.COLUMN_DAY,
+                        day.getMillis()
+                );
+            } else {
+                query = String.format(Locale.ENGLISH,
+                        "SELECT * FROM %s WHERE %s = %d AND %s = %d AND %s = %d",
+                        Database.PrayerTimesTable.TABLE_NAME,
+                        Database.PrayerTimesTable.COLUMN_COUNTRY_ID,
+                        place.countryId,
+                        Database.PrayerTimesTable.COLUMN_CITY_ID,
+                        place.cityId,
+                        Database.PrayerTimesTable.COLUMN_DAY,
+                        day.getMillis()
+                );
+            }
+
+            Cursor cursor = database.rawQuery(query, null);
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    prayerTimes = new Some<>(fromCursor(place, cursor));
+                }
+
+                cursor.close();
+            }
+
+            database.close();
+
+            return prayerTimes;
+        } catch (Throwable t) {
+            Log.error(PrayerTimes.class, t, "Failed to get prayer times for place '%s' and for day '%s' from database!", place, day);
+
+            return new None<>();
+        }
+    }
+
+    public static Optional<ArrayList<PrayerTimes>> getAllPrayerTimes(Context context, Place place) {
+        try {
+            ArrayList<PrayerTimes> allPrayerTimes = new ArrayList<>();
 
             SQLiteDatabase database = Database.with(context).getReadableDatabase();
 
@@ -83,22 +141,15 @@ public class PrayerTimes {
 
             Cursor cursor = database.rawQuery(query, null);
 
-            if (cursor != null && cursor.moveToFirst()) {
-                while (!cursor.isAfterLast()) {
-                    long day     = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_DAY));
-                    long fajr    = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_FAJR));
-                    long shuruq  = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_SHURUQ));
-                    long dhuhr   = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_DHUHR));
-                    long asr     = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_ASR));
-                    long maghrib = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_MAGHRIB));
-                    long isha    = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_ISHA));
-                    long qibla   = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_QIBLA));
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        PrayerTimes prayerTimes = fromCursor(place, cursor);
 
-                    PrayerTimes p = new PrayerTimes(place.countryId, place.cityId, place.districtId, day, fajr, shuruq, dhuhr, asr, maghrib, isha, qibla);
+                        allPrayerTimes.add(prayerTimes);
 
-                    prayerTimes.add(p);
-
-                    cursor.moveToNext();
+                        cursor.moveToNext();
+                    }
                 }
 
                 cursor.close();
@@ -106,15 +157,15 @@ public class PrayerTimes {
 
             database.close();
 
-            return new Some<>(prayerTimes);
+            return new Some<>(allPrayerTimes);
         } catch (Throwable t) {
-            Log.error(PrayerTimes.class, t, "Failed to get prayer times for place '%s' from database!", place);
+            Log.error(PrayerTimes.class, t, "Failed to get all prayer times for place '%s' from database!", place);
 
             return new None<>();
         }
     }
 
-    public static boolean savePrayerTimes(Context context, Place place, ArrayList<PrayerTimes> prayerTimes) {
+    public static boolean saveAllPrayerTimes(Context context, Place place, ArrayList<PrayerTimes> prayerTimes) {
         try {
             StringBuilder insertSQLBuilder = new StringBuilder("INSERT INTO ")
                     .append(Database.PrayerTimesTable.TABLE_NAME)
@@ -239,5 +290,18 @@ public class PrayerTimes {
 
     @Override public String toString() {
         return toJson();
+    }
+
+    private static PrayerTimes fromCursor(Place place, Cursor cursor) {
+        long day     = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_DAY));
+        long fajr    = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_FAJR));
+        long shuruq  = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_SHURUQ));
+        long dhuhr   = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_DHUHR));
+        long asr     = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_ASR));
+        long maghrib = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_MAGHRIB));
+        long isha    = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_ISHA));
+        long qibla   = cursor.getLong(cursor.getColumnIndex(Database.PrayerTimesTable.COLUMN_QIBLA));
+
+        return new PrayerTimes(place.countryId, place.cityId, place.districtId, day, fajr, shuruq, dhuhr, asr, maghrib, isha, qibla);
     }
 }

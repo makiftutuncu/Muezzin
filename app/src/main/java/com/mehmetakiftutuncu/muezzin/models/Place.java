@@ -1,8 +1,12 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
+import com.mehmetakiftutuncu.muezzin.database.Database;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -28,6 +32,73 @@ public class Place {
         this.countryId  = countryId;
         this.cityId     = cityId;
         this.districtId = districtId;
+    }
+
+    public Optional<String> getPlaceName(Context context) {
+        try {
+            Optional<String> placeName = new None<>();
+
+            SQLiteDatabase database = Database.with(context).getReadableDatabase();
+
+            String query;
+            if (districtId.isDefined) {
+                query = String.format(Locale.ENGLISH,
+                        "SELECT co.%s AS countryName, ci.%s AS cityName, di.%s AS districtName FROM %s AS co JOIN %s AS ci ON (co.%s = ci.%s) JOIN %s AS di ON (ci.%s = di.%s) WHERE co.%s = %d AND ci.%s = %d AND di.%s = %d",
+                        Database.CountryTable.COLUMN_ENGLISH_NAME,
+                        Database.CityTable.COLUMN_NAME,
+                        Database.DistrictTable.COLUMN_NAME,
+                        Database.CountryTable.TABLE_NAME,
+                        Database.CityTable.TABLE_NAME,
+                        Database.CountryTable.COLUMN_ID,
+                        Database.CityTable.COLUMN_COUNTRY_ID,
+                        Database.DistrictTable.TABLE_NAME,
+                        Database.CityTable.COLUMN_ID,
+                        Database.DistrictTable.COLUMN_CITY_ID,
+                        Database.CountryTable.COLUMN_ID,
+                        countryId,
+                        Database.CityTable.COLUMN_ID,
+                        cityId,
+                        Database.DistrictTable.COLUMN_ID,
+                        districtId.get()
+                );
+            } else {
+                query = String.format(Locale.ENGLISH,
+                        "SELECT co.%s AS countryName, ci.%s AS cityName FROM %s AS co JOIN %s AS ci ON (co.%s = ci.%s) WHERE co.%s = %d AND ci.%s = %d",
+                        Database.CountryTable.COLUMN_ENGLISH_NAME,
+                        Database.CityTable.COLUMN_NAME,
+                        Database.CountryTable.TABLE_NAME,
+                        Database.CityTable.TABLE_NAME,
+                        Database.CountryTable.COLUMN_ID,
+                        Database.CityTable.COLUMN_COUNTRY_ID,
+                        Database.CountryTable.COLUMN_ID,
+                        countryId,
+                        Database.CityTable.COLUMN_ID,
+                        cityId
+                );
+            }
+
+            Cursor cursor = database.rawQuery(query, null);
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    String countryName  = cursor.getString(cursor.getColumnIndex("countryName"));
+                    String cityName     = cursor.getString(cursor.getColumnIndex("cityName"));
+                    String districtName = districtId.isDefined ? cursor.getString(cursor.getColumnIndex("districtName")) : "";
+
+                    placeName = new Some<>(String.format(Locale.ENGLISH, "%s%s, %s", (districtName.isEmpty() ? "": (districtName + ", ")), cityName, countryName));
+                }
+
+                cursor.close();
+            }
+
+            database.close();
+
+            return placeName;
+        } catch (Throwable t) {
+            Log.error(getClass(), t, "Failed to get name for place '%s'!", this);
+
+            return new None<>();
+        }
     }
 
     @NonNull public String toJson() {

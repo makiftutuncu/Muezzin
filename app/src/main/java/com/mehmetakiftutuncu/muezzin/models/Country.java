@@ -54,18 +54,21 @@ public class Country {
 
             Cursor cursor = database.rawQuery(String.format(Locale.ENGLISH, "SELECT * FROM %s ORDER BY %s", Database.CountryTable.TABLE_NAME, orderBy), null);
 
-            if (cursor != null && cursor.moveToFirst()) {
-                while (!cursor.isAfterLast()) {
-                    int id             = cursor.getInt(cursor.getColumnIndex(Database.CountryTable.COLUMN_ID));
-                    String englishName = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_ENGLISH_NAME));
-                    String turkishName = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_TURKISH_NAME));
-                    String nativeName  = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_NATIVE_NAME));
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    while (!cursor.isAfterLast()) {
+                        int id             = cursor.getInt(cursor.getColumnIndex(Database.CountryTable.COLUMN_ID));
+                        String englishName = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_ENGLISH_NAME));
+                        String turkishName = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_TURKISH_NAME));
+                        String nativeName  = cursor.getString(cursor.getColumnIndex(Database.CountryTable.COLUMN_NATIVE_NAME));
 
-                    Country country = new Country(id, englishName, turkishName, nativeName);
+                        Country country = new Country(id, englishName, turkishName, nativeName);
 
-                    countries.add(country);
+                        countries.add(country);
 
-                    cursor.moveToNext();
+                        cursor.moveToNext();
+                    }
+
                 }
 
                 cursor.close();

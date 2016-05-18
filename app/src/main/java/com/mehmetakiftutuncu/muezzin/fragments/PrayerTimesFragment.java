@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +19,8 @@ import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 
 /**
@@ -26,7 +30,7 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
     private TextView text;
 
     private Place place;
-    private ArrayList<PrayerTimes> prayerTimes;
+    private PrayerTimes prayerTimes;
 
     public PrayerTimesFragment() {}
 
@@ -40,7 +44,7 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
     @Override public void onStart() {
         super.onStart();
 
-        loadPrayerTimes();
+        loadTodaysPrayerTimes();
     }
 
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -60,11 +64,11 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
     @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes) {
         Log.debug(getClass(), "Saving prayer times for place '%s' to database...", place);
 
-        if (!PrayerTimes.savePrayerTimes(getContext(), place, prayerTimes)) {
+        if (!PrayerTimes.saveAllPrayerTimes(getContext(), place, prayerTimes)) {
             // Snackbar.make(recyclerViewCountrySelection, "Failed to save countries to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
         }
 
-        this.prayerTimes = prayerTimes;
+        this.prayerTimes = prayerTimes.get(0);
 
         updateUI();
     }
@@ -73,36 +77,35 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
         Log.error(getClass(), "Failed to download prayer times for place '%s'!", place);
     }
 
-    private void loadPrayerTimes() {
-        Log.debug(getClass(), "Loading prayer times for place '%s'...", place);
+    private void loadTodaysPrayerTimes() {
+        Log.debug(getClass(), "Loading today's prayer times for place '%s'...", place);
 
-        Optional<ArrayList<PrayerTimes>> maybePrayerTimesFromDatabase = PrayerTimes.getPrayerTimes(getContext(), place);
+        Optional<PrayerTimes> maybePrayerTimesFromDatabase = PrayerTimes.getPrayerTimesForToday(getContext(), place);
 
         if (maybePrayerTimesFromDatabase.isEmpty) {
-            // Snackbar.make(recyclerViewCountrySelection, "Failed to load countries from database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+            Log.debug(getClass(), "Today's prayer times for place '%s' wasn't found on database! Downloading...", place);
+
+            MuezzinAPIClient.getPrayerTimes(place, this);
         } else {
-            ArrayList<PrayerTimes> prayerTimesFromDatabase = maybePrayerTimesFromDatabase.get();
+            Log.debug(getClass(), "Loaded today's prayer times for place '%s' from database!", place);
 
-            if (prayerTimesFromDatabase.isEmpty()) {
-                Log.debug(getClass(), "No prayer times for place '%s' were found on database! Downloading...", place);
-
-                MuezzinAPIClient.getPrayerTimes(place, this);
-            } else {
-                Log.debug(getClass(), "Loaded prayer times for place '%s' from database!", place);
-
-                this.prayerTimes = prayerTimesFromDatabase;
-                updateUI();
-            }
+            this.prayerTimes = maybePrayerTimesFromDatabase.get();
+            updateUI();
         }
     }
 
     private void updateUI() {
-        StringBuilder builder = new StringBuilder();
+        text.setText(prayerTimes.toString());
 
-        for (PrayerTimes p : prayerTimes) {
-            builder.append(p.toString()).append("\n");
+        Optional<String> maybePlaceName = place.getPlaceName(getContext());
+
+        if (maybePlaceName.isDefined) {
+            ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
+
+            if (supportActionBar != null) {
+                supportActionBar.setTitle(maybePlaceName.get());
+                supportActionBar.setSubtitle(DateTime.now().toString(PrayerTimes.fullDateFormat));
+            }
         }
-
-        text.setText(builder.toString());
     }
 }
