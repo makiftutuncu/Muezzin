@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:seekbar="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="@string/prayerTime_fajr">
+        <SwitchPreference
+            android:key="reminders_enabled_fajr"
+            android:title="@string/preferences_reminders_enabled"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="reminders_sound_fajr"
+            android:title="@string/preferences_reminders_sound"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="reminders_enabled_fajr"/>
+
+        <SwitchPreference
+            android:key="reminders_vibration_fajr"
+            android:title="@string/preferences_reminders_vibration"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_fajr"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="reminders_timeToRemind_fajr"
+            android:title="@string/preferences_reminders_timeToRemind"
+            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:dependency="reminders_enabled_fajr"
+            android:defaultValue="45"
+            seekbar:msbp_minValue="0"
+            seekbar:msbp_maxValue="60"
+            seekbar:msbp_interval="5"
+            seekbar:msbp_dialogEnabled="false"
+            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prayerTime_shuruq">
+        <SwitchPreference
+            android:key="reminders_enabled_shuruq"
+            android:title="@string/preferences_reminders_enabled"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="reminders_sound_shuruq"
+            android:title="@string/preferences_reminders_sound"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="reminders_enabled_shuruq"/>
+
+        <SwitchPreference
+            android:key="reminders_vibration_shuruq"
+            android:title="@string/preferences_reminders_vibration"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_shuruq"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="reminders_timeToRemind_shuruq"
+            android:title="@string/preferences_reminders_timeToRemind"
+            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:dependency="reminders_enabled_shuruq"
+            android:defaultValue="45"
+            seekbar:msbp_minValue="0"
+            seekbar:msbp_maxValue="60"
+            seekbar:msbp_interval="5"
+            seekbar:msbp_dialogEnabled="false"
+            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prayerTime_dhuhr">
+        <SwitchPreference
+            android:key="reminders_enabled_dhuhr"
+            android:title="@string/preferences_reminders_enabled"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="reminders_sound_dhuhr"
+            android:title="@string/preferences_reminders_sound"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="reminders_enabled_dhuhr"/>
+
+        <SwitchPreference
+            android:key="reminders_vibration_dhuhr"
+            android:title="@string/preferences_reminders_vibration"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_dhuhr"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="reminders_timeToRemind_dhuhr"
+            android:title="@string/preferences_reminders_timeToRemind"
+            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:dependency="reminders_enabled_dhuhr"
+            android:defaultValue="45"
+            seekbar:msbp_minValue="0"
+            seekbar:msbp_maxValue="60"
+            seekbar:msbp_interval="5"
+            seekbar:msbp_dialogEnabled="false"
+            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prayerTime_asr">
+        <SwitchPreference
+            android:key="reminders_enabled_asr"
+            android:title="@string/preferences_reminders_enabled"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="reminders_sound_asr"
+            android:title="@string/preferences_reminders_sound"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="reminders_enabled_asr"/>
+
+        <SwitchPreference
+            android:key="reminders_vibration_asr"
+            android:title="@string/preferences_reminders_vibration"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_asr"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="reminders_timeToRemind_asr"
+            android:title="@string/preferences_reminders_timeToRemind"
+            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:dependency="reminders_enabled_asr"
+            android:defaultValue="45"
+            seekbar:msbp_minValue="0"
+            seekbar:msbp_maxValue="60"
+            seekbar:msbp_interval="5"
+            seekbar:msbp_dialogEnabled="false"
+            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prayerTime_maghrib">
+        <SwitchPreference
+            android:key="reminders_enabled_maghrib"
+            android:title="@string/preferences_reminders_enabled"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="reminders_sound_maghrib"
+            android:title="@string/preferences_reminders_sound"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="reminders_enabled_maghrib"/>
+
+        <SwitchPreference
+            android:key="reminders_vibration_maghrib"
+            android:title="@string/preferences_reminders_vibration"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_maghrib"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="reminders_timeToRemind_maghrib"
+            android:title="@string/preferences_reminders_timeToRemind"
+            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:dependency="reminders_enabled_maghrib"
+            android:defaultValue="45"
+            seekbar:msbp_minValue="0"
+            seekbar:msbp_maxValue="60"
+            seekbar:msbp_interval="5"
+            seekbar:msbp_dialogEnabled="false"
+            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/prayerTime_isha">
+        <SwitchPreference
+            android:key="reminders_enabled_isha"
+            android:title="@string/preferences_reminders_enabled"
+            android:defaultValue="false" />
+
+        <RingtonePreference
+            android:key="reminders_sound_isha"
+            android:title="@string/preferences_reminders_sound"
+            android:ringtoneType="all"
+            android:showDefault="true"
+            android:showSilent="true"
+            android:dependency="reminders_enabled_isha"/>
+
+        <SwitchPreference
+            android:key="reminders_vibration_isha"
+            android:title="@string/preferences_reminders_vibration"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_isha"/>
+
+        <com.pavelsikun.seekbarpreference.SeekBarPreference
+            android:key="reminders_timeToRemind_isha"
+            android:title="@string/preferences_reminders_timeToRemind"
+            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:dependency="reminders_enabled_isha"
+            android:defaultValue="45"
+            seekbar:msbp_minValue="0"
+            seekbar:msbp_maxValue="60"
+            seekbar:msbp_interval="5"
+            seekbar:msbp_dialogEnabled="false"
+            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

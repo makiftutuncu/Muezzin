@@ -2,6 +2,8 @@ package com.mehmetakiftutuncu.muezzin.utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 
 import com.mehmetakiftutuncu.muezzin.models.Place;
@@ -36,6 +38,26 @@ public final class Conf {
             } catch (JSONException e) {
                 return new None<>();
             }
+        }
+    }
+
+    public static int getAppVersion(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            // Should never happen!
+            throw new RuntimeException("Could not get package name: " + e.getMessage());
+        }
+    }
+
+    public static String getAppVersionName(Context context) {
+        try {
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            // Should never happen!
+            throw new RuntimeException("Could not get package name: " + e.getMessage());
         }
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory android:title="@string/preferences_category_general">
+        <Preference
+            android:key="general_reminders"
+            android:title="@string/preferences_reminders_title"
+            android:summary="@string/preferences_reminders_summary"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/preferences_category_more">
+
+        <Preference
+            android:key="more_rate"
+            android:title="@string/preferences_more_rate" />
+
+        <Preference
+            android:key="more_feedback"
+            android:title="@string/preferences_more_feedback" />
+
+        <Preference
+            android:key="more_version"
+            android:title="@string/preferences_more_version" />
+
+        <Preference
+            android:key="more_licenses"
+            android:title="@string/preferences_more_openSource" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

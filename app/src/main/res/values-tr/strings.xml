@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Application name -->
-    <string name="app_name">Müezzin</string>
+    <string name="applicationName">Müezzin</string>
 
     <!-- Prayer time names -->
     <string name="prayerTime_fajr">İmsak</string>
@@ -13,18 +13,18 @@
     <string name="prayerTime_qibla">Kıble</string>
 
     <!-- Hijri Month Names -->
-    <string name="hijriMonth_1">Muharrem</string>
-    <string name="hijriMonth_2">Safer</string>
-    <string name="hijriMonth_3">Rebiülevvel</string>
-    <string name="hijriMonth_4">Rebiülahir</string>
-    <string name="hijriMonth_5">Cemaziyelevvel</string>
-    <string name="hijriMonth_6">Cemaziyelahir</string>
-    <string name="hijriMonth_7">Recep</string>
-    <string name="hijriMonth_8">Şaban</string>
-    <string name="hijriMonth_9">Ramazan</string>
-    <string name="hijriMonth_10">Şevval</string>
-    <string name="hijriMonth_11">Zilkade</string>
-    <string name="hijriMonth_12">Zilhicce</string>
+    <string name="hijriMonth1">Muharrem</string>
+    <string name="hijriMonth2">Safer</string>
+    <string name="hijriMonth3">Rebiülevvel</string>
+    <string name="hijriMonth4">Rebiülahir</string>
+    <string name="hijriMonth5">Cemaziyelevvel</string>
+    <string name="hijriMonth6">Cemaziyelahir</string>
+    <string name="hijriMonth7">Recep</string>
+    <string name="hijriMonth8">Şaban</string>
+    <string name="hijriMonth9">Ramazan</string>
+    <string name="hijriMonth10">Şevval</string>
+    <string name="hijriMonth11">Zilkade</string>
+    <string name="hijriMonth12">Zilhicce</string>
 
     <!-- Place selection -->
     <string name="placeSelection_noPlacesFound">Henüz bir konum eklenmemiş.\nKonum eklemek için +\'ya dokunun.</string>
@@ -34,4 +34,28 @@
 
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">%1$s Vaktine Kalan Zaman:</string>
+
+    <!-- Preferences -->
+    <string name="preferences">Tercihler</string>
+
+    <string name="preferences_category_general">Genel</string>
+
+    <string name="preferences_reminders_title">Hatırlatıcılar</string>
+    <string name="preferences_reminders_summary">Namaz vakitleri için hatırlatıcılar belirleyin</string>
+
+    <string name="preferences_reminders_enabled">Açık</string>
+    <string name="preferences_reminders_sound">Ses</string>
+    <string name="preferences_reminders_silent">Sessiz</string>
+    <string name="preferences_reminders_vibration">Titreşim</string>
+    <string name="preferences_reminders_timeToRemind">Hatırlatıcı Zamanı</string>
+    <string name="preferences_reminders_timeToRemindSummary">Dakika önce</string>
+    <string name="preferences_reminders_timeToRemindUnit">Dakika</string>
+
+    <string name="preferences_category_more">Daha Fazlası</string>
+
+    <string name="preferences_more_title">Hakkında</string>
+    <string name="preferences_more_rate">Oy Verin &amp; Yorum Yapın</string>
+    <string name="preferences_more_feedback">Geri Bildirim Gönderin</string>
+    <string name="preferences_more_version">Sürüm</string>
+    <string name="preferences_more_openSource">Açık Kaynak Lisansları</string>
 </resources>

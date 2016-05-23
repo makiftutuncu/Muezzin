@@ -3,8 +3,11 @@ package com.mehmetakiftutuncu.muezzin.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.activities.preferences.PreferencesActivity;
 import com.mehmetakiftutuncu.muezzin.fragments.NoPlacesFoundFragment;
 import com.mehmetakiftutuncu.muezzin.fragments.PrayerTimesFragment;
 import com.mehmetakiftutuncu.muezzin.models.Place;
@@ -22,6 +25,24 @@ public class PrayerTimesActivity extends AppCompatActivity {
             showNoPlacesFound();
         } else {
             showPrayerTimes(maybeCurrentPlace.get().toBundle());
+        }
+    }
+
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.settings, menu);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_preferences:
+                startActivity(new Intent(this, PreferencesActivity.class));
+
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
