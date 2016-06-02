@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
-import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.database.Database;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
@@ -37,6 +36,9 @@ public class PrayerTimes {
     public static final String timeFormat          = "HH:mm";
     public static final String remainingTimeFormat = "HH:mm:ss";
 
+    public static final String[] prayerTimeNames = new String[] {"fajr", "shuruq", "dhuhr", "asr", "maghrib", "isha"};
+    public final DateTime[] asArray;
+
     public PrayerTimes(int countryId, int cityId, Optional<Integer> districtId, long day, long fajr, long shuruq, long dhuhr, long asr, long maghrib, long isha, long qibla) {
         this(new Place(countryId, cityId, districtId), day, fajr, shuruq, dhuhr, asr, maghrib, isha, qibla);
     }
@@ -51,51 +53,49 @@ public class PrayerTimes {
         this.maghrib = new DateTime(maghrib, DateTimeZone.UTC);
         this.isha    = new DateTime(isha,    DateTimeZone.UTC);
         this.qibla   = new DateTime(qibla,   DateTimeZone.UTC);
+
+        asArray = new DateTime[] {this.fajr, this.shuruq, this.dhuhr, this.asr, this.maghrib, this.isha};
     }
 
     public DateTime nextPrayerTime() {
         DateTime now = DateTime.now().withDate(day.getYear(), day.getMonthOfYear(), day.getDayOfMonth()).withZoneRetainFields(DateTimeZone.UTC);
 
-        if (now.isBefore(fajr)) {
-            return fajr;
-        } else if (now.isBefore(shuruq)) {
-            return shuruq;
-        } else if (now.isBefore(dhuhr)) {
-            return dhuhr;
-        } else if (now.isBefore(asr)) {
-            return asr;
-        } else if (now.isBefore(maghrib)) {
-            return maghrib;
-        } else if (now.isBefore(isha)) {
-            return isha;
-        } else {
-            /* After isha, so next day's fajr is next prayer time.
-             * I just assume time fajr time will be the same next day too,
-             * HOWEVER it may/will vary a few minutes. It is still better than
-             * not knowing the time at all. */
-            return fajr.plusDays(1);
-        }
+        return nextPrayerTimeAfter(now);
     }
 
-    public String nextPrayerTimeName(Context context) {
+    public DateTime nextPrayerTimeAfter(DateTime prayerTime) {
+        for (DateTime p : asArray) {
+            if (prayerTime.isBefore(p)) {
+                return p;
+            }
+        }
+
+        /* After isha, so next day's fajr is next prayer time.
+         * I just assume fajr time will be the same next day too,
+         * HOWEVER it may/will vary a few minutes. It is still better than
+         * not knowing the time at all. */
+        return fajr.plusDays(1);
+    }
+
+    public String nextPrayerTimeName() {
         DateTime now = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
 
-        if (now.isBefore(fajr)) {
-            return context.getString(R.string.prayerTime_fajr);
-        } else if (now.isBefore(shuruq)) {
-            return context.getString(R.string.prayerTime_shuruq);
-        } else if (now.isBefore(dhuhr)) {
-            return context.getString(R.string.prayerTime_dhuhr);
-        } else if (now.isBefore(asr)) {
-            return context.getString(R.string.prayerTime_asr);
-        } else if (now.isBefore(maghrib)) {
-            return context.getString(R.string.prayerTime_maghrib);
-        } else if (now.isBefore(isha)) {
-            return context.getString(R.string.prayerTime_isha);
-        } else {
-            // Same logic as in getNextPrayerTime(), return fajr.
-            return context.getString(R.string.prayerTime_fajr);
+        return nextPrayerTimeNameAfter(now);
+    }
+
+    public String nextPrayerTimeNameAfter(DateTime prayerTime) {
+        for (int i = 0, length = asArray.length; i < length; i++) {
+            if (prayerTime.isBefore(asArray[i])) {
+                return prayerTimeNames[i];
+            }
         }
+
+        // Same logic as in getNextPrayerTime(), return fajr.
+        return prayerTimeNames[0];
+    }
+
+    public static String prayerTimeLocalizedName(Context context, String prayerTimeName) {
+        return context.getString(context.getResources().getIdentifier(String.format(Locale.ENGLISH, "prayerTime_%s", prayerTimeName), "string", context.getPackageName()));
     }
 
     public static Optional<PrayerTimes> getPrayerTimesForToday(Context context, Place place) {

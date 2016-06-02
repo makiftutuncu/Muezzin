@@ -35,6 +35,10 @@
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">%1$s Vaktine Kalan Zaman:</string>
 
+    <!-- Reminders -->
+    <string name="reminders_notification_title">Namaz Vakti Yaklaşıyor</string>
+    <string name="reminders_notification_summary">%2$s vaktine %1$d dakikadan az kaldı!</string>
+
     <!-- Preferences -->
     <string name="preferences">Tercihler</string>
 

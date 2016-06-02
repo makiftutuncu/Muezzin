@@ -10,22 +10,19 @@ import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
+import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 
 /**
  * Created by akif on 08/05/16.
  */
-public class ReminderPreferencesFragment extends PreferenceFragment {
-    public static final String KEY_REMINDERS_ENABLED_BASE      = "reminders_enabled_";
-    public static final String KEY_REMINDERS_SOUND_BASE        = "reminders_sound_";
-    public static final String KEY_REMINDERS_VIBRATION_BASE    = "reminders_vibration_";
-    public static final String KEY_REMINDERS_TIMETOREMIND_BASE = "reminders_timeToRemind_";
-
-    public static final String URI_DEFAULT_NOTIFICATION_SOUND = "content://settings/system/notification_sound";
-
+public class ReminderPreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         addPreferencesFromResource(R.xml.preferences_prayertimereminder);
+
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
 
         initializeForPrayerTime("fajr");
         initializeForPrayerTime("shuruq");
@@ -35,10 +32,20 @@ public class ReminderPreferencesFragment extends PreferenceFragment {
         initializeForPrayerTime("isha");
     }
 
-    private void initializeForPrayerTime(final String prayerTimeName) {
-        SharedPreferences sharedPreferences = getPreferenceManager().getSharedPreferences();
+    @Override public void onDestroy() {
+        super.onDestroy();
 
-        String soundKey = KEY_REMINDERS_SOUND_BASE + prayerTimeName;
+        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        if (key.startsWith(Pref.Reminders.ENABLED_BASE) || key.startsWith(Pref.Reminders.TIME_TO_REMIND_BASE)) {
+            PrayerTimeReminder.reschedulePrayerTimeReminders(getActivity());
+        }
+    }
+
+    private void initializeForPrayerTime(final String prayerTimeName) {
+        String soundKey = Pref.Reminders.SOUND_BASE + prayerTimeName;
 
         RingtonePreference sound = (RingtonePreference) findPreference(soundKey);
         sound.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -49,7 +56,7 @@ public class ReminderPreferencesFragment extends PreferenceFragment {
             }
         });
 
-        String currentSound = sharedPreferences.getString(soundKey, URI_DEFAULT_NOTIFICATION_SOUND);
+        String currentSound = Pref.Reminders.sound(getActivity(), prayerTimeName);
         updateSoundSummary(sound, currentSound);
     }
 

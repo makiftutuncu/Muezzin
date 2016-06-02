@@ -11,7 +11,7 @@ import com.mehmetakiftutuncu.muezzin.activities.preferences.PreferencesActivity;
 import com.mehmetakiftutuncu.muezzin.fragments.NoPlacesFoundFragment;
 import com.mehmetakiftutuncu.muezzin.fragments.PrayerTimesFragment;
 import com.mehmetakiftutuncu.muezzin.models.Place;
-import com.mehmetakiftutuncu.muezzin.utilities.Conf;
+import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
 public class PrayerTimesActivity extends AppCompatActivity {
@@ -19,7 +19,7 @@ public class PrayerTimesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prayertimes);
 
-        Optional<Place> maybeCurrentPlace = Conf.Places.getCurrentPlace(this);
+        Optional<Place> maybeCurrentPlace = Pref.Places.getCurrentPlace(this);
 
         if (maybeCurrentPlace.isEmpty) {
             showNoPlacesFound();

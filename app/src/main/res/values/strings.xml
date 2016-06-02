@@ -34,6 +34,10 @@
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">Remaining Time to %1$s:</string>
 
+    <!-- Reminders -->
+    <string name="reminders_notification_title">Prayer Time Approaching</string>
+    <string name="reminders_notification_summary">Less than %1$d minutes left to %2$s time!</string>
+
     <!-- Preferences -->
     <string name="preferences">Preferences</string>
 

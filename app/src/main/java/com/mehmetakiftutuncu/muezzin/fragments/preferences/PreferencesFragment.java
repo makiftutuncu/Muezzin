@@ -8,7 +8,7 @@ import android.preference.PreferenceFragment;
 
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.preferences.ReminderPreferencesActivity;
-import com.mehmetakiftutuncu.muezzin.utilities.Conf;
+import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 
 /**
  * Created by akif on 08/05/16.
@@ -67,7 +67,7 @@ public class PreferencesFragment extends PreferenceFragment {
         });
 
         Preference version = findPreference(KEY_MORE_VERSION);
-        String versionName = Conf.getAppVersionName(getActivity());
+        String versionName = Pref.getAppVersionName(getActivity());
         version.setSummary(versionName);
 
         Preference licenses = findPreference(KEY_MORE_LICENSES);

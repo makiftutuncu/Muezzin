@@ -154,7 +154,7 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
         if (prayerTimes != null) {
             DateTime now              = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
             DateTime nextPrayerTime   = prayerTimes.nextPrayerTime();
-            String nextPrayerTimeName = prayerTimes.nextPrayerTimeName(getContext());
+            String nextPrayerTimeName = PrayerTimes.prayerTimeLocalizedName(getContext(), prayerTimes.nextPrayerTimeName());
 
             DateTime remaining   = nextPrayerTime.minus(now.getMillis());
             String remainingTime = remaining.toString(PrayerTimes.remainingTimeFormat);
