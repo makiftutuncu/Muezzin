@@ -22,8 +22,6 @@ public class ReminderPreferencesFragment extends PreferenceFragment implements S
 
         addPreferencesFromResource(R.xml.preferences_prayertimereminder);
 
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-
         initializeForPrayerTime("fajr");
         initializeForPrayerTime("shuruq");
         initializeForPrayerTime("dhuhr");
@@ -32,8 +30,14 @@ public class ReminderPreferencesFragment extends PreferenceFragment implements S
         initializeForPrayerTime("isha");
     }
 
-    @Override public void onDestroy() {
-        super.onDestroy();
+    @Override public void onResume() {
+        super.onResume();
+
+        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override public void onPause() {
+        super.onPause();
 
         getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
     }

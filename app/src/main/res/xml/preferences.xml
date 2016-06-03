@@ -3,6 +3,11 @@
 
     <PreferenceCategory android:title="@string/preferences_category_general">
         <Preference
+            android:key="general_place"
+            android:title="@string/preferences_place_title"
+            android:summary="@string/preferences_place_noPlacesFound"/>
+
+        <Preference
             android:key="general_reminders"
             android:title="@string/preferences_reminders_title"
             android:summary="@string/preferences_reminders_summary"/>

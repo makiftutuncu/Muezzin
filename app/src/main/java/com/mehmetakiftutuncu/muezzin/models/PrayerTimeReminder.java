@@ -1,15 +1,11 @@
 package com.mehmetakiftutuncu.muezzin.models;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
-import com.mehmetakiftutuncu.muezzin.broadcastreceivers.PrayerTimeReminderBroadcastReceiver;
 import com.mehmetakiftutuncu.muezzin.services.PrayerTimeReminderService;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
+import com.mehmetakiftutuncu.muezzin.services.PrayerTimesUpdaterService;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -51,6 +47,12 @@ public class PrayerTimeReminder {
         Optional<PrayerTimes> maybePrayerTimes = PrayerTimes.getPrayerTimesForToday(context, place);
 
         if (maybePrayerTimes.isEmpty) {
+            /* No prayer times are found for today. Most probably, we ran out of data. Update prayer times!
+             *
+             * P.S. This is just a best effort since it will happen while trying to schedule reminders.
+             * If user has no reminders enabled, then he/she needs to launch the app to see that there's no more data. */
+            PrayerTimesUpdaterService.setUpdater(context);
+
             return new None<>();
         }
 

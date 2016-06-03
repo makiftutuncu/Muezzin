@@ -15,10 +15,14 @@ import android.widget.TextView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnPrayerTimesDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.models.Place;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
+import com.mehmetakiftutuncu.muezzin.utilities.Pref;
+import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -97,15 +101,29 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
     }
 
     @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes) {
-        Log.debug(getClass(), "Saving prayer times for place '%s' to database...", place);
+        DateTime today = DateTime.now().withTimeAtStartOfDay();
+        Optional<PrayerTimes> maybeTodaysPrayerTimes = new None<>();
 
-        if (!PrayerTimes.saveAllPrayerTimes(getContext(), place, prayerTimes)) {
-            // Snackbar.make(recyclerViewCountrySelection, "Failed to save countries to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+        for (int i = 0, size = prayerTimes.size(); i < size; i++) {
+            if (prayerTimes.get(i).day.equals(today)) {
+                maybeTodaysPrayerTimes = new Some<>(prayerTimes.get(i));
+                break;
+            }
         }
 
-        this.prayerTimes = prayerTimes.get(0);
+        if (maybeTodaysPrayerTimes.isEmpty) {
+            Log.error(getClass(), "Did not find today's prayer times in downloaded prayer times!");
+        } else {
+            Log.debug(getClass(), "Saving prayer times for place '%s' to database...", place);
 
-        initializeUI();
+            if (!PrayerTimes.saveAllPrayerTimes(getContext(), place, prayerTimes)) {
+                // Snackbar.make(recyclerViewCountrySelection, "Failed to save countries to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+            }
+
+            this.prayerTimes = maybeTodaysPrayerTimes.get();
+
+            initializeUI();
+        }
     }
 
     @Override public void onPrayerTimesDownloadFailed() {
@@ -138,6 +156,12 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
             if (supportActionBar != null) {
                 supportActionBar.setTitle(maybePlaceName.get());
                 supportActionBar.setSubtitle(DateTime.now().withZoneRetainFields(DateTimeZone.UTC).toString(PrayerTimes.dateFormat));
+            }
+
+            Optional<Place> maybeLastPlace = Pref.Places.getLastPlace(getContext());
+
+            if (maybeLastPlace.isDefined && !maybeLastPlace.get().equals(place)) {
+                PrayerTimeReminder.reschedulePrayerTimeReminders(getContext());
             }
         }
 

@@ -150,4 +150,13 @@ public class Place {
     @Override public String toString() {
         return toJson();
     }
+
+    @Override public boolean equals(Object o) {
+        return this == o || (
+                o instanceof Place
+                        && countryId == ((Place) o).countryId
+                        && cityId == ((Place) o).cityId
+                        && districtId == ((Place) o).districtId
+        );
+    }
 }

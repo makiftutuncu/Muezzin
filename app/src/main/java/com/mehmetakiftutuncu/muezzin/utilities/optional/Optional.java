@@ -18,4 +18,10 @@ public abstract class Optional<T> {
     @Override public String toString() {
         return isDefined ? value.toString() : "None";
     }
+
+    @Override public boolean equals(Object o) {
+        return this == o
+                || (isDefined && (o instanceof Optional && ((Optional) o).isDefined) && ((Optional) o).get().equals(value))
+                || (isEmpty && (o instanceof Optional && ((Optional) o).isEmpty));
+    }
 }

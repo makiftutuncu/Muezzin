@@ -33,6 +33,10 @@
             android:name=".services.PrayerTimeReminderService"
             android:exported="false" />
 
+        <service
+            android:name=".services.PrayerTimesUpdaterService"
+            android:exported="false" />
+
         <receiver
             android:name=".broadcastreceivers.PrayerTimeReminderBroadcastReceiver"
             android:enabled="true"

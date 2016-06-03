@@ -24,14 +24,31 @@ public final class Pref {
 
     public static class Places {
         private static final String CURRENT_PLACE = "currentPlace";
+        private static final String LAST_PLACE    = "lastPlace";
 
         public static void setCurrentPlace(Context context, Place place) {
+            Optional<Place> maybeCurrentPlace = getCurrentPlace(context);
+
+            if (maybeCurrentPlace.isDefined && !maybeCurrentPlace.get().equals(place)) {
+                getSharedPreferences(context).edit().putString(LAST_PLACE, maybeCurrentPlace.get().toString()).apply();
+            }
+
             getSharedPreferences(context).edit().putString(CURRENT_PLACE, place.toString()).apply();
         }
 
         @NonNull public static Optional<Place> getCurrentPlace(Context context) {
             try {
                 JSONObject json = new JSONObject(getSharedPreferences(context).getString(CURRENT_PLACE, ""));
+
+                return Place.fromJson(json);
+            } catch (JSONException e) {
+                return new None<>();
+            }
+        }
+
+        @NonNull public static Optional<Place> getLastPlace(Context context) {
+            try {
+                JSONObject json = new JSONObject(getSharedPreferences(context).getString(LAST_PLACE, ""));
 
                 return Place.fromJson(json);
             } catch (JSONException e) {

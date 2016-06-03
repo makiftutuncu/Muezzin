@@ -18,13 +18,19 @@ public class PrayerTimesActivity extends AppCompatActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prayertimes);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
 
         Optional<Place> maybeCurrentPlace = Pref.Places.getCurrentPlace(this);
 
         if (maybeCurrentPlace.isEmpty) {
             showNoPlacesFound();
         } else {
-            showPrayerTimes(maybeCurrentPlace.get().toBundle());
+            Place currentPlace = maybeCurrentPlace.get();
+
+            showPrayerTimes(currentPlace.toBundle());
         }
     }
 

@@ -27,7 +27,7 @@
     <string name="hijriMonth12">Zilhicce</string>
 
     <!-- Place selection -->
-    <string name="placeSelection_noPlacesFound">Henüz bir konum eklenmemiş.\nKonum eklemek için +\'ya dokunun.</string>
+    <string name="placeSelection_noPlacesFound">Henüz bir konum seçilmemiş.\nKonum seçmek için +\'ya dokunun.</string>
     <string name="placeSelection_city">Bir Şehir Seçin</string>
     <string name="placeSelection_country">Bir Ülke Seçin</string>
     <string name="placeSelection_district">Bir İlçe/Bölge Seçin</string>
@@ -43,6 +43,9 @@
     <string name="preferences">Tercihler</string>
 
     <string name="preferences_category_general">Genel</string>
+
+    <string name="preferences_place_title">Seçilen Konum</string>
+    <string name="preferences_place_noPlacesFound">Konum seçilmedi</string>
 
     <string name="preferences_reminders_title">Hatırlatıcılar</string>
     <string name="preferences_reminders_summary">Namaz vakitleri için hatırlatıcılar belirleyin</string>

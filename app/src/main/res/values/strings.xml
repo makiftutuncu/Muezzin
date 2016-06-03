@@ -26,7 +26,7 @@
     <string name="hijriMonth12">Dhu al-Hijjah</string>
 
     <!-- Place selection -->
-    <string name="placeSelection_noPlacesFound">You haven\'t added any places yet.\nTouch + to add a place.</string>
+    <string name="placeSelection_noPlacesFound">You haven\'t selected a place yet.\nTouch + to select a place.</string>
     <string name="placeSelection_country">Select a Country</string>
     <string name="placeSelection_city">Select a City</string>
     <string name="placeSelection_district">Select a District</string>
@@ -42,6 +42,9 @@
     <string name="preferences">Preferences</string>
 
     <string name="preferences_category_general">General</string>
+
+    <string name="preferences_place_title">Selected Place</string>
+    <string name="preferences_place_noPlacesFound">No place selected</string>
 
     <string name="preferences_reminders_title">Reminders</string>
     <string name="preferences_reminders_summary">Set reminders for prayer times</string>
