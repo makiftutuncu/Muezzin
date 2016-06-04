@@ -126,6 +126,16 @@ public class District {
         return String.format(Locale.ENGLISH, "{\"id\":%d,\"cityId\":%d,\"name\":\"%s\"}", id, cityId, name);
     }
 
+    @NonNull public static Optional<District> fromJson(int cityId, String json) {
+        try {
+            return fromJson(cityId, new JSONObject(json));
+        } catch (Throwable t) {
+            Log.error(District.class, t, "Failed to generate district for city '%d' from Json '%s'!", cityId, json);
+
+            return new None<>();
+        }
+    }
+
     @NonNull public static Optional<District> fromJson(int cityId, JSONObject json) {
         try {
             int id      = json.getInt("id");

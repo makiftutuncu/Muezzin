@@ -35,6 +35,8 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
 
     private int countryId;
 
+    private ArrayList<City> cities;
+
     public CitySelectionFragment() {}
 
     public static CitySelectionFragment with(int countryId, OnCitySelectedListener onCitySelectedListener) {
@@ -48,17 +50,54 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         return citySelectionFragment;
     }
 
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        countryId = getArguments().getInt("countryId");
+
+        if (savedInstanceState != null) {
+            ArrayList<String> cityJsons = savedInstanceState.getStringArrayList("cities");
+            cities = new ArrayList<>();
+
+            for (int i = 0, size = cityJsons != null ? cityJsons.size() : 0; i < size; i++) {
+                cities.add(City.fromJson(countryId, cityJsons.get(i)).get());
+            }
+        }
+
+        setRetainInstance(true);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        if (cities != null) {
+            ArrayList<String> cityJsons = new ArrayList<>();
+            for (int i = 0, size = cities.size(); i < size; i++) {
+                cityJsons.add(cities.get(i).toJson());
+            }
+
+            outState.putStringArrayList("cities", cityJsons);
+        }
+
+        outState.putParcelable("recyclerViewCitySelection", recyclerViewCitySelection.getLayoutManager().onSaveInstanceState());
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            recyclerViewCitySelection.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recyclerViewCitySelection"));
+        }
+    }
+
     @Override public void onStart() {
         super.onStart();
 
-        Bundle arguments = getArguments();
-
-        countryId = arguments.getInt("countryId");
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerViewCitySelection.setLayoutManager(linearLayoutManager);
-
-        loadCities();
+        if (cities == null) {
+            loadCities();
+        } else {
+            updateUI();
+        }
     }
 
     @Override public void onAttach(Context context) {
@@ -78,17 +117,22 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         multiStateViewLayout      = (MultiStateView) layout.findViewById(R.id.multiStateView_citySelection);
         recyclerViewCitySelection = (RecyclerView) layout.findViewById(R.id.recyclerView_citySelection);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerViewCitySelection.setLayoutManager(linearLayoutManager);
+
         return layout;
     }
 
     @Override public void onCitiesDownloaded(@NonNull ArrayList<City> cities) {
+        this.cities = cities;
+
         if (!City.saveCities(context, countryId, cities)) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
 
             return;
         }
 
-        setCities(cities);
+        updateUI();
     }
 
     @Override public void onCitiesDownloadFailed() {
@@ -105,21 +149,21 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         if (maybeCitiesFromDatabase.isEmpty) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
-            ArrayList<City> citiesFromDatabase = maybeCitiesFromDatabase.get();
+            cities = maybeCitiesFromDatabase.get();
 
-            if (citiesFromDatabase.isEmpty()) {
+            if (cities.isEmpty()) {
                 Log.debug(getClass(), "No cities for country '%d' were found on database!", countryId);
 
                 MuezzinAPIClient.getCities(countryId, this);
             } else {
                 Log.debug(getClass(), "Loaded cities for country '%d' from database!", countryId);
 
-                setCities(citiesFromDatabase);
+                updateUI();
             }
         }
     }
 
-    private void setCities(@NonNull ArrayList<City> cities) {
+    private void updateUI() {
         if (cities.isEmpty()) {
             changeStateTo(MultiStateView.VIEW_STATE_EMPTY, RETRY_ACTION_DOWNLOAD);
 

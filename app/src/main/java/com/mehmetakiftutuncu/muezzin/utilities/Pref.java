@@ -82,16 +82,6 @@ public final class Pref {
         }
     }
 
-    public static int getAppVersion(Context context) {
-        try {
-            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
-            return packageInfo.versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
-            // Should never happen!
-            throw new RuntimeException("Could not get package name: " + e.getMessage());
-        }
-    }
-
     public static String getAppVersionName(Context context) {
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);

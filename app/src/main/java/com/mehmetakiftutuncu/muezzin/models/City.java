@@ -135,6 +135,16 @@ public class City {
         return String.format(Locale.ENGLISH, "{\"id\":%d,\"countryId\":%d,\"name\":\"%s\"}", id, countryId, name);
     }
 
+    @NonNull public static Optional<City> fromJson(int countryId, String json) {
+        try {
+            return fromJson(countryId, new JSONObject(json));
+        } catch (Throwable t) {
+            Log.error(City.class, t, "Failed to generate city for country '%d' from Json '%s'!", countryId, json);
+
+            return new None<>();
+        }
+    }
+
     @NonNull public static Optional<City> fromJson(int countryId, JSONObject json) {
         try {
             int id      = json.getInt("id");

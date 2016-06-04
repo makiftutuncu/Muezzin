@@ -33,6 +33,8 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
     private MuezzinActivity muezzinActivity;
     private OnCountrySelectedListener onCountrySelectedListener;
 
+    private ArrayList<Country> countries;
+
     public CountrySelectionFragment() {}
 
     public static CountrySelectionFragment with(OnCountrySelectedListener onCountrySelectedListener) {
@@ -42,13 +44,52 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         return countrySelectionFragment;
     }
 
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            ArrayList<String> countryJsons = savedInstanceState.getStringArrayList("countries");
+            countries = new ArrayList<>();
+
+            for (int i = 0, size = countryJsons != null ? countryJsons.size() : 0; i < size; i++) {
+                countries.add(Country.fromJson(countryJsons.get(i)).get());
+            }
+        }
+
+        setRetainInstance(true);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        if (countries != null) {
+            ArrayList<String> countryJsons = new ArrayList<>();
+            for (int i = 0, size = countries.size(); i < size; i++) {
+                countryJsons.add(countries.get(i).toJson());
+            }
+
+            outState.putStringArrayList("countries", countryJsons);
+        }
+
+        outState.putParcelable("recyclerViewCountrySelection", recyclerViewCountrySelection.getLayoutManager().onSaveInstanceState());
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            recyclerViewCountrySelection.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recyclerViewCountrySelection"));
+        }
+    }
+
     @Override public void onStart() {
         super.onStart();
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerViewCountrySelection.setLayoutManager(linearLayoutManager);
-
-        loadCountries();
+        if (countries == null) {
+            loadCountries();
+        } else {
+            updateUI();
+        }
     }
 
     @Override public void onAttach(Context context) {
@@ -68,17 +109,22 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         multiStateViewLayout         = (MultiStateView) layout.findViewById(R.id.multiStateView_countrySelection);
         recyclerViewCountrySelection = (RecyclerView) layout.findViewById(R.id.recyclerView_countrySelection);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerViewCountrySelection.setLayoutManager(linearLayoutManager);
+
         return layout;
     }
 
     @Override public void onCountriesDownloaded(@NonNull ArrayList<Country> countries) {
+        this.countries = countries;
+
         if (!Country.saveCountries(context, countries)) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
 
             return;
         }
 
-        setCountries(countries);
+        updateUI();
     }
 
     @Override public void onCountriesDownloadFailed() {
@@ -97,21 +143,21 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         if (maybeCountriesFromDatabase.isEmpty) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
-            ArrayList<Country> countriesFromDatabase = maybeCountriesFromDatabase.get();
+            countries = maybeCountriesFromDatabase.get();
 
-            if (countriesFromDatabase.isEmpty()) {
+            if (countries.isEmpty()) {
                 Log.debug(getClass(), "No countries were found on database!");
 
                 MuezzinAPIClient.getCountries(this);
             } else {
                 Log.debug(getClass(), "Loaded countries from database!");
 
-                setCountries(countriesFromDatabase);
+                updateUI();
             }
         }
     }
 
-    private void setCountries(@NonNull ArrayList<Country> countries) {
+    private void updateUI() {
         if (countries.isEmpty()) {
             changeStateTo(MultiStateView.VIEW_STATE_EMPTY, RETRY_ACTION_DOWNLOAD);
 

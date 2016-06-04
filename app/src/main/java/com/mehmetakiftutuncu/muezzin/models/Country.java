@@ -145,6 +145,16 @@ public class Country {
         return String.format(Locale.ENGLISH, "{\"id\":%d,\"englishName\":\"%s\",\"turkishName\":\"%s\",\"nativeName\":\"%s\"}", id, englishName, turkishName, nativeName);
     }
 
+    @NonNull public static Optional<Country> fromJson(String json) {
+        try {
+            return fromJson(new JSONObject(json));
+        } catch (Throwable t) {
+            Log.error(Country.class, t, "Failed to generate country from Json '%s'!", json);
+
+            return new None<>();
+        }
+    }
+
     @NonNull public static Optional<Country> fromJson(JSONObject json) {
         try {
             int id             = json.getInt("id");

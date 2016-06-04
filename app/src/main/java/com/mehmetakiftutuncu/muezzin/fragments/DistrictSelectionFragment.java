@@ -35,6 +35,8 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
 
     private int cityId;
 
+    private ArrayList<District> districts;
+
     public DistrictSelectionFragment() {}
 
     public static DistrictSelectionFragment with(int cityId, OnDistrictSelectedListener onDistrictSelectedListener) {
@@ -48,17 +50,54 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         return districtSelectionFragment;
     }
 
+    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        cityId = getArguments().getInt("cityId");
+
+        if (savedInstanceState != null) {
+            ArrayList<String> districtJsons = savedInstanceState.getStringArrayList("districts");
+            districts = new ArrayList<>();
+
+            for (int i = 0, size = districtJsons != null ? districtJsons.size() : 0; i < size; i++) {
+                districts.add(District.fromJson(cityId, districtJsons.get(i)).get());
+            }
+        }
+
+        setRetainInstance(true);
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        if (districts != null) {
+            ArrayList<String> districtJsons = new ArrayList<>();
+            for (int i = 0, size = districts.size(); i < size; i++) {
+                districtJsons.add(districts.get(i).toJson());
+            }
+
+            outState.putStringArrayList("districts", districtJsons);
+        }
+
+        outState.putParcelable("recyclerViewDistrictSelection", recyclerViewDistrictSelection.getLayoutManager().onSaveInstanceState());
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+
+        if (savedInstanceState != null) {
+            recyclerViewDistrictSelection.getLayoutManager().onRestoreInstanceState(savedInstanceState.getParcelable("recyclerViewDistrictSelection"));
+        }
+    }
+
     @Override public void onStart() {
         super.onStart();
 
-        Bundle arguments = getArguments();
-
-        cityId = arguments.getInt("cityId");
-
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-        recyclerViewDistrictSelection.setLayoutManager(linearLayoutManager);
-
-        loadDistricts();
+        if (districts == null) {
+            loadDistricts();
+        } else {
+            updateUI();
+        }
     }
 
     @Override public void onAttach(Context context) {
@@ -78,10 +117,15 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         multiStateViewLayout          = (MultiStateView) layout.findViewById(R.id.multiStateView_districtSelection);
         recyclerViewDistrictSelection = (RecyclerView) layout.findViewById(R.id.recyclerView_districtSelection);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerViewDistrictSelection.setLayoutManager(linearLayoutManager);
+
         return layout;
     }
 
     @Override public void onDistrictsDownloaded(@NonNull ArrayList<District> districts) {
+        this.districts = districts;
+
         if (districts.isEmpty()) {
             Log.debug(getClass(), "No districts for city '%d' were found on the server!", cityId);
 
@@ -93,7 +137,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
                 return;
             }
 
-            setDistricts(districts);
+            updateUI();
         }
     }
 
@@ -111,21 +155,21 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         if (maybeDistrictsFromDatabase.isEmpty) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
-            ArrayList<District> districtsFromDatabase = maybeDistrictsFromDatabase.get();
+            districts = maybeDistrictsFromDatabase.get();
 
-            if (districtsFromDatabase.isEmpty()) {
+            if (districts.isEmpty()) {
                 Log.debug(getClass(), "No districts for city '%d' were found on database!", cityId);
 
                 MuezzinAPIClient.getDistricts(cityId, this);
             } else {
                 Log.debug(getClass(), "Loaded districts for city '%d' from database!", cityId);
 
-                setDistricts(districtsFromDatabase);
+                updateUI();
             }
         }
     }
 
-    private void setDistricts(@NonNull ArrayList<District> districts) {
+    private void updateUI() {
         changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
 
         DistrictsAdapter districtsAdapter = new DistrictsAdapter(districts, onDistrictSelectedListener);

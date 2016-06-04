@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import com.mehmetakiftutuncu.muezzin.R;
@@ -32,16 +33,61 @@ public class PlaceSelectionActivity extends MuezzinActivity implements OnCountry
 
     private boolean startedFromPreferences;
 
+    private CountrySelectionFragment countrySelectionFragment;
+    private CitySelectionFragment citySelectionFragment;
+    private DistrictSelectionFragment districtSelectionFragment;
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_placeselection);
 
+        FragmentManager supportFragmentManager = getSupportFragmentManager();
+
+        if (savedInstanceState != null) {
+            countryId  = savedInstanceState.getInt("countryId");
+            cityId     = savedInstanceState.getInt("cityId");
+            districtId = savedInstanceState.containsKey("districtId") ? new Some<>(savedInstanceState.getInt("districtId")) : new None<Integer>();
+
+            startedFromPreferences = savedInstanceState.getBoolean("startedFromPreferences");
+
+            countrySelectionFragment  = (CountrySelectionFragment)  supportFragmentManager.findFragmentByTag("CountrySelectionFragment");
+            citySelectionFragment     = (CitySelectionFragment)     supportFragmentManager.findFragmentByTag("CitySelectionFragment");
+            districtSelectionFragment = (DistrictSelectionFragment) supportFragmentManager.findFragmentByTag("DistrictSelectionFragment");
+        }
+
         Bundle extras = getIntent().getExtras();
         startedFromPreferences = extras != null && extras.getBoolean(EXTRA_STARTED_FROM_PREFERENCES, false);
 
-        CountrySelectionFragment countrySelectionFragment = CountrySelectionFragment.with(this);
+        if (countrySelectionFragment == null) {
+            countrySelectionFragment = CountrySelectionFragment.with(this);
+        } else {
+            countrySelectionFragment.setOnCountrySelectedListener(this);
+        }
 
-        replaceFragment(countrySelectionFragment, "CountrySelectionFragment", false);
+        if (districtSelectionFragment != null) {
+            districtSelectionFragment.setOnDistrictSelectedListener(this);
+
+            replaceFragment(districtSelectionFragment, "DistrictSelectionFragment", false);
+        } else if (citySelectionFragment != null) {
+            citySelectionFragment.setOnCitySelectedListener(this);
+
+            replaceFragment(citySelectionFragment, "CitySelectionFragment", false);
+        } else {
+            replaceFragment(countrySelectionFragment, "CountrySelectionFragment", false);
+        }
+    }
+
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("countryId", countryId);
+        outState.putInt("cityId", cityId);
+
+        if (districtId.isDefined) {
+            outState.putInt("districtId", districtId.get());
+        }
+
+        outState.putBoolean("startedFromPreferences", startedFromPreferences);
+
+        super.onSaveInstanceState(outState);
     }
 
     @Override public void onCountrySelected(Country country) {
@@ -82,7 +128,7 @@ public class PlaceSelectionActivity extends MuezzinActivity implements OnCountry
             fragmentTransaction.addToBackStack(tag);
         }
 
-        fragmentTransaction.commit();
+        fragmentTransaction.commitAllowingStateLoss();
     }
 
     private void launchPrayerTimesActivity() {
