@@ -55,8 +55,6 @@ public class PrayerTimesUpdaterService extends IntentService implements OnPrayer
     @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes) {
         Place place = maybeCurrentPlace.get();
 
-        Log.debug(getClass(), "Saving prayer times for place '%s' to database...", place);
-
         if (PrayerTimes.saveAllPrayerTimes(this, place, prayerTimes)) {
             // Updated prayer times and saved them successfully, now try to reschedule prayer time reminders.
             PrayerTimeReminder.reschedulePrayerTimeReminders(this);

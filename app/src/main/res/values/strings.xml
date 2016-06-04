@@ -26,13 +26,18 @@
     <string name="hijriMonth12">Dhu al-Hijjah</string>
 
     <!-- Place selection -->
-    <string name="placeSelection_noPlacesFound">You haven\'t selected a place yet.\nTouch + to select a place.</string>
+    <string name="placeSelection_noPlacesFound">You haven\'t selected a place yet.\n\nTouch button on bottom right corner to select a place.</string>
     <string name="placeSelection_country">Select a Country</string>
     <string name="placeSelection_city">Select a City</string>
     <string name="placeSelection_district">Select a District</string>
 
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">Remaining Time to %1$s:</string>
+
+    <!-- States -->
+    <string name="state_loading">Loading, please wait…</string>
+    <string name="state_error">Oops! An error occurred.\n\nTouch the button on bottom right corner to try again.</string>
+    <string name="state_noData">Oops! The data you\'re looking for is not found.\n\nTouch the button on bottom right corner to try downloading.</string>
 
     <!-- Reminders -->
     <string name="reminders_notification_title">Prayer Time Approaching</string>

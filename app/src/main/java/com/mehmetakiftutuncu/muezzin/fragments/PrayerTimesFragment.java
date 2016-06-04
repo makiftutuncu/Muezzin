@@ -1,18 +1,18 @@
 package com.mehmetakiftutuncu.muezzin.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnPrayerTimesDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
@@ -34,7 +34,7 @@ import java.util.TimerTask;
 /**
  * Created by akif on 08/05/16.
  */
-public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownloadedListener {
+public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTimesDownloadedListener {
     private TextView textViewRemainingTimeInfo;
     private TextView textViewRemainingTime;
     private TextView textViewFajr;
@@ -50,6 +50,9 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
 
     private Timer timer;
     private TimerTask timerTask;
+
+    private Context context;
+    private MuezzinActivity muezzinActivity;
 
     public PrayerTimesFragment() {}
 
@@ -78,9 +81,21 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
         cancelRemainingTimeCounter();
     }
 
+    @Override public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            this.context    = context;
+            muezzinActivity = (MuezzinActivity) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must extend MuezzinActivity!");
+        }
+    }
+
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_prayertimes, container, false);
 
+        multiStateViewLayout      = (MultiStateView) layout.findViewById(R.id.multiStateView_prayerTimes);
         textViewRemainingTimeInfo = (TextView) layout.findViewById(R.id.textView_prayerTimes_remainingTimeInfo);
         textViewRemainingTime     = (TextView) layout.findViewById(R.id.textView_prayerTimes_remainingTime);
         textViewFajr              = (TextView) layout.findViewById(R.id.textView_prayerTimes_fajrTime);
@@ -101,11 +116,16 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
     }
 
     @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes) {
-        DateTime today = DateTime.now().withTimeAtStartOfDay();
+        if (!PrayerTimes.saveAllPrayerTimes(context, place, prayerTimes)) {
+            changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
+            return;
+        }
+
+        DateTime today = DateTime.now().withTimeAtStartOfDay().withZoneRetainFields(DateTimeZone.UTC);
         Optional<PrayerTimes> maybeTodaysPrayerTimes = new None<>();
 
         for (int i = 0, size = prayerTimes.size(); i < size; i++) {
-            if (prayerTimes.get(i).day.equals(today)) {
+            if (prayerTimes.get(i).day.getMillis() == today.getMillis()) {
                 maybeTodaysPrayerTimes = new Some<>(prayerTimes.get(i));
                 break;
             }
@@ -113,13 +133,9 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
 
         if (maybeTodaysPrayerTimes.isEmpty) {
             Log.error(getClass(), "Did not find today's prayer times in downloaded prayer times!");
+
+            changeStateTo(MultiStateView.VIEW_STATE_EMPTY, RETRY_ACTION_DOWNLOAD);
         } else {
-            Log.debug(getClass(), "Saving prayer times for place '%s' to database...", place);
-
-            if (!PrayerTimes.saveAllPrayerTimes(getContext(), place, prayerTimes)) {
-                // Snackbar.make(recyclerViewCountrySelection, "Failed to save countries to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
-            }
-
             this.prayerTimes = maybeTodaysPrayerTimes.get();
 
             initializeUI();
@@ -128,40 +144,42 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
 
     @Override public void onPrayerTimesDownloadFailed() {
         Log.error(getClass(), "Failed to download prayer times for place '%s'!", place);
+        changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
     }
 
     private void loadTodaysPrayerTimes() {
-        Log.debug(getClass(), "Loading today's prayer times for place '%s'...", place);
+        changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
 
-        Optional<PrayerTimes> maybePrayerTimesFromDatabase = PrayerTimes.getPrayerTimesForToday(getContext(), place);
+        Optional<PrayerTimes> maybePrayerTimesFromDatabase = PrayerTimes.getPrayerTimesForToday(context, place);
 
         if (maybePrayerTimesFromDatabase.isEmpty) {
-            Log.debug(getClass(), "Today's prayer times for place '%s' wasn't found on database! Downloading...", place);
+            Log.debug(getClass(), "Today's prayer times for place '%s' wasn't found on database!", place);
 
             MuezzinAPIClient.getPrayerTimes(place, this);
         } else {
             Log.debug(getClass(), "Loaded today's prayer times for place '%s' from database!", place);
 
             this.prayerTimes = maybePrayerTimesFromDatabase.get();
+
             initializeUI();
         }
     }
 
     private void initializeUI() {
-        Optional<String> maybePlaceName = place.getPlaceName(getContext());
+        changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
+
+        Optional<String> maybePlaceName = place.getPlaceName(context);
 
         if (maybePlaceName.isDefined) {
-            ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-
-            if (supportActionBar != null) {
-                supportActionBar.setTitle(maybePlaceName.get());
-                supportActionBar.setSubtitle(DateTime.now().withZoneRetainFields(DateTimeZone.UTC).toString(PrayerTimes.dateFormat));
+            if (muezzinActivity != null) {
+                muezzinActivity.setTitle(maybePlaceName.get());
+                muezzinActivity.setSubtitle(DateTime.now().withZoneRetainFields(DateTimeZone.UTC).toString(PrayerTimes.dateFormat));
             }
 
-            Optional<Place> maybeLastPlace = Pref.Places.getLastPlace(getContext());
+            Optional<Place> maybeLastPlace = Pref.Places.getLastPlace(context);
 
             if (maybeLastPlace.isDefined && !maybeLastPlace.get().equals(place)) {
-                PrayerTimeReminder.reschedulePrayerTimeReminders(getContext());
+                PrayerTimeReminder.reschedulePrayerTimeReminders(context);
             }
         }
 
@@ -178,7 +196,7 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
         if (prayerTimes != null) {
             DateTime now              = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
             DateTime nextPrayerTime   = prayerTimes.nextPrayerTime();
-            String nextPrayerTimeName = PrayerTimes.prayerTimeLocalizedName(getContext(), prayerTimes.nextPrayerTimeName());
+            String nextPrayerTimeName = PrayerTimes.prayerTimeLocalizedName(context, prayerTimes.nextPrayerTimeName());
 
             DateTime remaining   = nextPrayerTime.minus(now.getMillis());
             String remainingTime = remaining.toString(PrayerTimes.remainingTimeFormat);
@@ -216,6 +234,50 @@ public class PrayerTimesFragment extends Fragment implements OnPrayerTimesDownlo
 
         if (timerTask != null && timerTask.scheduledExecutionTime() > 0) {
             timerTask.cancel();
+        }
+    }
+
+    @Override protected void changeStateTo(int newState, final int retryAction) {
+        if (multiStateViewLayout != null) {
+            switch (newState) {
+                case MultiStateView.VIEW_STATE_CONTENT:
+                    multiStateViewLayout.setViewState(newState);
+                    break;
+
+                case MultiStateView.VIEW_STATE_LOADING:
+                case MultiStateView.VIEW_STATE_EMPTY:
+                case MultiStateView.VIEW_STATE_ERROR:
+                    multiStateViewLayout.setViewState(newState);
+
+                    if (muezzinActivity != null) {
+                        muezzinActivity.setTitle(R.string.applicationName);
+                        muezzinActivity.setSubtitle("");
+                    }
+
+                    View layout = multiStateViewLayout.getView(newState);
+
+                    if (layout != null) {
+                        View fab = layout.findViewById(R.id.fab_retry);
+
+                        if (fab != null) {
+                            fab.setOnClickListener(new View.OnClickListener() {
+                                @Override public void onClick(View v) {
+                                    retry(retryAction);
+                                }
+                            });
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override protected void retry(int action) {
+        switch (action) {
+            case RETRY_ACTION_DOWNLOAD:
+                changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
+                MuezzinAPIClient.getPrayerTimes(place, this);
+                break;
         }
     }
 }

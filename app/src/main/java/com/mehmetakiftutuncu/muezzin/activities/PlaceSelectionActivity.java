@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.fragments.CitySelectionFragment;
@@ -24,7 +23,7 @@ import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 
-public class PlaceSelectionActivity extends AppCompatActivity implements OnCountrySelectedListener, OnCitySelectedListener, OnDistrictSelectedListener {
+public class PlaceSelectionActivity extends MuezzinActivity implements OnCountrySelectedListener, OnCitySelectedListener, OnDistrictSelectedListener {
     public static final String EXTRA_STARTED_FROM_PREFERENCES = "startedFromPreferences";
 
     private int countryId = 0;

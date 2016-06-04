@@ -2,7 +2,6 @@ package com.mehmetakiftutuncu.muezzin.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,7 +13,7 @@ import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
-public class PrayerTimesActivity extends AppCompatActivity {
+public class PrayerTimesActivity extends MuezzinActivity {
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prayertimes);

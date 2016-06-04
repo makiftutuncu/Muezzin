@@ -13,7 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:src="@drawable/ic_place"/>
+            android:src="@drawable/ic_nodata"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -21,11 +21,11 @@
             android:layout_gravity="center_horizontal"
             android:gravity="center"
             android:layout_marginTop="16dp"
-            android:text="@string/placeSelection_noPlacesFound"/>
+            android:text="@string/state_noData"/>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab_addPlace"
+        android:id="@+id/fab_retry"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -34,5 +34,5 @@
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_add" />
+        android:src="@drawable/ic_download" />
 </RelativeLayout>

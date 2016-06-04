@@ -29,6 +29,6 @@ public class NoPlacesFoundFragment extends Fragment implements View.OnClickListe
     }
 
     @Override public void onClick(View v) {
-        startActivity(new Intent(getContext(), PlaceSelectionActivity.class));
+        startActivity(new Intent(getActivity(), PlaceSelectionActivity.class));
     }
 }

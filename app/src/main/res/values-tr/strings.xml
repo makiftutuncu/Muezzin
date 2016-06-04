@@ -27,13 +27,18 @@
     <string name="hijriMonth12">Zilhicce</string>
 
     <!-- Place selection -->
-    <string name="placeSelection_noPlacesFound">Henüz bir konum seçilmemiş.\nKonum seçmek için +\'ya dokunun.</string>
+    <string name="placeSelection_noPlacesFound">Henüz bir konum seçilmemiş.\n\nKonum seçmek için sağ alt köşedeki düğmeye dokunun.</string>
     <string name="placeSelection_city">Bir Şehir Seçin</string>
     <string name="placeSelection_country">Bir Ülke Seçin</string>
     <string name="placeSelection_district">Bir İlçe/Bölge Seçin</string>
 
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">%1$s Vaktine Kalan Zaman:</string>
+
+    <!-- States -->
+    <string name="state_loading">Yükleniyor, lütfen bekleyin…</string>
+    <string name="state_error">Hay aksi! Bir hata oluştu.\n\nYeniden denemek için sağ alt köşedeki düğmeye dokunun.</string>
+    <string name="state_noData">Hay aksi! Aradığınız veri bulunamadı.\n\nİndirmeyi denemek için sağ alt köşedeki düğmeye dokunun.</string>
 
     <!-- Reminders -->
     <string name="reminders_notification_title">Namaz Vakti Yaklaşıyor</string>

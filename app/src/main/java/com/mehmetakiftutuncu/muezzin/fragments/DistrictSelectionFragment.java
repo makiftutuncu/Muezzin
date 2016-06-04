@@ -1,22 +1,21 @@
 package com.mehmetakiftutuncu.muezzin.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.kennyc.view.MultiStateView;
+import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
+import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictsDownloadedListener;
-import com.mehmetakiftutuncu.muezzin.R;
-import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
 import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
@@ -27,12 +26,11 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class DistrictSelectionFragment extends Fragment implements OnDistrictsDownloadedListener {
+public class DistrictSelectionFragment extends StatefulFragment implements OnDistrictsDownloadedListener {
     private RecyclerView recyclerViewDistrictSelection;
 
-    private LinearLayoutManager linearLayoutManager;
-    private DistrictsAdapter districtsAdapter;
-
+    private Context context;
+    private MuezzinActivity muezzinActivity;
     private OnDistrictSelectedListener onDistrictSelectedListener;
 
     private int cityId;
@@ -57,21 +55,28 @@ public class DistrictSelectionFragment extends Fragment implements OnDistrictsDo
 
         cityId = arguments.getInt("cityId");
 
-        linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewDistrictSelection.setLayoutManager(linearLayoutManager);
 
         loadDistricts();
     }
 
+    @Override public void onAttach(Context context) {
+        super.onAttach(context);
+
+        try {
+            this.context    = context;
+            muezzinActivity = (MuezzinActivity) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context + " must extend MuezzinActivity!");
+        }
+    }
+
     @Nullable @Override public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View layout = inflater.inflate(R.layout.fragment_districtselection, container, false);
 
+        multiStateViewLayout          = (MultiStateView) layout.findViewById(R.id.multiStateView_districtSelection);
         recyclerViewDistrictSelection = (RecyclerView) layout.findViewById(R.id.recyclerView_districtSelection);
-
-        ActionBar supportActionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (supportActionBar != null) {
-            supportActionBar.setTitle(getString(R.string.placeSelection_district));
-        }
 
         return layout;
     }
@@ -82,10 +87,10 @@ public class DistrictSelectionFragment extends Fragment implements OnDistrictsDo
 
             onDistrictSelectedListener.onNoDistrictsFound();
         } else {
-            Log.debug(getClass(), "Saving districts for city '%d' to database...", cityId);
+            if (!District.saveDistricts(context, cityId, districts)) {
+                changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
 
-            if (!District.saveDistricts(getContext(), cityId, districts)) {
-                Snackbar.make(recyclerViewDistrictSelection, "Failed to save districts to database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+                return;
             }
 
             setDistricts(districts);
@@ -93,7 +98,7 @@ public class DistrictSelectionFragment extends Fragment implements OnDistrictsDo
     }
 
     @Override public void onDistrictsDownloadFailed() {
-        Snackbar.make(recyclerViewDistrictSelection, "Failed to download districts!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+        changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
     }
 
     public void setOnDistrictSelectedListener(OnDistrictSelectedListener onDistrictSelectedListener) {
@@ -101,17 +106,15 @@ public class DistrictSelectionFragment extends Fragment implements OnDistrictsDo
     }
 
     private void loadDistricts() {
-        Log.debug(getClass(), "Loading districts for city '%d' from database...", cityId);
-
-        Optional<ArrayList<District>> maybeDistrictsFromDatabase = District.getDistricts(getContext(), cityId);
+        Optional<ArrayList<District>> maybeDistrictsFromDatabase = District.getDistricts(context, cityId);
 
         if (maybeDistrictsFromDatabase.isEmpty) {
-            Snackbar.make(recyclerViewDistrictSelection, "Failed to load districts from database!", Snackbar.LENGTH_INDEFINITE).setAction("OK", null).show();
+            changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
             ArrayList<District> districtsFromDatabase = maybeDistrictsFromDatabase.get();
 
             if (districtsFromDatabase.isEmpty()) {
-                Log.debug(getClass(), "No districts for city '%d' were found on database! Downloading...", cityId);
+                Log.debug(getClass(), "No districts for city '%d' were found on database!", cityId);
 
                 MuezzinAPIClient.getDistricts(cityId, this);
             } else {
@@ -123,7 +126,56 @@ public class DistrictSelectionFragment extends Fragment implements OnDistrictsDo
     }
 
     private void setDistricts(@NonNull ArrayList<District> districts) {
-        districtsAdapter = new DistrictsAdapter(districts, onDistrictSelectedListener);
+        changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
+
+        DistrictsAdapter districtsAdapter = new DistrictsAdapter(districts, onDistrictSelectedListener);
         recyclerViewDistrictSelection.setAdapter(districtsAdapter);
+
+        if (muezzinActivity != null) {
+            muezzinActivity.setTitle(R.string.placeSelection_district);
+        }
+    }
+
+    @Override protected void changeStateTo(int newState, final int retryAction) {
+        if (multiStateViewLayout != null) {
+            switch (newState) {
+                case MultiStateView.VIEW_STATE_CONTENT:
+                    multiStateViewLayout.setViewState(newState);
+                    break;
+
+                case MultiStateView.VIEW_STATE_LOADING:
+                case MultiStateView.VIEW_STATE_EMPTY:
+                case MultiStateView.VIEW_STATE_ERROR:
+                    multiStateViewLayout.setViewState(newState);
+
+                    if (muezzinActivity != null) {
+                        muezzinActivity.setTitle(R.string.applicationName);
+                    }
+
+                    View layout = multiStateViewLayout.getView(newState);
+
+                    if (layout != null) {
+                        View fab = layout.findViewById(R.id.fab_retry);
+
+                        if (fab != null) {
+                            fab.setOnClickListener(new View.OnClickListener() {
+                                @Override public void onClick(View v) {
+                                    retry(retryAction);
+                                }
+                            });
+                        }
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override protected void retry(int action) {
+        switch (action) {
+            case RETRY_ACTION_DOWNLOAD:
+                changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
+                MuezzinAPIClient.getDistricts(cityId, this);
+                break;
+        }
     }
 }
