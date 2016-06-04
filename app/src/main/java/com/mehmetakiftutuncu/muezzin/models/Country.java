@@ -40,10 +40,8 @@ public class Country {
     public String getLocalizedName(Context context) {
         if (LocaleUtils.isLanguageTurkish(context)) {
             return turkishName;
-        } else if (LocaleUtils.isLanguageEnglish(context)) {
-            return englishName;
         } else {
-            return String.format("%s (%s)", englishName, nativeName);
+            return englishName;
         }
     }
 

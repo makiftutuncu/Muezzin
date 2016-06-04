@@ -63,7 +63,7 @@
     <string name="preferences_reminders_vibration">Vibration</string>
     <string name="preferences_reminders_timeToRemind">Time to Remind</string>
     <string name="preferences_reminders_timeToRemindSummary">Minute(s) before prayer time</string>
-    <string name="preferences_reminders_timeToRemindUnit">Minute(s)</string>
+    <string name="preferences_reminders_timeToRemindUnit">min</string>
 
     <string name="preferences_category_more">More</string>
 
