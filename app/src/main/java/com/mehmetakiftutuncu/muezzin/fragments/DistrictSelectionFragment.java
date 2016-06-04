@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
@@ -26,7 +27,8 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class DistrictSelectionFragment extends StatefulFragment implements OnDistrictsDownloadedListener {
+public class DistrictSelectionFragment extends StatefulFragment implements OnDistrictsDownloadedListener, FloatingSearchView.OnQueryChangeListener {
+    private FloatingSearchView floatingSearchView;
     private RecyclerView recyclerViewDistrictSelection;
 
     private Context context;
@@ -36,6 +38,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
     private int cityId;
 
     private ArrayList<District> districts;
+    private DistrictsAdapter districtsAdapter;
 
     public DistrictSelectionFragment() {}
 
@@ -115,7 +118,10 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         View layout = inflater.inflate(R.layout.fragment_districtselection, container, false);
 
         multiStateViewLayout          = (MultiStateView) layout.findViewById(R.id.multiStateView_districtSelection);
+        floatingSearchView            = (FloatingSearchView) layout.findViewById(R.id.floatingSearchView_districtSearch);
         recyclerViewDistrictSelection = (RecyclerView) layout.findViewById(R.id.recyclerView_districtSelection);
+
+        floatingSearchView.setOnQueryChangeListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewDistrictSelection.setLayoutManager(linearLayoutManager);
@@ -172,7 +178,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
     private void updateUI() {
         changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
 
-        DistrictsAdapter districtsAdapter = new DistrictsAdapter(districts, onDistrictSelectedListener);
+        districtsAdapter = new DistrictsAdapter(districts, onDistrictSelectedListener);
         recyclerViewDistrictSelection.setAdapter(districtsAdapter);
 
         if (muezzinActivity != null) {
@@ -221,5 +227,11 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
                 MuezzinAPIClient.getDistricts(cityId, this);
                 break;
         }
+    }
+
+    @Override public void onSearchTextChanged(String oldQuery, String newQuery) {
+        Log.debug(getClass(), "Searching for district with query '%s'", newQuery);
+
+        districtsAdapter.search(newQuery);
     }
 }

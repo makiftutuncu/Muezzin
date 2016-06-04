@@ -12,17 +12,21 @@ import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CityViewHolder;
 import com.mehmetakiftutuncu.muezzin.models.City;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * Created by akif on 11/05/16.
  */
 public class CitiesAdapter extends RecyclerView.Adapter<CityViewHolder> {
+    private ArrayList<City> allCities;
     private ArrayList<City> cities;
 
     private OnCitySelectedListener onCitySelectedListener;
 
     public CitiesAdapter(ArrayList<City> cities, OnCitySelectedListener onCitySelectedListener) {
-        this.cities = cities;
+        this.allCities = cities;
+        this.cities    = cities;
+
         this.onCitySelectedListener = onCitySelectedListener;
     }
 
@@ -40,5 +44,28 @@ public class CitiesAdapter extends RecyclerView.Adapter<CityViewHolder> {
 
     @Override public int getItemCount() {
         return cities != null ? cities.size() : 0;
+    }
+
+    public void search(String query) {
+        String q = query.trim();
+
+        if (q.isEmpty()) {
+            cities = allCities;
+
+            return;
+        }
+
+        cities = new ArrayList<>();
+        Locale locale = new Locale("tr", "TR");
+
+        for (int i = 0, size = allCities.size(); i < size; i++) {
+            City city = allCities.get(i);
+
+            if (city.name.toLowerCase(city.isTurkishCity ? locale : Locale.getDefault()).contains(q)) {
+                cities.add(city);
+            }
+        }
+
+        notifyDataSetChanged();
     }
 }

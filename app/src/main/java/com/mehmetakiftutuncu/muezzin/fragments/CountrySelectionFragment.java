@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
@@ -26,7 +27,8 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class CountrySelectionFragment extends StatefulFragment implements OnCountriesDownloadedListener {
+public class CountrySelectionFragment extends StatefulFragment implements OnCountriesDownloadedListener, FloatingSearchView.OnQueryChangeListener {
+    private FloatingSearchView floatingSearchView;
     private RecyclerView recyclerViewCountrySelection;
 
     private Context context;
@@ -34,6 +36,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
     private OnCountrySelectedListener onCountrySelectedListener;
 
     private ArrayList<Country> countries;
+    private CountriesAdapter countriesAdapter;
 
     public CountrySelectionFragment() {}
 
@@ -107,7 +110,10 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         View layout = inflater.inflate(R.layout.fragment_countryselection, container, false);
 
         multiStateViewLayout         = (MultiStateView) layout.findViewById(R.id.multiStateView_countrySelection);
+        floatingSearchView           = (FloatingSearchView) layout.findViewById(R.id.floatingSearchView_countrySearch);
         recyclerViewCountrySelection = (RecyclerView) layout.findViewById(R.id.recyclerView_countrySelection);
+
+        floatingSearchView.setOnQueryChangeListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewCountrySelection.setLayoutManager(linearLayoutManager);
@@ -166,7 +172,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
 
         changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
 
-        CountriesAdapter countriesAdapter = new CountriesAdapter(countries, onCountrySelectedListener);
+        countriesAdapter = new CountriesAdapter(countries, onCountrySelectedListener);
         recyclerViewCountrySelection.setAdapter(countriesAdapter);
 
         if (muezzinActivity != null) {
@@ -215,5 +221,11 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
                 MuezzinAPIClient.getCountries(this);
                 break;
         }
+    }
+
+    @Override public void onSearchTextChanged(String oldQuery, String newQuery) {
+        Log.debug(getClass(), "Searching for country with query '%s'", newQuery);
+
+        countriesAdapter.search(newQuery);
     }
 }

@@ -15,7 +15,9 @@ import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
+import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -63,6 +65,7 @@ public class MuezzinAPIClient {
                     JSONArray countriesJsonArray = response.getJSONArray("countries");
                     int numberOfCountries        = countriesJsonArray.length();
 
+                    Optional<Country> Turkey = new None<>();
                     ArrayList<Country> countries = new ArrayList<>();
 
                     for (int i = 0; i < numberOfCountries; i++) {
@@ -70,8 +73,18 @@ public class MuezzinAPIClient {
                         Optional<Country> maybeCountry = Country.fromJson(countryJson);
 
                         if (maybeCountry.isDefined) {
-                            countries.add(maybeCountry.get());
+                            Country country = maybeCountry.get();
+
+                            if (country.isTurkey) {
+                                Turkey = new Some<>(country);
+                            } else {
+                                countries.add(country);
+                            }
                         }
+                    }
+
+                    if (Turkey.isDefined) {
+                        countries.add(0, Turkey.get());
                     }
 
                     if (countries.size() != numberOfCountries) {

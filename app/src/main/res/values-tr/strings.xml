@@ -28,9 +28,12 @@
 
     <!-- Place selection -->
     <string name="placeSelection_noPlacesFound">Henüz bir konum seçilmemiş.\n\nKonum seçmek için sağ alt köşedeki düğmeye dokunun.</string>
-    <string name="placeSelection_city">Bir Şehir Seçin</string>
     <string name="placeSelection_country">Bir Ülke Seçin</string>
+    <string name="placeSelection_country_search">Ülke Ara</string>
+    <string name="placeSelection_city">Bir Şehir Seçin</string>
+    <string name="placeSelection_city_search">Şehir Ara</string>
     <string name="placeSelection_district">Bir İlçe/Bölge Seçin</string>
+    <string name="placeSelection_district_search">İlçe/Bölge Ara</string>
 
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">%1$s Vaktine Kalan Zaman:</string>

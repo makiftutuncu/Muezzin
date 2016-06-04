@@ -9,8 +9,29 @@
     app:msv_loadingView="@layout/state_loading"
     app:msv_viewState="loading">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView_districtSelection"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView_districtSelection"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="72dp"/>
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            xmlns:fsv="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/floatingSearchView_districtSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            fsv:floatingSearch_searchBarMarginLeft="12dp"
+            fsv:floatingSearch_searchBarMarginTop="12dp"
+            fsv:floatingSearch_searchBarMarginRight="12dp"
+            fsv:floatingSearch_searchHint="@string/placeSelection_district_search"
+            fsv:floatingSearch_suggestionsListAnimDuration="250"
+            fsv:floatingSearch_showSearchKey="true"
+            fsv:floatingSearch_dismissOnOutsideTouch="true"
+            fsv:floatingSearch_dimBackground="false"
+            fsv:floatingSearch_leftActionMode="showSearch"/>
+    </RelativeLayout>
 </com.kennyc.view.MultiStateView>

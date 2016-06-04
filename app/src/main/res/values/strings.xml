@@ -28,8 +28,11 @@
     <!-- Place selection -->
     <string name="placeSelection_noPlacesFound">You haven\'t selected a place yet.\n\nTouch button on bottom right corner to select a place.</string>
     <string name="placeSelection_country">Select a Country</string>
+    <string name="placeSelection_country_search">Search for a Country</string>
     <string name="placeSelection_city">Select a City</string>
+    <string name="placeSelection_city_search">Search for a City</string>
     <string name="placeSelection_district">Select a District</string>
+    <string name="placeSelection_district_search">Search for a District</string>
 
     <!-- Prayer times -->
     <string name="prayerTimes_cardTitle_remainingTime">Remaining Time to %1$s:</string>

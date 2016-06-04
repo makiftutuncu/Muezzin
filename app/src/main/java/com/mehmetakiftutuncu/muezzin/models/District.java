@@ -6,6 +6,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 
 import com.mehmetakiftutuncu.muezzin.database.Database;
+import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils;
 import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
@@ -14,6 +15,8 @@ import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Locale;
 
 /**
@@ -24,10 +27,14 @@ public class District {
     public final int cityId;
     public final String name;
 
+    public final boolean isTurkishDistrict;
+
     public District(int id, int cityId, String name) {
         this.id = id;
         this.cityId = cityId;
         this.name = name;
+
+        this.isTurkishDistrict = isTurkish(cityId);
     }
 
     public static Optional<ArrayList<District>> getDistricts(Context context, int cityId) {
@@ -59,6 +66,14 @@ public class District {
             }
 
             database.close();
+
+            if (isTurkish(cityId)) {
+                Collections.sort(districts, new Comparator<District>() {
+                    @Override public int compare(District lhs, District rhs) {
+                        return LocaleUtils.getTurkishCollator().compare(lhs.name, rhs.name);
+                    }
+                });
+            }
 
             return new Some<>(districts);
         } catch (Throwable t) {
@@ -151,5 +166,9 @@ public class District {
 
     @Override public String toString() {
         return toJson();
+    }
+
+    private static boolean isTurkish(int cityId) {
+        return cityId >= 500 && cityId <= 580;
     }
 }

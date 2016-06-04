@@ -27,10 +27,14 @@ public class City {
     public final int countryId;
     public final String name;
 
+    public final boolean isTurkishCity;
+
     public City(int id, int countryId, String name) {
         this.id = id;
         this.countryId = countryId;
         this.name = name;
+
+        this.isTurkishCity = isTurkish(countryId);
     }
 
     public static Optional<ArrayList<City>> getCities(final Context context, int countryId) {
@@ -40,7 +44,7 @@ public class City {
             SQLiteDatabase database = Database.with(context).getReadableDatabase();
 
             Cursor cursor = database.rawQuery(
-                    String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE %s = %d", Database.CityTable.TABLE_NAME, Database.CityTable.COLUMN_COUNTRY_ID, countryId),
+                    String.format(Locale.ENGLISH, "SELECT * FROM %s WHERE %s = %d ORDER BY %s", Database.CityTable.TABLE_NAME, Database.CityTable.COLUMN_COUNTRY_ID, countryId, Database.CityTable.COLUMN_ID),
                     null
             );
 
@@ -63,11 +67,13 @@ public class City {
 
             database.close();
 
-            Collections.sort(cities, new Comparator<City>() {
-                @Override public int compare(City lhs, City rhs) {
-                    return LocaleUtils.getCollator(context).compare(lhs.name, rhs.name);
-                }
-            });
+            if (isTurkish(countryId)) {
+                Collections.sort(cities, new Comparator<City>() {
+                    @Override public int compare(City lhs, City rhs) {
+                        return LocaleUtils.getTurkishCollator().compare(lhs.name, rhs.name);
+                    }
+                });
+            }
 
             return new Some<>(cities);
         } catch (Throwable t) {
@@ -160,5 +166,9 @@ public class City {
 
     @Override public String toString() {
         return toJson();
+    }
+
+    private static boolean isTurkish(int countryId) {
+        return countryId == 2;
     }
 }

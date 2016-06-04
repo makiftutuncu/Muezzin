@@ -26,18 +26,22 @@ public class Country {
     public final String turkishName;
     public final String nativeName;
 
+    public final boolean isTurkey;
+
     public Country(int id, String englishName, String turkishName, String nativeName) {
         this.id = id;
         this.englishName = englishName;
         this.turkishName = turkishName;
         this.nativeName = nativeName;
+
+        this.isTurkey = id == 2;
     }
 
     public String getLocalizedName(Context context) {
         if (LocaleUtils.isLanguageTurkish(context)) {
             return turkishName;
         } else if (LocaleUtils.isLanguageEnglish(context)) {
-            return turkishName;
+            return englishName;
         } else {
             return String.format("%s (%s)", englishName, nativeName);
         }
@@ -51,6 +55,7 @@ public class Country {
 
             SQLiteDatabase database = Database.with(context).getReadableDatabase();
 
+            Optional<Country> Turkey = new None<>();
             Cursor cursor = database.rawQuery(String.format(Locale.ENGLISH, "SELECT * FROM %s ORDER BY %s", Database.CountryTable.TABLE_NAME, orderBy), null);
 
             if (cursor != null) {
@@ -63,7 +68,11 @@ public class Country {
 
                         Country country = new Country(id, englishName, turkishName, nativeName);
 
-                        countries.add(country);
+                        if (country.isTurkey) {
+                            Turkey = new Some<>(country);
+                        } else {
+                            countries.add(country);
+                        }
 
                         cursor.moveToNext();
                     }
@@ -71,6 +80,10 @@ public class Country {
                 }
 
                 cursor.close();
+            }
+
+            if (Turkey.isDefined) {
+                countries.add(0, Turkey.get());
             }
 
             database.close();

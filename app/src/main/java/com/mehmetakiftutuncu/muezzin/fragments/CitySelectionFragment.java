@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
@@ -26,7 +27,8 @@ import java.util.ArrayList;
 /**
  * Created by akif on 08/05/16.
  */
-public class CitySelectionFragment extends StatefulFragment implements OnCitiesDownloadedListener {
+public class CitySelectionFragment extends StatefulFragment implements OnCitiesDownloadedListener, FloatingSearchView.OnQueryChangeListener {
+    private FloatingSearchView floatingSearchView;
     private RecyclerView recyclerViewCitySelection;
 
     private Context context;
@@ -36,6 +38,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
     private int countryId;
 
     private ArrayList<City> cities;
+    private CitiesAdapter citiesAdapter;
 
     public CitySelectionFragment() {}
 
@@ -115,7 +118,10 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         View layout = inflater.inflate(R.layout.fragment_cityselection, container, false);
 
         multiStateViewLayout      = (MultiStateView) layout.findViewById(R.id.multiStateView_citySelection);
+        floatingSearchView        = (FloatingSearchView) layout.findViewById(R.id.floatingSearchView_citySearch);
         recyclerViewCitySelection = (RecyclerView) layout.findViewById(R.id.recyclerView_citySelection);
+
+        floatingSearchView.setOnQueryChangeListener(this);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerViewCitySelection.setLayoutManager(linearLayoutManager);
@@ -172,7 +178,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
 
         changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
 
-        CitiesAdapter citiesAdapter = new CitiesAdapter(cities, onCitySelectedListener);
+        citiesAdapter = new CitiesAdapter(cities, onCitySelectedListener);
         recyclerViewCitySelection.setAdapter(citiesAdapter);
 
         if (muezzinActivity != null) {
@@ -221,5 +227,11 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
                 MuezzinAPIClient.getCities(countryId, this);
                 break;
         }
+    }
+
+    @Override public void onSearchTextChanged(String oldQuery, String newQuery) {
+        Log.debug(getClass(), "Searching for city with query '%s'", newQuery);
+
+        citiesAdapter.search(newQuery);
     }
 }
