@@ -92,18 +92,24 @@ public class PrayerTimeReminder {
 
         ArrayList<PrayerTimeReminder> prayerTimeReminders = maybeReminderTimes.get();
 
-        if (prayerTimeReminders.isEmpty()) {
-            // No more prayer time reminder for today
-            return;
-        }
-
         for (int i = 0, size = prayerTimeReminders.size(); i < size; i++) {
             PrayerTimeReminder prayerTimeReminder = prayerTimeReminders.get(i);
 
             PrayerTimeReminderService.setPrayerTimeReminderAlarm(context, prayerTimeReminder);
         }
 
-        PrayerTimeReminderService.setSchedulerAlarm(context);
+        boolean atLeastOneReminderIsEnabled = false;
+
+        for (int i = 0, length = PrayerTimes.prayerTimeNames.length; i < length; i++) {
+            if (Pref.Reminders.isEnabled(context, PrayerTimes.prayerTimeNames[i])) {
+                atLeastOneReminderIsEnabled = true;
+                break;
+            }
+        }
+
+        if (atLeastOneReminderIsEnabled) {
+            PrayerTimeReminderService.setSchedulerAlarm(context);
+        }
     }
 
     @NonNull public Bundle toBundle() {
