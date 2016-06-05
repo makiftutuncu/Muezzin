@@ -27,13 +27,17 @@
 
         <activity
             android:name=".activities.WelcomeActivity"
-            android:theme="@style/MuezzinWelcomeTheme"/>
+            android:theme="@style/MuezzinWelcomeTheme" />
 
         <activity android:name=".activities.PlaceSelectionActivity" />
 
         <activity android:name=".activities.preferences.PreferencesActivity" />
 
         <activity android:name=".activities.preferences.ReminderPreferencesActivity" />
+
+        <activity
+            android:name=".activities.LicencesActivity"
+            android:label="@string/preferences_more_openSource" />
 
         <service
             android:name=".services.PrayerTimeReminderService"

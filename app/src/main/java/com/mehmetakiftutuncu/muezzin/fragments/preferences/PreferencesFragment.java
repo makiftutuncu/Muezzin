@@ -7,6 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.activities.LicencesActivity;
 import com.mehmetakiftutuncu.muezzin.activities.PlaceSelectionActivity;
 import com.mehmetakiftutuncu.muezzin.activities.preferences.ReminderPreferencesActivity;
 import com.mehmetakiftutuncu.muezzin.models.Place;
@@ -92,6 +93,14 @@ public class PreferencesFragment extends PreferenceFragment {
         version.setSummary(versionName);
 
         Preference licenses = findPreference(KEY_MORE_LICENSES);
+        licenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override public boolean onPreferenceClick(Preference preference) {
+                Intent intent = new Intent(getActivity(), LicencesActivity.class);
+                startActivity(intent);
+
+                return true;
+            }
+        });
     }
 
     private void updatePlaceSummary(Preference preference) {
