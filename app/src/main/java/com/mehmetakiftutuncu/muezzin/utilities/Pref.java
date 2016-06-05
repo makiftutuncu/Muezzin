@@ -78,7 +78,7 @@ public final class Pref {
         }
 
         public static int timeToRemind(Context context, String prayerTimeName) {
-            return getSharedPreferences(context).getInt(TIME_TO_REMIND_BASE + prayerTimeName, 45);
+            return Integer.parseInt(getSharedPreferences(context).getString(TIME_TO_REMIND_BASE + prayerTimeName, "45"));
         }
     }
 

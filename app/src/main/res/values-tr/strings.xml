@@ -73,8 +73,7 @@
     <string name="preferences_reminders_silent">Sessiz</string>
     <string name="preferences_reminders_vibration">Titreşim</string>
     <string name="preferences_reminders_timeToRemind">Hatırlatıcı Zamanı</string>
-    <string name="preferences_reminders_timeToRemindSummary">Dakika önce</string>
-    <string name="preferences_reminders_timeToRemindUnit">dk</string>
+    <string name="preferences_reminders_timeToRemindSummary">Vakitten %1$d dakika önce</string>
 
     <string name="preferences_category_more">Daha Fazlası</string>
 

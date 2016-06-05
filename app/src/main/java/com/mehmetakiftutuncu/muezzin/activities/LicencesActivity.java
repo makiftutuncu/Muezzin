@@ -28,7 +28,6 @@ public class LicencesActivity extends AppCompatActivity {
         // Libraries that are hosted on GitHub, but do not provide license text
         licences.add(Licenses.fromGitHub("Kennyc1012/MultiStateView", Licenses.LICENSE_APACHE_V2));
         licences.add(Licenses.fromGitHub("oopj/android-async-http", Licenses.LICENSE_APACHE_V2));
-        licences.add(Licenses.fromGitHub("MrBIMC/MaterialSeekBarPreference", Licenses.LICENSE_APACHE_V2));
 
         // Libraries that are hosted on GitHub, and "LICENSE.txt" is provided
         licences.add(Licenses.fromGitHub("arimorty/floatingsearchview"));

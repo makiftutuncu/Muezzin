@@ -23,6 +23,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
@@ -138,6 +140,14 @@ public class MuezzinAPIClient {
                         }
                     }
 
+                    if (City.isTurkish(countryId)) {
+                        Collections.sort(cities, new Comparator<City>() {
+                            @Override public int compare(City lhs, City rhs) {
+                                return LocaleUtils.getTurkishCollator().compare(lhs.name, rhs.name);
+                            }
+                        });
+                    }
+
                     if (cities.size() != numberOfCities) {
                         Log.error(MuezzinAPIClient.class, "Failed to parse some of the cities for country '%d' from Json '%s'!", countryId, response);
                         listener.onCitiesDownloadFailed();
@@ -187,6 +197,14 @@ public class MuezzinAPIClient {
                         if (maybeDistrict.isDefined) {
                             districts.add(maybeDistrict.get());
                         }
+                    }
+
+                    if (District.isTurkish(cityId)) {
+                        Collections.sort(districts, new Comparator<District>() {
+                            @Override public int compare(District lhs, District rhs) {
+                                return LocaleUtils.getTurkishCollator().compare(lhs.name, rhs.name);
+                            }
+                        });
                     }
 
                     if (districts.size() != numberOfDistricts) {

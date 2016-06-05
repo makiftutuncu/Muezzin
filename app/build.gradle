@@ -11,9 +11,10 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -33,7 +34,6 @@ dependencies {
     compile 'com.github.arimorty:floatingsearchview:2.0.1'
     compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
-    compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
     compile 'com.stephentuso:welcome:0.7.2'
     compile 'joda-time:joda-time:2.9.4'
     compile 'net.yslibrary.licenseadapter:licenseadapter:1.2.4'

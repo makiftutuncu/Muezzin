@@ -98,18 +98,19 @@ public class PrayerTimeReminder {
             PrayerTimeReminderService.setPrayerTimeReminderAlarm(context, prayerTimeReminder);
         }
 
-        boolean atLeastOneReminderIsEnabled = false;
+        if (isAtLeastOneReminderEnabled(context)) {
+            PrayerTimeReminderService.setSchedulerAlarm(context);
+        }
+    }
 
+    public static boolean isAtLeastOneReminderEnabled(Context context) {
         for (int i = 0, length = PrayerTimes.prayerTimeNames.length; i < length; i++) {
             if (Pref.Reminders.isEnabled(context, PrayerTimes.prayerTimeNames[i])) {
-                atLeastOneReminderIsEnabled = true;
-                break;
+                return true;
             }
         }
 
-        if (atLeastOneReminderIsEnabled) {
-            PrayerTimeReminderService.setSchedulerAlarm(context);
-        }
+        return false;
     }
 
     @NonNull public Bundle toBundle() {

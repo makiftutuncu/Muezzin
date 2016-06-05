@@ -168,7 +168,7 @@ public class City {
         return toJson();
     }
 
-    private static boolean isTurkish(int countryId) {
+    public static boolean isTurkish(int countryId) {
         return countryId == 2;
     }
 }

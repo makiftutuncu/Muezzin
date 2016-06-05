@@ -1,24 +1,22 @@
 package com.mehmetakiftutuncu.muezzin.fragments.preferences;
 
-import android.content.SharedPreferences;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
-import android.preference.SwitchPreference;
 
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
-import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
 /**
  * Created by akif on 08/05/16.
  */
-public class ReminderPreferencesFragment extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class ReminderPreferencesFragment extends PreferenceFragment {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -32,20 +30,10 @@ public class ReminderPreferencesFragment extends PreferenceFragment implements S
         initializeForPrayerTime("isha");
     }
 
-    @Override public void onResume() {
-        super.onResume();
-
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
-    }
-
     @Override public void onPause() {
         super.onPause();
 
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
-    }
-
-    @Override public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.startsWith(Pref.Reminders.ENABLED_BASE) || key.startsWith(Pref.Reminders.TIME_TO_REMIND_BASE)) {
+        if (PrayerTimeReminder.isAtLeastOneReminderEnabled(getActivity())) {
             PrayerTimeReminder.reschedulePrayerTimeReminders(getActivity());
         }
     }
@@ -65,16 +53,19 @@ public class ReminderPreferencesFragment extends PreferenceFragment implements S
         String currentSound = Pref.Reminders.sound(getActivity(), prayerTimeName);
         updateSoundSummary(sound, currentSound);
 
-        SwitchPreference enabled = (SwitchPreference) findPreference(Pref.Reminders.ENABLED_BASE + prayerTimeName);
-        final SeekBarPreference timeToRemind = (SeekBarPreference) findPreference(Pref.Reminders.TIME_TO_REMIND_BASE + prayerTimeName);
+        String timeToRemindKey = Pref.Reminders.TIME_TO_REMIND_BASE + prayerTimeName;
 
-        timeToRemind.setEnabled(enabled.isChecked());
-        enabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        ListPreference timeToRemind = (ListPreference) findPreference(timeToRemindKey);
+        timeToRemind.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
-                timeToRemind.setEnabled((boolean) newValue);
+                preference.setSummary(getString(R.string.preferences_reminders_timeToRemindSummary, Integer.parseInt((String) newValue)));
+
                 return true;
             }
         });
+
+        int currentTimeToRemind = Pref.Reminders.timeToRemind(getActivity(), prayerTimeName);
+        timeToRemind.setSummary(getString(R.string.preferences_reminders_timeToRemindSummary, currentTimeToRemind));
     }
 
     private void updateSoundSummary(Preference preference, String newValue) {

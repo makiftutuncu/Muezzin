@@ -168,7 +168,7 @@ public class District {
         return toJson();
     }
 
-    private static boolean isTurkish(int cityId) {
+    public static boolean isTurkish(int cityId) {
         return cityId >= 500 && cityId <= 580;
     }
 }

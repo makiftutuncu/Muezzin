@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:seekbar="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <PreferenceCategory android:title="@string/prayerTime_fajr">
         <SwitchPreference
@@ -22,16 +21,15 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_fajr"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <ListPreference
             android:key="reminders_timeToRemind_fajr"
             android:title="@string/preferences_reminders_timeToRemind"
-            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:entries="@array/preferences_reminders_timeToRemindValues"
+            android:entryValues="@array/preferences_reminders_timeToRemindValues"
+            android:positiveButtonText="@null"
+            android:negativeButtonText="@null"
             android:defaultValue="45"
-            seekbar:msbp_minValue="5"
-            seekbar:msbp_maxValue="60"
-            seekbar:msbp_interval="5"
-            seekbar:msbp_dialogEnabled="false"
-            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+            android:dependency="reminders_enabled_fajr"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prayerTime_shuruq">
@@ -54,16 +52,15 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_shuruq"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <ListPreference
             android:key="reminders_timeToRemind_shuruq"
             android:title="@string/preferences_reminders_timeToRemind"
-            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:entries="@array/preferences_reminders_timeToRemindValues"
+            android:entryValues="@array/preferences_reminders_timeToRemindValues"
+            android:positiveButtonText="@null"
+            android:negativeButtonText="@null"
             android:defaultValue="45"
-            seekbar:msbp_minValue="5"
-            seekbar:msbp_maxValue="60"
-            seekbar:msbp_interval="5"
-            seekbar:msbp_dialogEnabled="false"
-            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+            android:dependency="reminders_enabled_shuruq"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prayerTime_dhuhr">
@@ -86,16 +83,15 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_dhuhr"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <ListPreference
             android:key="reminders_timeToRemind_dhuhr"
             android:title="@string/preferences_reminders_timeToRemind"
-            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:entries="@array/preferences_reminders_timeToRemindValues"
+            android:entryValues="@array/preferences_reminders_timeToRemindValues"
+            android:positiveButtonText="@null"
+            android:negativeButtonText="@null"
             android:defaultValue="45"
-            seekbar:msbp_minValue="5"
-            seekbar:msbp_maxValue="60"
-            seekbar:msbp_interval="5"
-            seekbar:msbp_dialogEnabled="false"
-            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+            android:dependency="reminders_enabled_dhuhr"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prayerTime_asr">
@@ -118,16 +114,15 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_asr"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <ListPreference
             android:key="reminders_timeToRemind_asr"
             android:title="@string/preferences_reminders_timeToRemind"
-            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:entries="@array/preferences_reminders_timeToRemindValues"
+            android:entryValues="@array/preferences_reminders_timeToRemindValues"
+            android:positiveButtonText="@null"
+            android:negativeButtonText="@null"
             android:defaultValue="45"
-            seekbar:msbp_minValue="5"
-            seekbar:msbp_maxValue="60"
-            seekbar:msbp_interval="5"
-            seekbar:msbp_dialogEnabled="false"
-            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+            android:dependency="reminders_enabled_asr"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prayerTime_maghrib">
@@ -150,16 +145,15 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_maghrib"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <ListPreference
             android:key="reminders_timeToRemind_maghrib"
             android:title="@string/preferences_reminders_timeToRemind"
-            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:entries="@array/preferences_reminders_timeToRemindValues"
+            android:entryValues="@array/preferences_reminders_timeToRemindValues"
+            android:positiveButtonText="@null"
+            android:negativeButtonText="@null"
             android:defaultValue="45"
-            seekbar:msbp_minValue="5"
-            seekbar:msbp_maxValue="60"
-            seekbar:msbp_interval="5"
-            seekbar:msbp_dialogEnabled="false"
-            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+            android:dependency="reminders_enabled_maghrib"/>
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/prayerTime_isha">
@@ -182,15 +176,14 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_isha"/>
 
-        <com.pavelsikun.seekbarpreference.SeekBarPreference
+        <ListPreference
             android:key="reminders_timeToRemind_isha"
             android:title="@string/preferences_reminders_timeToRemind"
-            android:summary="@string/preferences_reminders_timeToRemindSummary"
+            android:entries="@array/preferences_reminders_timeToRemindValues"
+            android:entryValues="@array/preferences_reminders_timeToRemindValues"
+            android:positiveButtonText="@null"
+            android:negativeButtonText="@null"
             android:defaultValue="45"
-            seekbar:msbp_minValue="5"
-            seekbar:msbp_maxValue="60"
-            seekbar:msbp_interval="5"
-            seekbar:msbp_dialogEnabled="false"
-            seekbar:msbp_measurementUnit="@string/preferences_reminders_timeToRemindUnit" />
+            android:dependency="reminders_enabled_isha"/>
     </PreferenceCategory>
 </PreferenceScreen>
