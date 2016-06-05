@@ -26,6 +26,16 @@
     <string name="hijriMonth11">Zilkade</string>
     <string name="hijriMonth12">Zilhicce</string>
 
+    <!-- Welcome -->
+    <string name="welcome_skip">Atla</string>
+    <string name="welcome_done">Bitir</string>
+    <string name="welcome_title1">Müezzin\'e Hoş Geldiniz!</string>
+    <string name="welcome_content1">Müezzin ile namaz vakitlerini kolayca takip edebilirsiniz.</string>
+    <string name="welcome_title2">Başlamak İçin Bir Konum Seçin</string>
+    <string name="welcome_content2">Müezzin 200\'den fazla ülkeyi ve şehirlerini destekler.</string>
+    <string name="welcome_title3">Hatırlatıcılar Belirleyin</string>
+    <string name="welcome_content3">Müezzin size namaz vakitlerinin yaklaştığını hatırlatabilir.</string>
+
     <!-- Place selection -->
     <string name="placeSelection_noPlacesFound">Henüz bir konum seçilmemiş.\n\nKonum seçmek için sağ alt köşedeki düğmeye dokunun.</string>
     <string name="placeSelection_country">Bir Ülke Seçin</string>

@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
+import android.preference.SwitchPreference;
 
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
+import com.pavelsikun.seekbarpreference.SeekBarPreference;
 
 /**
  * Created by akif on 08/05/16.
@@ -62,6 +64,17 @@ public class ReminderPreferencesFragment extends PreferenceFragment implements S
 
         String currentSound = Pref.Reminders.sound(getActivity(), prayerTimeName);
         updateSoundSummary(sound, currentSound);
+
+        SwitchPreference enabled = (SwitchPreference) findPreference(Pref.Reminders.ENABLED_BASE + prayerTimeName);
+        final SeekBarPreference timeToRemind = (SeekBarPreference) findPreference(Pref.Reminders.TIME_TO_REMIND_BASE + prayerTimeName);
+
+        timeToRemind.setEnabled(enabled.isChecked());
+        enabled.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
+                timeToRemind.setEnabled((boolean) newValue);
+                return true;
+            }
+        });
     }
 
     private void updateSoundSummary(Preference preference, String newValue) {

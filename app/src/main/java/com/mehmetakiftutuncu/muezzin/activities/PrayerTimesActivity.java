@@ -12,11 +12,17 @@ import com.mehmetakiftutuncu.muezzin.fragments.PrayerTimesFragment;
 import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.stephentuso.welcome.WelcomeScreenHelper;
 
 public class PrayerTimesActivity extends MuezzinActivity {
+    private WelcomeScreenHelper welcomeScreenHelper;
+
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prayertimes);
+
+        welcomeScreenHelper = new WelcomeScreenHelper(this, WelcomeActivity.class);
+        welcomeScreenHelper.show(savedInstanceState);
     }
 
     @Override protected void onResume() {
@@ -51,6 +57,12 @@ public class PrayerTimesActivity extends MuezzinActivity {
         }
     }
 
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        welcomeScreenHelper.onSaveInstanceState(outState);
+
+        super.onSaveInstanceState(outState);
+    }
+
     private void showNoPlacesFound() {
         NoPlacesFoundFragment noPlacesFoundFragment = new NoPlacesFoundFragment();
 
@@ -67,16 +79,5 @@ public class PrayerTimesActivity extends MuezzinActivity {
                 .beginTransaction()
                 .replace(R.id.frameLayout_prayerTimesContainer, prayerTimesFragment, "PrayerTimesFragment")
                 .commit();
-    }
-
-    @Override protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
-        Bundle bundle = intent.getExtras();
-        Optional<Place> maybePlace = Place.fromBundle(bundle);
-
-        if (maybePlace.isDefined) {
-            showPrayerTimes(bundle);
-        }
     }
 }

@@ -1,12 +1,16 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="AppThemeBase"/>
+    <style name="MuezzinTheme" parent="MuezzinThemeBase"/>
 
-    <style name="AppThemeBase" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="MuezzinThemeBase" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="MuezzinWelcomeTheme" parent="WelcomeScreenTheme">
+        <item name="welcomeButtonSkipText">@string/welcome_skip</item>
+        <item name="welcomeButtonDoneText">@string/welcome_done</item>
+    </style>
 </resources>

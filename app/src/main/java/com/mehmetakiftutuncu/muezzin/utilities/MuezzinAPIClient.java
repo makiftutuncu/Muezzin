@@ -34,9 +34,9 @@ public class MuezzinAPIClient {
     private static final AsyncHttpClient client = new AsyncHttpClient();
 
     private static final String BASE_URL         = "https://muezzin.herokuapp.com/";
-    private static final String COUNTRIES_API    = "countries/force";
-    private static final String CITIES_API       = "%d/cities/force";
-    private static final String DISTRICTS_API    = "%d/districts/force";
+    private static final String COUNTRIES_API    = "countries";
+    private static final String CITIES_API       = "%d/cities";
+    private static final String DISTRICTS_API    = "%d/districts";
     private static final String PRAYER_TIMES_API = "prayertimes/%d/%d/%s/force";
 
     private static void get(String path, RequestParams params, AsyncHttpResponseHandler responseHandler) {

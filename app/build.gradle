@@ -34,5 +34,6 @@ dependencies {
     compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'com.pavelsikun:material-seekbar-preference:2.3.0'
+    compile 'com.stephentuso:welcome:0.7.2'
     compile 'joda-time:joda-time:2.9.3'
 }

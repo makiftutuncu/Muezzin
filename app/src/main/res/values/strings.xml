@@ -25,6 +25,16 @@
     <string name="hijriMonth11">Dhu al-Qa\'dah</string>
     <string name="hijriMonth12">Dhu al-Hijjah</string>
 
+    <!-- Welcome -->
+    <string name="welcome_skip">Skip</string>
+    <string name="welcome_done">Done</string>
+    <string name="welcome_title1">Welcome to Muezzin!</string>
+    <string name="welcome_content1">You can track prayer times with Muezzin easily.</string>
+    <string name="welcome_title2">Select a Place to Start</string>
+    <string name="welcome_content2">Muezzin supports more than 200 countries and their cities.</string>
+    <string name="welcome_title3">Set Reminders</string>
+    <string name="welcome_content3">Muezzin can remind you that prayer times are approaching.</string>
+
     <!-- Place selection -->
     <string name="placeSelection_noPlacesFound">You haven\'t selected a place yet.\n\nTouch button on bottom right corner to select a place.</string>
     <string name="placeSelection_country">Select a Country</string>

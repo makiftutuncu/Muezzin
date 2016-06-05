@@ -114,7 +114,7 @@ public class PrayerTimeReminderService extends IntentService {
                     .setContentText(getResources().getString(R.string.reminders_notification_summary, remainingMinutes, localizedPrayerTimeName))
                     .setTicker(getString(R.string.reminders_notification_title))
                     .setAutoCancel(true)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_mosque)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                     .setContentIntent(pendingIntent)
                     .setDefaults(Notification.DEFAULT_LIGHTS);
