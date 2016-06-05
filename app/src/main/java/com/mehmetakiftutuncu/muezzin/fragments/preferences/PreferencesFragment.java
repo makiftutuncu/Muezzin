@@ -11,6 +11,7 @@ import com.mehmetakiftutuncu.muezzin.activities.LicencesActivity;
 import com.mehmetakiftutuncu.muezzin.activities.PlaceSelectionActivity;
 import com.mehmetakiftutuncu.muezzin.activities.preferences.ReminderPreferencesActivity;
 import com.mehmetakiftutuncu.muezzin.models.Place;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 
@@ -39,6 +40,8 @@ public class PreferencesFragment extends PreferenceFragment {
         super.onResume();
 
         initializePreferences();
+
+        PrayerTimeReminder.reschedulePrayerTimeReminders(getActivity());
     }
 
     private void initializePreferences() {

@@ -10,7 +10,6 @@ import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 
 import com.mehmetakiftutuncu.muezzin.R;
-import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 
 /**
@@ -28,14 +27,6 @@ public class ReminderPreferencesFragment extends PreferenceFragment {
         initializeForPrayerTime("asr");
         initializeForPrayerTime("maghrib");
         initializeForPrayerTime("isha");
-    }
-
-    @Override public void onPause() {
-        super.onPause();
-
-        if (PrayerTimeReminder.isAtLeastOneReminderEnabled(getActivity())) {
-            PrayerTimeReminder.reschedulePrayerTimeReminders(getActivity());
-        }
     }
 
     private void initializeForPrayerTime(final String prayerTimeName) {
