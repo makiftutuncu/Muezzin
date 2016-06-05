@@ -1,7 +1,33 @@
 Muezzin
-=================================
+=======
+Muezzin is an application for Islamic prayer times. It is a lightweight and easy to use application. It provides prayer times data for more than 200 countries. You can set and customize reminder notifications for each prayer time of a day.
 
-[To be completed]
+The data Muezzin uses are provided by [**Muezzin API**](https://github.com/mehmetakiftutuncu/MuezzinAPI) server application which gets all the data it has from Republic of Turkey, Presidency of Religious Affairs' website: http://www.diyanet.gov.tr/
+
+Please feel free to contribute and don't hesitate to let me know about your feedback, ideas and issues.
+
+May Allah accept your prayers.
+
+Download
+--------
+Muezzin is on Google Play Store, available in English and Turkish for devices running Android 4.0.3+.
+
+<a href="https://play.google.com/store/apps/details?id=com.mehmetakiftutuncu.muezzin">
+  <img alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
+</a>
+
+Features I Plan to Add in the Future
+------------------------------------
+1. Home screen widgets
+2. Automatically setting silent mode during prayer times
+3. ...
+
+Permissions
+-----------
+Muezzin needs following permissions to work:
+
+1. **Network connection** - This is for the application to be able to get it's data from Muezzin API. Once any data is downloaded, no more network connection is needed.
+2. **Run at startup** - This is required in order to keep the reminders you set alive when you turn off your device and back on again.
 
 License
 --------------
