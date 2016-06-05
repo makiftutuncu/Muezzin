@@ -35,6 +35,7 @@ public class LicencesActivity extends AppCompatActivity {
         licences.add(Licenses.fromGitHub("JodaOrg/joda-time"));
 
         // Libraries that are hosted on GitHub, and license file is provided as "LICENSE"
+        licences.add(Licenses.fromGitHub("Maddoc42/Android-Material-Icon-Generator", Licenses.FILE_NO_EXTENSION));
         licences.add(Licenses.fromGitHub("yshrsmz/LicenseAdapter", Licenses.FILE_NO_EXTENSION));
 
         LicenseAdapter adapter = new LicenseAdapter(licences);

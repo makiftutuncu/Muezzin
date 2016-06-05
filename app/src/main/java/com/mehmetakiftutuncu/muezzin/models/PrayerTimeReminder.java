@@ -118,7 +118,7 @@ public class PrayerTimeReminder {
 
         bundle.putInt(EXTRA_INDEX, index);
         bundle.putString(EXTRA_PRAYER_TIME_NAME, prayerTimeName);
-        bundle.putSerializable(EXTRA_REMINDER_TIME, reminderTime);
+        bundle.putLong(EXTRA_REMINDER_TIME, reminderTime.getMillis());
 
         return bundle;
     }
@@ -130,7 +130,7 @@ public class PrayerTimeReminder {
 
         int index             = bundle.getInt(EXTRA_INDEX);
         String prayerTimeName = bundle.getString(EXTRA_PRAYER_TIME_NAME);
-        DateTime reminderTime = (DateTime) bundle.getSerializable(EXTRA_REMINDER_TIME);
+        DateTime reminderTime = new DateTime(bundle.getLong(EXTRA_REMINDER_TIME), DateTimeZone.UTC).withZoneRetainFields(DateTimeZone.getDefault());
 
         return new Some<>(new PrayerTimeReminder(index, prayerTimeName, reminderTime));
     }
