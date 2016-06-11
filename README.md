@@ -10,7 +10,7 @@ May Allah accept your prayers.
 
 Download
 --------
-Muezzin is on Google Play Store, available in English and Turkish for devices running Android 4.0.3+.
+Muezzin is on Google Play Store, available for devices running Android 4.0.3+.
 
 <a href="https://play.google.com/store/apps/details?id=com.mehmetakiftutuncu.muezzin">
   <img alt="Get it on Google Play" src="https://developer.android.com/images/brand/en_generic_rgb_wo_60.png" />
@@ -21,6 +21,12 @@ Features I Plan to Add in the Future
 1. Home screen widgets
 2. Automatically setting silent mode during prayer times
 3. ...
+
+Translations
+------------
+Muezzin currently supports English and Turkish. To help translate it into your language, please visit http://osreg42.oneskyapp.com/collaboration/project/70308
+
+Translations are welcome.
 
 Permissions
 -----------

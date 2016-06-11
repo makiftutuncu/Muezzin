@@ -108,6 +108,11 @@ public class MuezzinAPIClient {
                 Log.error(MuezzinAPIClient.class, throwable, "Failed to get countries, Muezzin API response status '%d' and body '%s'", statusCode, responseString);
                 listener.onCountriesDownloadFailed();
             }
+
+            @Override public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorJson) {
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get countries, Muezzin API response status '%d' and body '%s'", statusCode, errorJson);
+                listener.onCountriesDownloadFailed();
+            }
         });
     }
 
@@ -165,6 +170,11 @@ public class MuezzinAPIClient {
 
             @Override public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.error(MuezzinAPIClient.class, throwable, "Failed to get cities for country '%d', Muezzin API response status '%d' and body '%s'", countryId, statusCode, responseString);
+                listener.onCitiesDownloadFailed();
+            }
+
+            @Override public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorJson) {
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get cities for country '%d', Muezzin API response status '%d' and body '%s'", countryId, statusCode, errorJson);
                 listener.onCitiesDownloadFailed();
             }
         });
@@ -226,6 +236,11 @@ public class MuezzinAPIClient {
                 Log.error(MuezzinAPIClient.class, throwable, "Failed to get districts for city '%d', Muezzin API response status '%d' and body '%s'", cityId, statusCode, responseString);
                 listener.onDistrictsDownloadFailed();
             }
+
+            @Override public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorJson) {
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get districts for city '%d', Muezzin API response status '%d' and body '%s'", cityId, statusCode, errorJson);
+                listener.onDistrictsDownloadFailed();
+            }
         });
     }
 
@@ -275,6 +290,11 @@ public class MuezzinAPIClient {
 
             @Override public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
                 Log.error(MuezzinAPIClient.class, throwable, "Failed to get prayer times for place '%s', Muezzin API response status '%d' and body '%s'", place, statusCode, responseString);
+                listener.onPrayerTimesDownloadFailed();
+            }
+
+            @Override public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorJson) {
+                Log.error(MuezzinAPIClient.class, throwable, "Failed to get prayer times for place '%s', Muezzin API response status '%d' and body '%s'", place, statusCode, errorJson);
                 listener.onPrayerTimesDownloadFailed();
             }
         });

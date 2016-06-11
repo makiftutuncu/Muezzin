@@ -1,10 +1,13 @@
 package com.mehmetakiftutuncu.muezzin.fragments;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,6 +57,9 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
     private Context context;
     private MuezzinActivity muezzinActivity;
 
+    private int defaultTextColor;
+    private int redTextColor;
+
     public PrayerTimesFragment() {}
 
     public static PrayerTimesFragment with(Bundle bundle) {
@@ -87,6 +93,18 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
         try {
             this.context    = context;
             muezzinActivity = (MuezzinActivity) context;
+
+            TypedValue typedValue = new TypedValue();
+            muezzinActivity.getTheme().resolveAttribute(android.R.attr.textColorSecondary, typedValue, true);
+            TypedArray typedArray = getActivity().obtainStyledAttributes(typedValue.data, new int[] {android.R.attr.textColorSecondary});
+            defaultTextColor = typedArray.getColor(0, -1);
+            typedArray.recycle();
+
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                redTextColor = getResources().getColor(R.color.red);
+            } else {
+                redTextColor = getResources().getColor(R.color.red, muezzinActivity.getTheme());
+            }
         } catch (ClassCastException e) {
             throw new ClassCastException(context + " must extend MuezzinActivity!");
         }
@@ -201,8 +219,16 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
             DateTime remaining   = nextPrayerTime.minus(now.getMillis());
             String remainingTime = remaining.toString(PrayerTimes.remainingTimeFormat);
 
-            textViewRemainingTimeInfo.setText(getString(R.string.prayerTimes_cardTitle_remainingTime, nextPrayerTimeName));
-            textViewRemainingTime.setText(remainingTime);
+            boolean isRemainingLessThan45Minutes = remaining.getHourOfDay() == 0 && remaining.getMinuteOfHour() < 45;
+            int color = isRemainingLessThan45Minutes ? redTextColor : defaultTextColor;
+
+            if (isAdded()) {
+                textViewRemainingTimeInfo.setText(getString(R.string.prayerTimes_cardTitle_remainingTime, nextPrayerTimeName));
+                textViewRemainingTime.setText(remainingTime);
+
+                textViewRemainingTimeInfo.setTextColor(color);
+                textViewRemainingTime.setTextColor(color);
+            }
         }
     }
 
