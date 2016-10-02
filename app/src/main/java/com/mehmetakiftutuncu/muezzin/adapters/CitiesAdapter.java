@@ -6,24 +6,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CityViewHolder;
+import com.mehmetakiftutuncu.muezzin.fragments.CitySelectionFragment;
 import com.mehmetakiftutuncu.muezzin.models.City;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Created by akif on 11/05/16.
  */
 public class CitiesAdapter extends RecyclerView.Adapter<CityViewHolder> {
-    private ArrayList<City> allCities;
-    private ArrayList<City> cities;
+    private List<City> allCities;
+    private List<City> cities;
 
-    private OnCitySelectedListener onCitySelectedListener;
+    private CitySelectionFragment.OnCitySelectedListener onCitySelectedListener;
 
-    public CitiesAdapter(ArrayList<City> cities, OnCitySelectedListener onCitySelectedListener) {
+    public CitiesAdapter(List<City> cities, CitySelectionFragment.OnCitySelectedListener onCitySelectedListener) {
         this.allCities = cities;
         this.cities    = cities;
 
@@ -61,7 +62,7 @@ public class CitiesAdapter extends RecyclerView.Adapter<CityViewHolder> {
         for (int i = 0, size = allCities.size(); i < size; i++) {
             City city = allCities.get(i);
 
-            if (city.name.toLowerCase(city.isTurkishCity ? locale : Locale.getDefault()).contains(q)) {
+            if (city.name.toLowerCase(city.isTurkish ? locale : Locale.getDefault()).contains(q)) {
                 cities.add(city);
             }
         }

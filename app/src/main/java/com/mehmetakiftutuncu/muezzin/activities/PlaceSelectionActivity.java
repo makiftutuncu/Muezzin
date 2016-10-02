@@ -7,29 +7,24 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
+import com.github.mehmetakiftutuncu.toolbelt.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.fragments.CitySelectionFragment;
 import com.mehmetakiftutuncu.muezzin.fragments.CountrySelectionFragment;
 import com.mehmetakiftutuncu.muezzin.fragments.DistrictSelectionFragment;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 import com.mehmetakiftutuncu.muezzin.models.District;
 import com.mehmetakiftutuncu.muezzin.models.Place;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
 
-public class PlaceSelectionActivity extends MuezzinActivity implements OnCountrySelectedListener, OnCitySelectedListener, OnDistrictSelectedListener {
+public class PlaceSelectionActivity extends MuezzinActivity implements CountrySelectionFragment.OnCountrySelectedListener, CitySelectionFragment.OnCitySelectedListener, DistrictSelectionFragment.OnDistrictSelectedListener {
     public static final String EXTRA_STARTED_FROM_PREFERENCES = "startedFromPreferences";
 
     private int countryId = 0;
     private int cityId = 0;
-    private Optional<Integer> districtId = new None<>();
+    private Optional<Integer> districtId = Optional.empty();
 
     private boolean startedFromPreferences;
 
@@ -46,7 +41,7 @@ public class PlaceSelectionActivity extends MuezzinActivity implements OnCountry
         if (savedInstanceState != null) {
             countryId  = savedInstanceState.getInt("countryId");
             cityId     = savedInstanceState.getInt("cityId");
-            districtId = savedInstanceState.containsKey("districtId") ? new Some<>(savedInstanceState.getInt("districtId")) : new None<Integer>();
+            districtId = savedInstanceState.containsKey("districtId") ? Optional.with(savedInstanceState.getInt("districtId")) : Optional.<Integer>empty();
 
             startedFromPreferences = savedInstanceState.getBoolean("startedFromPreferences");
 
@@ -81,7 +76,7 @@ public class PlaceSelectionActivity extends MuezzinActivity implements OnCountry
         outState.putInt("countryId", countryId);
         outState.putInt("cityId", cityId);
 
-        if (districtId.isDefined) {
+        if (districtId.isDefined()) {
             outState.putInt("districtId", districtId.get());
         }
 
@@ -102,14 +97,14 @@ public class PlaceSelectionActivity extends MuezzinActivity implements OnCountry
     @Override public void onCitySelected(City city) {
         cityId = city.id;
 
-        DistrictSelectionFragment districtSelectionFragment = DistrictSelectionFragment.with(cityId, this);
+        DistrictSelectionFragment districtSelectionFragment = DistrictSelectionFragment.with(countryId, cityId, this);
         districtSelectionFragment.setOnDistrictSelectedListener(this);
 
         replaceFragment(districtSelectionFragment, "DistrictSelectionFragment", true);
     }
 
     @Override public void onDistrictSelected(District district) {
-        districtId = new Some<>(district.id);
+        districtId = Optional.with(district.id);
 
         launchPrayerTimesActivity();
     }

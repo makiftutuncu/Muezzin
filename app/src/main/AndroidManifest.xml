@@ -61,5 +61,39 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".widgetproviders.PrayerTimesHorizontalWidget" android:label="@string/widgets_prayertimes_horizontal_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayertimes_horizontal" />
+        </receiver>
+
+        <receiver android:name=".widgetproviders.PrayerTimesVerticalWidget" android:label="@string/widgets_prayertimes_vertical_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayertimes_vertical" />
+        </receiver>
+
+        <receiver android:name=".widgetproviders.PrayerTimesBigWidget" android:label="@string/widgets_prayertimes_big_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_prayertimes_big" />
+        </receiver>
+
+        <service
+            android:name=".services.WidgetUpdaterService"
+            android:exported="false" />
     </application>
 </manifest>

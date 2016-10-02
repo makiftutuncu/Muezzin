@@ -4,8 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.fragments.CitySelectionFragment;
 import com.mehmetakiftutuncu.muezzin.models.City;
 
 /**
@@ -15,9 +15,9 @@ public class CityViewHolder extends RecyclerView.ViewHolder {
     private View cityItemLayout;
     private TextView textViewName;
 
-    private OnCitySelectedListener onCitySelectedListener;
+    private CitySelectionFragment.OnCitySelectedListener onCitySelectedListener;
 
-    public CityViewHolder(View cityItemLayout, OnCitySelectedListener onCitySelectedListener) {
+    public CityViewHolder(View cityItemLayout, CitySelectionFragment.OnCitySelectedListener onCitySelectedListener) {
         super(cityItemLayout);
 
         this.cityItemLayout = cityItemLayout;
@@ -29,10 +29,6 @@ public class CityViewHolder extends RecyclerView.ViewHolder {
     public void setFrom(final City city) {
         textViewName.setText(city.name);
 
-        cityItemLayout.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                onCitySelectedListener.onCitySelected(city);
-            }
-        });
+        cityItemLayout.setOnClickListener(v -> onCitySelectedListener.onCitySelected(city));
     }
 }

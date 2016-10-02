@@ -5,8 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.fragments.CountrySelectionFragment;
 import com.mehmetakiftutuncu.muezzin.models.Country;
 
 /**
@@ -19,9 +19,9 @@ public class CountryViewHolder extends RecyclerView.ViewHolder {
     private TextView textViewName;
     private TextView textViewNativeName;
 
-    private OnCountrySelectedListener onCountrySelectedListener;
+    private CountrySelectionFragment.OnCountrySelectedListener onCountrySelectedListener;
 
-    public CountryViewHolder(Context context, View countryItemLayout, OnCountrySelectedListener onCountrySelectedListener) {
+    public CountryViewHolder(Context context, View countryItemLayout, CountrySelectionFragment.OnCountrySelectedListener onCountrySelectedListener) {
         super(countryItemLayout);
 
         this.context = context;
@@ -36,12 +36,8 @@ public class CountryViewHolder extends RecyclerView.ViewHolder {
         String nameToUse = country.getLocalizedName(context);
 
         textViewName.setText(nameToUse);
-        textViewNativeName.setText(country.nativeName);
+        textViewNativeName.setText(country.nameNative);
 
-        countryItemLayout.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                onCountrySelectedListener.onCountrySelected(country);
-            }
-        });
+        countryItemLayout.setOnClickListener(v -> onCountrySelectedListener.onCountrySelected(country));
     }
 }

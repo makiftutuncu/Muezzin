@@ -4,8 +4,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.fragments.DistrictSelectionFragment;
 import com.mehmetakiftutuncu.muezzin.models.District;
 
 /**
@@ -15,9 +15,9 @@ public class DistrictViewHolder extends RecyclerView.ViewHolder {
     private View districtItemLayout;
     private TextView textViewName;
 
-    private OnDistrictSelectedListener onDistrictSelectedListener;
+    private DistrictSelectionFragment.OnDistrictSelectedListener onDistrictSelectedListener;
 
-    public DistrictViewHolder(View districtItemLayout, OnDistrictSelectedListener onDistrictSelectedListener) {
+    public DistrictViewHolder(View districtItemLayout, DistrictSelectionFragment.OnDistrictSelectedListener onDistrictSelectedListener) {
         super(districtItemLayout);
 
         this.districtItemLayout = districtItemLayout;
@@ -29,10 +29,6 @@ public class DistrictViewHolder extends RecyclerView.ViewHolder {
     public void setFrom(final District district) {
         textViewName.setText(district.name);
 
-        districtItemLayout.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                onDistrictSelectedListener.onDistrictSelected(district);
-            }
-        });
+        districtItemLayout.setOnClickListener(v -> onDistrictSelectedListener.onDistrictSelected(district));
     }
 }

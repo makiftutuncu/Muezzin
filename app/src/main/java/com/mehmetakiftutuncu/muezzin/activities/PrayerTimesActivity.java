@@ -4,25 +4,42 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.preferences.PreferencesActivity;
 import com.mehmetakiftutuncu.muezzin.fragments.NoPlacesFoundFragment;
 import com.mehmetakiftutuncu.muezzin.fragments.PrayerTimesFragment;
 import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
 import com.stephentuso.welcome.WelcomeScreenHelper;
 
 public class PrayerTimesActivity extends MuezzinActivity {
     private WelcomeScreenHelper welcomeScreenHelper;
+    private boolean shownWelcomeScreen;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_prayertimes);
 
         welcomeScreenHelper = new WelcomeScreenHelper(this, WelcomeActivity.class);
-        welcomeScreenHelper.show(savedInstanceState);
+
+        shownWelcomeScreen = savedInstanceState != null && savedInstanceState.getBoolean("shownWelcomeScreen", false);
+
+        if (!shownWelcomeScreen) {
+            shownWelcomeScreen = true;
+
+            if (Pref.Application.getVersion(this) < 4) {
+                // Installed version 2.0 for the first time
+                Toast.makeText(this, R.string.welcome_updateNotice, Toast.LENGTH_LONG).show();
+                Pref.getSharedPreferences(this).edit().clear().apply();
+                welcomeScreenHelper.forceShow();
+                Pref.Application.setVersion(this);
+            } else {
+                welcomeScreenHelper.show(savedInstanceState);
+            }
+        }
     }
 
     @Override protected void onResume() {
@@ -30,7 +47,7 @@ public class PrayerTimesActivity extends MuezzinActivity {
 
         Optional<Place> maybeCurrentPlace = Pref.Places.getCurrentPlace(this);
 
-        if (maybeCurrentPlace.isEmpty) {
+        if (maybeCurrentPlace.isEmpty()) {
             showNoPlacesFound();
         } else {
             Place currentPlace = maybeCurrentPlace.get();
@@ -59,6 +76,7 @@ public class PrayerTimesActivity extends MuezzinActivity {
 
     @Override protected void onSaveInstanceState(Bundle outState) {
         welcomeScreenHelper.onSaveInstanceState(outState);
+        outState.putBoolean("shownWelcomeScreen", shownWelcomeScreen);
 
         super.onSaveInstanceState(outState);
     }

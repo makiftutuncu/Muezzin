@@ -11,23 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.github.mehmetakiftutuncu.toolbelt.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
 import com.mehmetakiftutuncu.muezzin.adapters.DistrictsAdapter;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictsDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.models.District;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
-import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by akif on 08/05/16.
  */
-public class DistrictSelectionFragment extends StatefulFragment implements OnDistrictsDownloadedListener, FloatingSearchView.OnQueryChangeListener {
+public class DistrictSelectionFragment extends StatefulFragment implements MuezzinAPI.OnDistrictsDownloadedListener, FloatingSearchView.OnQueryChangeListener {
     private FloatingSearchView floatingSearchView;
     private RecyclerView recyclerViewDistrictSelection;
 
@@ -35,17 +34,24 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
     private MuezzinActivity muezzinActivity;
     private OnDistrictSelectedListener onDistrictSelectedListener;
 
+    private int countryId;
     private int cityId;
 
-    private ArrayList<District> districts;
+    private List<District> districts;
     private DistrictsAdapter districtsAdapter;
+
+    public interface OnDistrictSelectedListener {
+        void onDistrictSelected(District district);
+        void onNoDistrictsFound();
+    }
 
     public DistrictSelectionFragment() {}
 
-    public static DistrictSelectionFragment with(int cityId, OnDistrictSelectedListener onDistrictSelectedListener) {
+    public static DistrictSelectionFragment with(int countryId, int cityId, OnDistrictSelectedListener onDistrictSelectedListener) {
         DistrictSelectionFragment districtSelectionFragment = new DistrictSelectionFragment();
         Bundle arguments = new Bundle();
 
+        arguments.putInt("countryId", countryId);
         arguments.putInt("cityId", cityId);
         districtSelectionFragment.setArguments(arguments);
         districtSelectionFragment.setOnDistrictSelectedListener(onDistrictSelectedListener);
@@ -56,30 +62,20 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
     @Override public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        cityId = getArguments().getInt("cityId");
+        countryId = getArguments().getInt("countryId");
+        cityId    = getArguments().getInt("cityId");
 
         if (savedInstanceState != null) {
-            ArrayList<String> districtJsons = savedInstanceState.getStringArrayList("districts");
-            districts = new ArrayList<>();
+            ArrayList<District> districtParcelables = savedInstanceState.getParcelableArrayList("districts");
 
-            for (int i = 0, size = districtJsons != null ? districtJsons.size() : 0; i < size; i++) {
-                districts.add(District.fromJson(cityId, districtJsons.get(i)).get());
-            }
+            districts = districtParcelables != null ? districtParcelables : new ArrayList<>();
         }
 
         setRetainInstance(true);
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
-        if (districts != null) {
-            ArrayList<String> districtJsons = new ArrayList<>();
-            for (int i = 0, size = districts.size(); i < size; i++) {
-                districtJsons.add(districts.get(i).toJson());
-            }
-
-            outState.putStringArrayList("districts", districtJsons);
-        }
-
+        outState.putParcelableArrayList("districts", new ArrayList<>(districts));
         outState.putParcelable("recyclerViewDistrictSelection", recyclerViewDistrictSelection.getLayoutManager().onSaveInstanceState());
 
         super.onSaveInstanceState(outState);
@@ -129,7 +125,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         return layout;
     }
 
-    @Override public void onDistrictsDownloaded(@NonNull ArrayList<District> districts) {
+    @Override public void onDistrictsDownloaded(@NonNull List<District> districts) {
         this.districts = districts;
 
         if (districts.isEmpty()) {
@@ -147,7 +143,8 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         }
     }
 
-    @Override public void onDistrictsDownloadFailed() {
+    @Override public void onDownloadDistrictsFailed(Exception e) {
+        Log.error(getClass(), e, "");
         changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
     }
 
@@ -156,9 +153,9 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
     }
 
     private void loadDistricts() {
-        Optional<ArrayList<District>> maybeDistrictsFromDatabase = District.getDistricts(context, cityId);
+        Optional<List<District>> maybeDistrictsFromDatabase = District.getDistricts(context, cityId);
 
-        if (maybeDistrictsFromDatabase.isEmpty) {
+        if (maybeDistrictsFromDatabase.isEmpty()) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
             districts = maybeDistrictsFromDatabase.get();
@@ -166,7 +163,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
             if (districts.isEmpty()) {
                 Log.debug(getClass(), "No districts for city '%d' were found on database!", cityId);
 
-                MuezzinAPIClient.getDistricts(cityId, this);
+                MuezzinAPI.get().getDistricts(context, countryId, cityId, this);
             } else {
                 Log.debug(getClass(), "Loaded districts for city '%d' from database!", cityId);
 
@@ -208,11 +205,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
                         View fab = layout.findViewById(R.id.fab_retry);
 
                         if (fab != null) {
-                            fab.setOnClickListener(new View.OnClickListener() {
-                                @Override public void onClick(View v) {
-                                    retry(retryAction);
-                                }
-                            });
+                            fab.setOnClickListener(v -> retry(retryAction));
                         }
                     }
                     break;
@@ -224,7 +217,7 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
         switch (action) {
             case RETRY_ACTION_DOWNLOAD:
                 changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
-                MuezzinAPIClient.getDistricts(cityId, this);
+                MuezzinAPI.get().getDistricts(context, countryId, cityId, this);
                 break;
         }
     }
@@ -232,6 +225,6 @@ public class DistrictSelectionFragment extends StatefulFragment implements OnDis
     @Override public void onSearchTextChanged(String oldQuery, String newQuery) {
         Log.debug(getClass(), "Searching for district with query '%s'", newQuery);
 
-        districtsAdapter.search(newQuery);
+        districtsAdapter.search(newQuery, cityId);
     }
 }

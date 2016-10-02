@@ -12,6 +12,7 @@ public class WelcomeActivity extends com.stephentuso.welcome.ui.WelcomeActivity 
                 .basicPage(R.drawable.ic_mosque, getString(R.string.welcome_title1), getString(R.string.welcome_content1), R.color.colorPrimary, true)
                 .basicPage(R.drawable.ic_place_white, getString(R.string.welcome_title2), getString(R.string.welcome_content2), R.color.colorPrimary, true)
                 .basicPage(R.drawable.ic_settings, getString(R.string.welcome_title3), getString(R.string.welcome_content3), R.color.colorPrimary, true)
+                .basicPage(R.drawable.ic_home, getString(R.string.welcome_title4), getString(R.string.welcome_content4), R.color.colorPrimary, true)
                 .swipeToDismiss(true)
                 .animateButtons(true)
                 .backButtonNavigatesPages(true)

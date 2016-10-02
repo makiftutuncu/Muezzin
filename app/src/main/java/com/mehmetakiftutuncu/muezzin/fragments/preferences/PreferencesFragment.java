@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.LicencesActivity;
 import com.mehmetakiftutuncu.muezzin.activities.PlaceSelectionActivity;
@@ -13,7 +14,7 @@ import com.mehmetakiftutuncu.muezzin.activities.preferences.ReminderPreferencesA
 import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.widgetproviders.PrayerTimesWidgetBase;
 
 /**
  * Created by akif on 08/05/16.
@@ -42,53 +43,46 @@ public class PreferencesFragment extends PreferenceFragment {
         initializePreferences();
 
         PrayerTimeReminder.reschedulePrayerTimeReminders(getActivity());
+        PrayerTimesWidgetBase.updateAllWidgets(getActivity());
     }
 
     private void initializePreferences() {
         Preference place = findPreference(KEY_GENERAL_PLACE);
-        place.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getActivity(), PlaceSelectionActivity.class);
-                intent.putExtra(PlaceSelectionActivity.EXTRA_STARTED_FROM_PREFERENCES, true);
-                startActivity(intent);
+        place.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(getActivity(), PlaceSelectionActivity.class);
+            intent.putExtra(PlaceSelectionActivity.EXTRA_STARTED_FROM_PREFERENCES, true);
+            startActivity(intent);
 
-                return true;
-            }
+            return true;
         });
 
         updatePlaceSummary(place);
 
         Preference reminders = findPreference(KEY_GENERAL_REMINDERS);
-        reminders.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getActivity(), ReminderPreferencesActivity.class);
-                startActivity(intent);
+        reminders.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(getActivity(), ReminderPreferencesActivity.class);
+            startActivity(intent);
 
-                return true;
-            }
+            return true;
         });
 
         Preference rate = findPreference(KEY_MORE_RATE);
-        rate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(RATE_URI));
-                startActivity(Intent.createChooser(intent, getString(R.string.preferences_more_rate)));
+        rate.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(RATE_URI));
+            startActivity(Intent.createChooser(intent, getString(R.string.preferences_more_rate)));
 
-                return true;
-            }
+            return true;
         });
 
         Preference feedback = findPreference(KEY_MORE_FEEDBACK);
-        feedback.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(Intent.ACTION_SEND);
-                intent.setType("message/rfc822");
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{FEEDBACK_CONTACT});
-                intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.applicationName));
-                startActivity(Intent.createChooser(intent, getString(R.string.preferences_more_feedback)));
+        feedback.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("message/rfc822");
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[]{FEEDBACK_CONTACT});
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.applicationName));
+            startActivity(Intent.createChooser(intent, getString(R.string.preferences_more_feedback)));
 
-                return true;
-            }
+            return true;
         });
 
         Preference version = findPreference(KEY_MORE_VERSION);
@@ -96,20 +90,18 @@ public class PreferencesFragment extends PreferenceFragment {
         version.setSummary(versionName);
 
         Preference licenses = findPreference(KEY_MORE_LICENSES);
-        licenses.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-            @Override public boolean onPreferenceClick(Preference preference) {
-                Intent intent = new Intent(getActivity(), LicencesActivity.class);
-                startActivity(intent);
+        licenses.setOnPreferenceClickListener(preference -> {
+            Intent intent = new Intent(getActivity(), LicencesActivity.class);
+            startActivity(intent);
 
-                return true;
-            }
+            return true;
         });
     }
 
     private void updatePlaceSummary(Preference preference) {
         Optional<Place> maybeCurrentPlace = Pref.Places.getCurrentPlace(getActivity());
 
-        String summary = maybeCurrentPlace.isDefined ? maybeCurrentPlace.get().getPlaceName(getActivity()).getOrElse("") : "";
+        String summary = maybeCurrentPlace.isDefined() ? maybeCurrentPlace.get().getPlaceName(getActivity()).getOrElse("") : "";
 
         if (!summary.isEmpty()) {
             preference.setSummary(summary);

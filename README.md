@@ -18,9 +18,8 @@ Muezzin is on Google Play Store, available for devices running Android 4.0.3+.
 
 Features I Plan to Add in the Future
 ------------------------------------
-1. Home screen widgets
-2. Automatically setting silent mode during prayer times
-3. ...
+1. Automatically setting silent mode during prayer times
+2. ...
 
 Translations
 ------------

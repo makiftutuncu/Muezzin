@@ -35,6 +35,9 @@
     <string name="welcome_content2">Müezzin 200\'den fazla ülkeyi ve şehirlerini destekler.</string>
     <string name="welcome_title3">Hatırlatıcılar Belirleyin</string>
     <string name="welcome_content3">Müezzin size namaz vakitlerinin yaklaştığını hatırlatabilir.</string>
+    <string name="welcome_title4">Ana Ekran Araçları</string>
+    <string name="welcome_content4">Artık ana ekranınıza Müezzin araçları (widget) ekleyebilirsiniz.</string>
+    <string name="welcome_updateNotice">Verilerdeki değişiklik nedeniyle bu güncellemeden sonra bir kereye mahsus yeniden kurulum yapmanız gerekmektedir.</string>
 
     <!-- Place selection -->
     <string name="placeSelection_noPlacesFound">Henüz bir konum seçilmemiş.\n\nKonum seçmek için sağ alt köşedeki düğmeye dokunun.</string>
@@ -50,12 +53,14 @@
 
     <!-- States -->
     <string name="state_loading">Yükleniyor, lütfen bekleyin…</string>
-    <string name="state_error">Hay aksi! Bir hata oluştu.\n\nYeniden denemek için sağ alt köşedeki düğmeye dokunun.</string>
+    <string name="state_error">Hay aksi! Bir hata oluştu.\n\nİnternete bağlı olduğunuzdan emin olun.\n\nYeniden denemek için sağ alt köşedeki düğmeye dokunun.</string>
     <string name="state_noData">Hay aksi! Aradığınız veri bulunamadı.\n\nİndirmeyi denemek için sağ alt köşedeki düğmeye dokunun.</string>
 
     <!-- Reminders -->
     <string name="reminders_notification_title">Namaz Vakti Yaklaşıyor</string>
     <string name="reminders_notification_summary">%2$s vaktine %1$d dakikadan az kaldı!</string>
+    <string name="reminders_notificationOnPrayerTime_title">Namaz Vakti</string>
+    <string name="reminders_notificationOnPrayerTime_summary">%1$s vakti geldi!</string>
 
     <!-- Preferences -->
     <string name="preferences">Tercihler</string>
@@ -72,8 +77,10 @@
     <string name="preferences_reminders_sound">Ses</string>
     <string name="preferences_reminders_silent">Sessiz</string>
     <string name="preferences_reminders_vibration">Titreşim</string>
+    <string name="preferences_reminders_remindBeforePrayerTime">Vakitten Önce Hatırlat</string>
     <string name="preferences_reminders_timeToRemind">Hatırlatıcı Zamanı</string>
     <string name="preferences_reminders_timeToRemindSummary">Vakitten %1$d dakika önce</string>
+    <string name="preferences_reminders_remindOnPrayerTime">Vakitte Hatırlat</string>
 
     <string name="preferences_category_more">Daha Fazlası</string>
 
@@ -82,4 +89,9 @@
     <string name="preferences_more_feedback">Geri Bildirim Gönderin</string>
     <string name="preferences_more_version">Sürüm</string>
     <string name="preferences_more_openSource">Açık Kaynak Lisansları</string>
+
+    <!-- Widgets -->
+    <string name="widgets_prayertimes_horizontal_label">Müezzin (Yatay)</string>
+    <string name="widgets_prayertimes_vertical_label">Müezzin (Dikey)</string>
+    <string name="widgets_prayertimes_big_label">Müezzin (Büyük)</string>
 </resources>

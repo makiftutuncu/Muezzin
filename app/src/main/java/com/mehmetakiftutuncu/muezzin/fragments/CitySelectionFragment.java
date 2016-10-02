@@ -11,23 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.github.mehmetakiftutuncu.toolbelt.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
 import com.mehmetakiftutuncu.muezzin.adapters.CitiesAdapter;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCitiesDownloadedListener;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCitySelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.City;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
-import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by akif on 08/05/16.
  */
-public class CitySelectionFragment extends StatefulFragment implements OnCitiesDownloadedListener, FloatingSearchView.OnQueryChangeListener {
+public class CitySelectionFragment extends StatefulFragment implements FloatingSearchView.OnQueryChangeListener, MuezzinAPI.OnCitiesDownloadedListener {
     private FloatingSearchView floatingSearchView;
     private RecyclerView recyclerViewCitySelection;
 
@@ -37,8 +36,12 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
 
     private int countryId;
 
-    private ArrayList<City> cities;
+    private List<City> cities;
     private CitiesAdapter citiesAdapter;
+
+    public interface OnCitySelectedListener {
+        void onCitySelected(City city);
+    }
 
     public CitySelectionFragment() {}
 
@@ -59,27 +62,16 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         countryId = getArguments().getInt("countryId");
 
         if (savedInstanceState != null) {
-            ArrayList<String> cityJsons = savedInstanceState.getStringArrayList("cities");
-            cities = new ArrayList<>();
+            ArrayList<City> cityParcelables = savedInstanceState.getParcelableArrayList("cities");
 
-            for (int i = 0, size = cityJsons != null ? cityJsons.size() : 0; i < size; i++) {
-                cities.add(City.fromJson(countryId, cityJsons.get(i)).get());
-            }
+            this.cities = cityParcelables != null ? cityParcelables : new ArrayList<>();
         }
 
         setRetainInstance(true);
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
-        if (cities != null) {
-            ArrayList<String> cityJsons = new ArrayList<>();
-            for (int i = 0, size = cities.size(); i < size; i++) {
-                cityJsons.add(cities.get(i).toJson());
-            }
-
-            outState.putStringArrayList("cities", cityJsons);
-        }
-
+        outState.putParcelableArrayList("cities", new ArrayList<>(cities));
         outState.putParcelable("recyclerViewCitySelection", recyclerViewCitySelection.getLayoutManager().onSaveInstanceState());
 
         super.onSaveInstanceState(outState);
@@ -129,7 +121,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         return layout;
     }
 
-    @Override public void onCitiesDownloaded(@NonNull ArrayList<City> cities) {
+    @Override public void onCitiesDownloaded(@NonNull List<City> cities) {
         this.cities = cities;
 
         if (!City.saveCities(context, countryId, cities)) {
@@ -141,7 +133,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         updateUI();
     }
 
-    @Override public void onCitiesDownloadFailed() {
+    @Override public void onDownloadCitiesFailed(Exception e) {
         changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
     }
 
@@ -150,9 +142,9 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
     }
 
     private void loadCities() {
-        Optional<ArrayList<City>> maybeCitiesFromDatabase = City.getCities(context, countryId);
+        Optional<List<City>> maybeCitiesFromDatabase = City.getCities(context, countryId);
 
-        if (maybeCitiesFromDatabase.isEmpty) {
+        if (maybeCitiesFromDatabase.isEmpty()) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
             cities = maybeCitiesFromDatabase.get();
@@ -160,7 +152,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
             if (cities.isEmpty()) {
                 Log.debug(getClass(), "No cities for country '%d' were found on database!", countryId);
 
-                MuezzinAPIClient.getCities(countryId, this);
+                MuezzinAPI.get().getCities(context, countryId, this);
             } else {
                 Log.debug(getClass(), "Loaded cities for country '%d' from database!", countryId);
 
@@ -208,11 +200,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
                         View fab = layout.findViewById(R.id.fab_retry);
 
                         if (fab != null) {
-                            fab.setOnClickListener(new View.OnClickListener() {
-                                @Override public void onClick(View v) {
-                                    retry(retryAction);
-                                }
-                            });
+                            fab.setOnClickListener(v -> retry(retryAction));
                         }
                     }
                     break;
@@ -224,7 +212,7 @@ public class CitySelectionFragment extends StatefulFragment implements OnCitiesD
         switch (action) {
             case RETRY_ACTION_DOWNLOAD:
                 changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
-                MuezzinAPIClient.getCities(countryId, this);
+                MuezzinAPI.get().getCities(context, countryId, this);
                 break;
         }
     }

@@ -12,14 +12,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 
+import com.github.mehmetakiftutuncu.toolbelt.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.PrayerTimesActivity;
 import com.mehmetakiftutuncu.muezzin.broadcastreceivers.PrayerTimeReminderBroadcastReceiver;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
-import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimesOfDay;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.widgetproviders.PrayerTimesWidgetBase;
 
 import org.joda.time.DateTime;
 
@@ -53,10 +54,14 @@ public class PrayerTimeReminderService extends IntentService {
         if (intent != null) {
             String action = intent.getAction();
 
-            if (action.equals(ACTION_REMIND)) {
-                showReminder(intent);
-            } else if (action.equals(ACTION_SCHEDULE)) {
-                schedule();
+            switch (action) {
+                case ACTION_REMIND:
+                    showNotification(intent);
+                    break;
+
+                case ACTION_SCHEDULE:
+                    schedule();
+                    break;
             }
         }
     }
@@ -85,34 +90,38 @@ public class PrayerTimeReminderService extends IntentService {
         intent.putExtras(prayerTimeReminder.toBundle());
         intent.setAction(PrayerTimeReminderService.ACTION_REMIND);
 
-        PendingIntent operation = PendingIntent.getBroadcast(context, prayerTimeReminder.index, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent operation = PendingIntent.getBroadcast(context, prayerTimeReminder.index, intent, 0);
 
-        alarmManager.set(AlarmManager.RTC_WAKEUP, prayerTimeReminder.reminderTime.getMillis(), operation);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, prayerTimeReminder.reminderTime.toDateTimeToday().getMillis(), operation);
     }
 
-    private void showReminder(Intent intent) {
+    private void showNotification(Intent intent) {
         Bundle extras = intent.getExtras();
 
         Optional<PrayerTimeReminder> maybePrayerTimeReminder = PrayerTimeReminder.fromBundle(extras);
 
-        if (maybePrayerTimeReminder.isDefined) {
+        if (maybePrayerTimeReminder.isDefined()) {
             PrayerTimeReminder prayerTimeReminder = maybePrayerTimeReminder.get();
 
-            Log.debug(getClass(), "Showing prayer time for '%s'...", prayerTimeReminder);
+            Log.debug(getClass(), "Showing notification for '%s'...", prayerTimeReminder);
 
-            String localizedPrayerTimeName = PrayerTimes.prayerTimeLocalizedName(this, prayerTimeReminder.prayerTimeName);
+            String localizedPrayerTimeName = PrayerTimesOfDay.prayerTimeLocalizedName(this, prayerTimeReminder.prayerTimeType);
 
-            int remainingMinutes = Pref.Reminders.timeToRemind(this, prayerTimeReminder.prayerTimeName);
-            String sound         = Pref.Reminders.sound(this, prayerTimeReminder.prayerTimeName);
-            boolean vibrate      = Pref.Reminders.vibrate(this, prayerTimeReminder.prayerTimeName);
+            int remainingMinutes = Pref.Reminders.timeToRemind(this, prayerTimeReminder.prayerTimeType);
+
+            String title = prayerTimeReminder.isOnPrayerTime ? getString(R.string.reminders_notificationOnPrayerTime_title) : getString(R.string.reminders_notification_title);
+            String body = prayerTimeReminder.isOnPrayerTime ? getString(R.string.reminders_notificationOnPrayerTime_summary, localizedPrayerTimeName) : getString(R.string.reminders_notification_summary, remainingMinutes, localizedPrayerTimeName);
+
+            String sound    = Pref.Reminders.sound(this, prayerTimeReminder.prayerTimeType);
+            boolean vibrate = Pref.Reminders.vibrate(this, prayerTimeReminder.prayerTimeType);
 
             Intent launchIntent = new Intent(this, PrayerTimesActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, launchIntent, 0);
 
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                    .setContentTitle(getString(R.string.reminders_notification_title))
-                    .setContentText(getResources().getString(R.string.reminders_notification_summary, remainingMinutes, localizedPrayerTimeName))
-                    .setTicker(getString(R.string.reminders_notification_title))
+                    .setContentTitle(title)
+                    .setContentText(body)
+                    .setTicker(title)
                     .setAutoCancel(true)
                     .setSmallIcon(R.drawable.ic_mosque)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
@@ -138,5 +147,6 @@ public class PrayerTimeReminderService extends IntentService {
         Log.debug(getClass(), "Rescheduling prayer time reminders...");
 
         PrayerTimeReminder.reschedulePrayerTimeReminders(this);
+        PrayerTimesWidgetBase.updateAllWidgets(this);
     }
 }

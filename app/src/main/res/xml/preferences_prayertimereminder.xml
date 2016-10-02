@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-
     <PreferenceCategory android:title="@string/prayerTime_fajr">
         <SwitchPreference
             android:key="reminders_enabled_fajr"
@@ -21,6 +20,12 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_fajr"/>
 
+        <SwitchPreference
+            android:key="reminders_remindBeforePrayerTime_fajr"
+            android:title="@string/preferences_reminders_remindBeforePrayerTime"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_fajr"/>
+
         <ListPreference
             android:key="reminders_timeToRemind_fajr"
             android:title="@string/preferences_reminders_timeToRemind"
@@ -29,6 +34,12 @@
             android:positiveButtonText="@null"
             android:negativeButtonText="@null"
             android:defaultValue="45"
+            android:dependency="reminders_remindBeforePrayerTime_fajr"/>
+
+        <SwitchPreference
+            android:key="reminders_remindOnPrayerTime_fajr"
+            android:title="@string/preferences_reminders_remindOnPrayerTime"
+            android:defaultValue="true"
             android:dependency="reminders_enabled_fajr"/>
     </PreferenceCategory>
 
@@ -52,6 +63,12 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_shuruq"/>
 
+        <SwitchPreference
+            android:key="reminders_remindBeforePrayerTime_shuruq"
+            android:title="@string/preferences_reminders_remindBeforePrayerTime"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_shuruq"/>
+
         <ListPreference
             android:key="reminders_timeToRemind_shuruq"
             android:title="@string/preferences_reminders_timeToRemind"
@@ -60,6 +77,12 @@
             android:positiveButtonText="@null"
             android:negativeButtonText="@null"
             android:defaultValue="45"
+            android:dependency="reminders_remindBeforePrayerTime_shuruq"/>
+
+        <SwitchPreference
+            android:key="reminders_remindOnPrayerTime_shuruq"
+            android:title="@string/preferences_reminders_remindOnPrayerTime"
+            android:defaultValue="true"
             android:dependency="reminders_enabled_shuruq"/>
     </PreferenceCategory>
 
@@ -83,6 +106,12 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_dhuhr"/>
 
+        <SwitchPreference
+            android:key="reminders_remindBeforePrayerTime_dhuhr"
+            android:title="@string/preferences_reminders_remindBeforePrayerTime"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_dhuhr"/>
+
         <ListPreference
             android:key="reminders_timeToRemind_dhuhr"
             android:title="@string/preferences_reminders_timeToRemind"
@@ -91,6 +120,12 @@
             android:positiveButtonText="@null"
             android:negativeButtonText="@null"
             android:defaultValue="45"
+            android:dependency="reminders_remindBeforePrayerTime_dhuhr"/>
+
+        <SwitchPreference
+            android:key="reminders_remindOnPrayerTime_dhuhr"
+            android:title="@string/preferences_reminders_remindOnPrayerTime"
+            android:defaultValue="true"
             android:dependency="reminders_enabled_dhuhr"/>
     </PreferenceCategory>
 
@@ -114,6 +149,12 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_asr"/>
 
+        <SwitchPreference
+            android:key="reminders_remindBeforePrayerTime_asr"
+            android:title="@string/preferences_reminders_remindBeforePrayerTime"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_asr"/>
+
         <ListPreference
             android:key="reminders_timeToRemind_asr"
             android:title="@string/preferences_reminders_timeToRemind"
@@ -122,6 +163,12 @@
             android:positiveButtonText="@null"
             android:negativeButtonText="@null"
             android:defaultValue="45"
+            android:dependency="reminders_remindBeforePrayerTime_asr"/>
+
+        <SwitchPreference
+            android:key="reminders_remindOnPrayerTime_asr"
+            android:title="@string/preferences_reminders_remindOnPrayerTime"
+            android:defaultValue="true"
             android:dependency="reminders_enabled_asr"/>
     </PreferenceCategory>
 
@@ -145,6 +192,12 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_maghrib"/>
 
+        <SwitchPreference
+            android:key="reminders_remindBeforePrayerTime_maghrib"
+            android:title="@string/preferences_reminders_remindBeforePrayerTime"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_maghrib"/>
+
         <ListPreference
             android:key="reminders_timeToRemind_maghrib"
             android:title="@string/preferences_reminders_timeToRemind"
@@ -153,6 +206,12 @@
             android:positiveButtonText="@null"
             android:negativeButtonText="@null"
             android:defaultValue="45"
+            android:dependency="reminders_remindBeforePrayerTime_maghrib"/>
+
+        <SwitchPreference
+            android:key="reminders_remindOnPrayerTime_maghrib"
+            android:title="@string/preferences_reminders_remindOnPrayerTime"
+            android:defaultValue="true"
             android:dependency="reminders_enabled_maghrib"/>
     </PreferenceCategory>
 
@@ -176,6 +235,12 @@
             android:defaultValue="true"
             android:dependency="reminders_enabled_isha"/>
 
+        <SwitchPreference
+            android:key="reminders_remindBeforePrayerTime_isha"
+            android:title="@string/preferences_reminders_remindBeforePrayerTime"
+            android:defaultValue="true"
+            android:dependency="reminders_enabled_isha"/>
+
         <ListPreference
             android:key="reminders_timeToRemind_isha"
             android:title="@string/preferences_reminders_timeToRemind"
@@ -184,6 +249,12 @@
             android:positiveButtonText="@null"
             android:negativeButtonText="@null"
             android:defaultValue="45"
+            android:dependency="reminders_remindBeforePrayerTime_isha"/>
+
+        <SwitchPreference
+            android:key="reminders_remindOnPrayerTime_isha"
+            android:title="@string/preferences_reminders_remindOnPrayerTime"
+            android:defaultValue="true"
             android:dependency="reminders_enabled_isha"/>
     </PreferenceCategory>
 </PreferenceScreen>

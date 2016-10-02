@@ -10,6 +10,7 @@ import android.preference.PreferenceFragment;
 import android.preference.RingtonePreference;
 
 import com.mehmetakiftutuncu.muezzin.R;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimeType;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
 
 /**
@@ -21,41 +22,37 @@ public class ReminderPreferencesFragment extends PreferenceFragment {
 
         addPreferencesFromResource(R.xml.preferences_prayertimereminder);
 
-        initializeForPrayerTime("fajr");
-        initializeForPrayerTime("shuruq");
-        initializeForPrayerTime("dhuhr");
-        initializeForPrayerTime("asr");
-        initializeForPrayerTime("maghrib");
-        initializeForPrayerTime("isha");
+        initializeForPrayerTime(PrayerTimeType.Fajr);
+        initializeForPrayerTime(PrayerTimeType.Shuruq);
+        initializeForPrayerTime(PrayerTimeType.Dhuhr);
+        initializeForPrayerTime(PrayerTimeType.Asr);
+        initializeForPrayerTime(PrayerTimeType.Maghrib);
+        initializeForPrayerTime(PrayerTimeType.Isha);
     }
 
-    private void initializeForPrayerTime(final String prayerTimeName) {
-        String soundKey = Pref.Reminders.SOUND_BASE + prayerTimeName;
+    private void initializeForPrayerTime(final PrayerTimeType prayerTimeType) {
+        String soundKey = Pref.Reminders.SOUND_BASE + prayerTimeType.name;
 
         RingtonePreference sound = (RingtonePreference) findPreference(soundKey);
-        sound.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
-                updateSoundSummary(preference, (String) newValue);
+        sound.setOnPreferenceChangeListener((preference, newValue) -> {
+            updateSoundSummary(preference, (String) newValue);
 
-                return true;
-            }
+            return true;
         });
 
-        String currentSound = Pref.Reminders.sound(getActivity(), prayerTimeName);
+        String currentSound = Pref.Reminders.sound(getActivity(), prayerTimeType);
         updateSoundSummary(sound, currentSound);
 
-        String timeToRemindKey = Pref.Reminders.TIME_TO_REMIND_BASE + prayerTimeName;
+        String timeToRemindKey = Pref.Reminders.TIME_TO_REMIND_BASE + prayerTimeType.name;
 
         ListPreference timeToRemind = (ListPreference) findPreference(timeToRemindKey);
-        timeToRemind.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-            @Override public boolean onPreferenceChange(Preference preference, Object newValue) {
-                preference.setSummary(getString(R.string.preferences_reminders_timeToRemindSummary, Integer.parseInt((String) newValue)));
+        timeToRemind.setOnPreferenceChangeListener((preference, newValue) -> {
+            preference.setSummary(getString(R.string.preferences_reminders_timeToRemindSummary, Integer.parseInt((String) newValue)));
 
-                return true;
-            }
+            return true;
         });
 
-        int currentTimeToRemind = Pref.Reminders.timeToRemind(getActivity(), prayerTimeName);
+        int currentTimeToRemind = Pref.Reminders.timeToRemind(getActivity(), prayerTimeType);
         timeToRemind.setSummary(getString(R.string.preferences_reminders_timeToRemindSummary, currentTimeToRemind));
     }
 

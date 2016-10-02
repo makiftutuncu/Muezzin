@@ -4,28 +4,30 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Log;
 
 /**
  * Created by akif on 09/05/16.
  */
 public class Database extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "muezzin";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
     public class CountryTable {
         public static final String TABLE_NAME = "country";
 
         public static final String COLUMN_ID           = "id";
-        public static final String COLUMN_ENGLISH_NAME = "englishName";
-        public static final String COLUMN_TURKISH_NAME = "turkishName";
-        public static final String COLUMN_NATIVE_NAME  = "nativeName";
+        public static final String COLUMN_NAME         = "name";
+        public static final String COLUMN_NAME_TURKISH = "nameTurkish";
+        public static final String COLUMN_NAME_NATIVE  = "nameNative";
 
-        public static final String CREATE_TABLE_SQL = "CREATE TABLE " + TABLE_NAME + " (" +
+        public static final String CREATE_TABLE_SQL =
+            "CREATE TABLE " + TABLE_NAME + " (" +
                 COLUMN_ID           + " INTEGER PRIMARY KEY, " +
-                COLUMN_ENGLISH_NAME + " TEXT NOT NULL, " +
-                COLUMN_TURKISH_NAME + " TEXT NOT NULL, " +
-                COLUMN_NATIVE_NAME  + " TEXT NOT NULL);";
+                COLUMN_NAME +         " TEXT NOT NULL, " +
+                COLUMN_NAME_TURKISH + " TEXT NOT NULL, " +
+                COLUMN_NAME_NATIVE +  " TEXT NOT NULL" +
+            ");";
     }
 
     public class CityTable {
@@ -35,10 +37,12 @@ public class Database extends SQLiteOpenHelper {
         public static final String COLUMN_COUNTRY_ID = "countryId";
         public static final String COLUMN_NAME       = "name";
 
-        public static final String CREATE_TABLE_SQL = "CREATE TABLE " + TABLE_NAME + " (" +
+        public static final String CREATE_TABLE_SQL =
+            "CREATE TABLE " + TABLE_NAME + " (" +
                 COLUMN_ID         + " INTEGER PRIMARY KEY, " +
                 COLUMN_COUNTRY_ID + " INTEGER NOT NULL, " +
-                COLUMN_NAME       + " TEXT NOT NULL);";
+                COLUMN_NAME       + " TEXT NOT NULL" +
+            ");";
     }
 
     public class DistrictTable {
@@ -48,10 +52,12 @@ public class Database extends SQLiteOpenHelper {
         public static final String COLUMN_CITY_ID = "cityId";
         public static final String COLUMN_NAME    = "name";
 
-        public static final String CREATE_TABLE_SQL = "CREATE TABLE " + TABLE_NAME + " (" +
+        public static final String CREATE_TABLE_SQL =
+            "CREATE TABLE " + TABLE_NAME + " (" +
                 COLUMN_ID      + " INTEGER PRIMARY KEY, " +
                 COLUMN_CITY_ID + " INTEGER NOT NULL, " +
-                COLUMN_NAME    + " TEXT NOT NULL);";
+                COLUMN_NAME    + " TEXT NOT NULL" +
+            ");";
     }
 
     public class PrayerTimesTable {
@@ -60,7 +66,7 @@ public class Database extends SQLiteOpenHelper {
         public static final String COLUMN_COUNTRY_ID  = "countryId";
         public static final String COLUMN_CITY_ID     = "cityId";
         public static final String COLUMN_DISTRICT_ID = "districtId";
-        public static final String COLUMN_DAY         = "day";
+        public static final String COLUMN_DATE        = "date";
         public static final String COLUMN_FAJR        = "fajr";
         public static final String COLUMN_SHURUQ      = "shuruq";
         public static final String COLUMN_DHUHR       = "dhuhr";
@@ -69,18 +75,20 @@ public class Database extends SQLiteOpenHelper {
         public static final String COLUMN_ISHA        = "isha";
         public static final String COLUMN_QIBLA       = "qibla";
 
-        public static final String CREATE_TABLE_SQL = "CREATE TABLE " + TABLE_NAME + " (" +
-                COLUMN_COUNTRY_ID  + " INTEGER NOT NULL, " +
-                COLUMN_CITY_ID     + " INTEGER NOT NULL, " +
-                COLUMN_DISTRICT_ID + " INTEGER, " +
-                COLUMN_DAY         + " INTEGER NOT NULL, " +
-                COLUMN_FAJR        + " INTEGER NOT NULL, " +
-                COLUMN_SHURUQ      + " INTEGER NOT NULL, " +
-                COLUMN_DHUHR       + " INTEGER NOT NULL, " +
-                COLUMN_ASR         + " INTEGER NOT NULL, " +
-                COLUMN_MAGHRIB     + " INTEGER NOT NULL, " +
-                COLUMN_ISHA        + " INTEGER NOT NULL, " +
-                COLUMN_QIBLA       + " INTEGER NOT NULL);";
+        public static final String CREATE_TABLE_SQL =
+                "CREATE TABLE " + TABLE_NAME + " (" +
+                    COLUMN_COUNTRY_ID  + " INTEGER NOT NULL, " +
+                    COLUMN_CITY_ID     + " INTEGER NOT NULL, " +
+                    COLUMN_DISTRICT_ID + " INTEGER, " +
+                    COLUMN_DATE        + " TEXT NOT NULL, " +
+                    COLUMN_FAJR        + " TEXT NOT NULL, " +
+                    COLUMN_SHURUQ      + " TEXT NOT NULL, " +
+                    COLUMN_DHUHR       + " TEXT NOT NULL, " +
+                    COLUMN_ASR         + " TEXT NOT NULL, " +
+                    COLUMN_MAGHRIB     + " TEXT NOT NULL, " +
+                    COLUMN_ISHA        + " TEXT NOT NULL, " +
+                    COLUMN_QIBLA       + " TEXT NOT NULL" +
+                ");";
     }
 
     private Database(Context context) {

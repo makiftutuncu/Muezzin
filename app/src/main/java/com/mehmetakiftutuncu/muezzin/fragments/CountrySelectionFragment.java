@@ -11,23 +11,22 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.github.mehmetakiftutuncu.toolbelt.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
 import com.mehmetakiftutuncu.muezzin.adapters.CountriesAdapter;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCountriesDownloadedListener;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnCountrySelectedListener;
 import com.mehmetakiftutuncu.muezzin.models.Country;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
-import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
+import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPI;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by akif on 08/05/16.
  */
-public class CountrySelectionFragment extends StatefulFragment implements OnCountriesDownloadedListener, FloatingSearchView.OnQueryChangeListener {
+public class CountrySelectionFragment extends StatefulFragment implements MuezzinAPI.OnCountriesDownloadedListener, FloatingSearchView.OnQueryChangeListener {
     private FloatingSearchView floatingSearchView;
     private RecyclerView recyclerViewCountrySelection;
 
@@ -35,8 +34,12 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
     private MuezzinActivity muezzinActivity;
     private OnCountrySelectedListener onCountrySelectedListener;
 
-    private ArrayList<Country> countries;
+    private List<Country> countries;
     private CountriesAdapter countriesAdapter;
+
+    public interface OnCountrySelectedListener {
+        void onCountrySelected(Country country);
+    }
 
     public CountrySelectionFragment() {}
 
@@ -51,27 +54,16 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState != null) {
-            ArrayList<String> countryJsons = savedInstanceState.getStringArrayList("countries");
-            countries = new ArrayList<>();
+            ArrayList<Country> countryParcelables = savedInstanceState.getParcelableArrayList("countries");
 
-            for (int i = 0, size = countryJsons != null ? countryJsons.size() : 0; i < size; i++) {
-                countries.add(Country.fromJson(countryJsons.get(i)).get());
-            }
+            countries = countryParcelables != null ? countryParcelables : new ArrayList<>();
         }
 
         setRetainInstance(true);
     }
 
     @Override public void onSaveInstanceState(Bundle outState) {
-        if (countries != null) {
-            ArrayList<String> countryJsons = new ArrayList<>();
-            for (int i = 0, size = countries.size(); i < size; i++) {
-                countryJsons.add(countries.get(i).toJson());
-            }
-
-            outState.putStringArrayList("countries", countryJsons);
-        }
-
+        outState.putParcelableArrayList("countries", new ArrayList<>(countries));
         outState.putParcelable("recyclerViewCountrySelection", recyclerViewCountrySelection.getLayoutManager().onSaveInstanceState());
 
         super.onSaveInstanceState(outState);
@@ -121,7 +113,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         return layout;
     }
 
-    @Override public void onCountriesDownloaded(@NonNull ArrayList<Country> countries) {
+    @Override public void onCountriesDownloaded(@NonNull List<Country> countries) {
         this.countries = countries;
 
         if (!Country.saveCountries(context, countries)) {
@@ -133,7 +125,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         updateUI();
     }
 
-    @Override public void onCountriesDownloadFailed() {
+    @Override public void onDownloadCountriesFailed(Exception e) {
         changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
     }
 
@@ -144,9 +136,9 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
     private void loadCountries() {
         changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
 
-        Optional<ArrayList<Country>> maybeCountriesFromDatabase = Country.getCountries(context);
+        Optional<List<Country>> maybeCountriesFromDatabase = Country.getCountries(context);
 
-        if (maybeCountriesFromDatabase.isEmpty) {
+        if (maybeCountriesFromDatabase.isEmpty()) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
         } else {
             countries = maybeCountriesFromDatabase.get();
@@ -154,7 +146,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
             if (countries.isEmpty()) {
                 Log.debug(getClass(), "No countries were found on database!");
 
-                MuezzinAPIClient.getCountries(this);
+                MuezzinAPI.get().getCountries(context, this);
             } else {
                 Log.debug(getClass(), "Loaded countries from database!");
 
@@ -202,11 +194,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
                         View fab = layout.findViewById(R.id.fab_retry);
 
                         if (fab != null) {
-                            fab.setOnClickListener(new View.OnClickListener() {
-                                @Override public void onClick(View v) {
-                                    retry(retryAction);
-                                }
-                            });
+                            fab.setOnClickListener(v -> retry(retryAction));
                         }
                     }
                     break;
@@ -218,7 +206,7 @@ public class CountrySelectionFragment extends StatefulFragment implements OnCoun
         switch (action) {
             case RETRY_ACTION_DOWNLOAD:
                 changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
-                MuezzinAPIClient.getCountries(this);
+                MuezzinAPI.get().getCountries(context, this);
                 break;
         }
     }

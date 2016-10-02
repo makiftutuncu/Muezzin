@@ -6,24 +6,26 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mehmetakiftutuncu.muezzin.interfaces.OnDistrictSelectedListener;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.DistrictViewHolder;
+import com.mehmetakiftutuncu.muezzin.fragments.DistrictSelectionFragment;
+import com.mehmetakiftutuncu.muezzin.models.City;
 import com.mehmetakiftutuncu.muezzin.models.District;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Created by akif on 11/05/16.
  */
 public class DistrictsAdapter extends RecyclerView.Adapter<DistrictViewHolder> {
-    private ArrayList<District> allDistricts;
-    private ArrayList<District> districts;
+    private List<District> allDistricts;
+    private List<District> districts;
 
-    private OnDistrictSelectedListener onDistrictSelectedListener;
+    private DistrictSelectionFragment.OnDistrictSelectedListener onDistrictSelectedListener;
 
-    public DistrictsAdapter(ArrayList<District> districts, OnDistrictSelectedListener onDistrictSelectedListener) {
+    public DistrictsAdapter(List<District> districts, DistrictSelectionFragment.OnDistrictSelectedListener onDistrictSelectedListener) {
         this.allDistricts = districts;
         this.districts    = districts;
 
@@ -46,7 +48,7 @@ public class DistrictsAdapter extends RecyclerView.Adapter<DistrictViewHolder> {
         return districts != null ? districts.size() : 0;
     }
 
-    public void search(String query) {
+    public void search(String query, int cityId) {
         String q = query.trim();
 
         if (q.isEmpty()) {
@@ -61,7 +63,7 @@ public class DistrictsAdapter extends RecyclerView.Adapter<DistrictViewHolder> {
         for (int i = 0, size = allDistricts.size(); i < size; i++) {
             District district = allDistricts.get(i);
 
-            if (district.name.toLowerCase(district.isTurkishDistrict? locale : Locale.getDefault()).contains(q)) {
+            if (district.name.toLowerCase(City.isTurkish(cityId) ? locale : Locale.getDefault()).contains(q)) {
                 districts.add(district);
             }
         }

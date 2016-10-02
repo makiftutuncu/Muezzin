@@ -13,31 +13,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.github.mehmetakiftutuncu.toolbelt.Log;
+import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.kennyc.view.MultiStateView;
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity;
-import com.mehmetakiftutuncu.muezzin.interfaces.OnPrayerTimesDownloadedListener;
 import com.mehmetakiftutuncu.muezzin.models.Place;
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder;
-import com.mehmetakiftutuncu.muezzin.models.PrayerTimes;
-import com.mehmetakiftutuncu.muezzin.utilities.Log;
-import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPIClient;
+import com.mehmetakiftutuncu.muezzin.models.PrayerTimesOfDay;
+import com.mehmetakiftutuncu.muezzin.utilities.MuezzinAPI;
 import com.mehmetakiftutuncu.muezzin.utilities.Pref;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.None;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Optional;
-import com.mehmetakiftutuncu.muezzin.utilities.optional.Some;
+import com.mehmetakiftutuncu.muezzin.utilities.RemainingTime;
+import com.mehmetakiftutuncu.muezzin.widgetproviders.PrayerTimesWidgetBase;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.joda.time.LocalTime;
+import org.joda.time.chrono.IslamicChronology;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 /**
  * Created by akif on 08/05/16.
  */
-public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTimesDownloadedListener {
+public class PrayerTimesFragment extends StatefulFragment implements MuezzinAPI.OnPrayerTimesDownloadedListener {
     private TextView textViewRemainingTimeInfo;
     private TextView textViewRemainingTime;
     private TextView textViewFajr;
@@ -49,7 +53,7 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
     private TextView textViewQibla;
 
     private Place place;
-    private PrayerTimes prayerTimes;
+    private Optional<PrayerTimesOfDay> maybePrayerTimesOfDay;
 
     private Timer timer;
     private TimerTask timerTask;
@@ -59,6 +63,9 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
 
     private int defaultTextColor;
     private int redTextColor;
+
+    private static final String FULL_DATE_PATTERN = "dd MMMM YYYY";
+    private static final DateTimeFormatter FULL_DATE_FORMATTTER = DateTimeFormat.forPattern(FULL_DATE_PATTERN);
 
     public PrayerTimesFragment() {}
 
@@ -126,141 +133,40 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
 
         Optional<Place> maybePlace = Place.fromBundle(getArguments());
 
-        if (maybePlace.isDefined) {
+        if (maybePlace.isDefined()) {
             place = maybePlace.get();
         }
 
         return layout;
     }
 
-    @Override public void onPrayerTimesDownloaded(@NonNull ArrayList<PrayerTimes> prayerTimes) {
-        if (!PrayerTimes.saveAllPrayerTimes(context, place, prayerTimes)) {
+    @Override public void onPrayerTimesDownloaded(@NonNull List<PrayerTimesOfDay> prayerTimes) {
+        if (!PrayerTimesOfDay.saveAllPrayerTimes(context, place, prayerTimes)) {
             changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
             return;
         }
 
-        DateTime today = DateTime.now().withTimeAtStartOfDay().withZoneRetainFields(DateTimeZone.UTC);
-        Optional<PrayerTimes> maybeTodaysPrayerTimes = new None<>();
+        LocalDate today = LocalDate.now();
 
         for (int i = 0, size = prayerTimes.size(); i < size; i++) {
-            if (prayerTimes.get(i).day.getMillis() == today.getMillis()) {
-                maybeTodaysPrayerTimes = new Some<>(prayerTimes.get(i));
+            if (prayerTimes.get(i).date.equals(today)) {
+                maybePrayerTimesOfDay = Optional.with(prayerTimes.get(i));
                 break;
             }
         }
 
-        if (maybeTodaysPrayerTimes.isEmpty) {
+        if (maybePrayerTimesOfDay.isEmpty()) {
             Log.error(getClass(), "Did not find today's prayer times in downloaded prayer times!");
 
             changeStateTo(MultiStateView.VIEW_STATE_EMPTY, RETRY_ACTION_DOWNLOAD);
         } else {
-            this.prayerTimes = maybeTodaysPrayerTimes.get();
-
             initializeUI();
         }
     }
 
-    @Override public void onPrayerTimesDownloadFailed() {
-        Log.error(getClass(), "Failed to download prayer times for place '%s'!", place);
+    @Override public void onDownloadPrayerTimesFailed(Exception e) {
+        Log.error(getClass(), e, "Failed to download prayer times for place '%s'!", place);
         changeStateTo(MultiStateView.VIEW_STATE_ERROR, RETRY_ACTION_DOWNLOAD);
-    }
-
-    private void loadTodaysPrayerTimes() {
-        changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
-
-        Optional<PrayerTimes> maybePrayerTimesFromDatabase = PrayerTimes.getPrayerTimesForToday(context, place);
-
-        if (maybePrayerTimesFromDatabase.isEmpty) {
-            Log.debug(getClass(), "Today's prayer times for place '%s' wasn't found on database!", place);
-
-            MuezzinAPIClient.getPrayerTimes(place, this);
-        } else {
-            Log.debug(getClass(), "Loaded today's prayer times for place '%s' from database!", place);
-
-            this.prayerTimes = maybePrayerTimesFromDatabase.get();
-
-            initializeUI();
-        }
-    }
-
-    private void initializeUI() {
-        changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
-
-        Optional<String> maybePlaceName = place.getPlaceName(context);
-
-        if (maybePlaceName.isDefined) {
-            if (muezzinActivity != null) {
-                muezzinActivity.setTitle(maybePlaceName.get());
-                muezzinActivity.setSubtitle(DateTime.now().withZoneRetainFields(DateTimeZone.UTC).toString(PrayerTimes.dateFormat));
-            }
-
-            Optional<Place> maybeLastPlace = Pref.Places.getLastPlace(context);
-
-            if (maybeLastPlace.isDefined && !maybeLastPlace.get().equals(place)) {
-                PrayerTimeReminder.reschedulePrayerTimeReminders(context);
-            }
-        }
-
-        textViewFajr.setText(prayerTimes.fajr.toString(PrayerTimes.timeFormat));
-        textViewDhuhr.setText(prayerTimes.dhuhr.toString(PrayerTimes.timeFormat));
-        textViewAsr.setText(prayerTimes.asr.toString(PrayerTimes.timeFormat));
-        textViewMaghrib.setText(prayerTimes.maghrib.toString(PrayerTimes.timeFormat));
-        textViewIsha.setText(prayerTimes.isha.toString(PrayerTimes.timeFormat));
-        textViewShuruq.setText(prayerTimes.shuruq.toString(PrayerTimes.timeFormat));
-        textViewQibla.setText(prayerTimes.qibla.toString(PrayerTimes.timeFormat));
-    }
-
-    private void updateRemainingTime() {
-        if (prayerTimes != null) {
-            DateTime now              = DateTime.now().withZoneRetainFields(DateTimeZone.UTC);
-            DateTime nextPrayerTime   = prayerTimes.nextPrayerTime();
-            String nextPrayerTimeName = PrayerTimes.prayerTimeLocalizedName(context, prayerTimes.nextPrayerTimeName());
-
-            DateTime remaining   = nextPrayerTime.minus(now.getMillis());
-            String remainingTime = remaining.toString(PrayerTimes.remainingTimeFormat);
-
-            boolean isRemainingLessThan45Minutes = remaining.getHourOfDay() == 0 && remaining.getMinuteOfHour() < 45;
-            int color = isRemainingLessThan45Minutes ? redTextColor : defaultTextColor;
-
-            if (isAdded()) {
-                textViewRemainingTimeInfo.setText(getString(R.string.prayerTimes_cardTitle_remainingTime, nextPrayerTimeName));
-                textViewRemainingTime.setText(remainingTime);
-
-                textViewRemainingTimeInfo.setTextColor(color);
-                textViewRemainingTime.setTextColor(color);
-            }
-        }
-    }
-
-    private void scheduleRemainingTimeCounter() {
-        timer = new Timer();
-
-        timerTask = new TimerTask() {
-            @Override public void run() {
-                FragmentActivity activity = getActivity();
-
-                if (activity != null) {
-                    activity.runOnUiThread(new Runnable() {
-                        @Override public void run() {
-                            updateRemainingTime();
-                        }
-                    });
-                }
-            }
-        };
-
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
-    }
-
-    private void cancelRemainingTimeCounter() {
-        if (timer != null) {
-            timer.cancel();
-            timer.purge();
-        }
-
-        if (timerTask != null && timerTask.scheduledExecutionTime() > 0) {
-            timerTask.cancel();
-        }
     }
 
     @Override protected void changeStateTo(int newState, final int retryAction) {
@@ -286,13 +192,10 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
                         View fab = layout.findViewById(R.id.fab_retry);
 
                         if (fab != null) {
-                            fab.setOnClickListener(new View.OnClickListener() {
-                                @Override public void onClick(View v) {
-                                    retry(retryAction);
-                                }
-                            });
+                            fab.setOnClickListener(v -> retry(retryAction));
                         }
                     }
+
                     break;
             }
         }
@@ -302,8 +205,125 @@ public class PrayerTimesFragment extends StatefulFragment implements OnPrayerTim
         switch (action) {
             case RETRY_ACTION_DOWNLOAD:
                 changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
-                MuezzinAPIClient.getPrayerTimes(place, this);
+                MuezzinAPI.get().getPrayerTimes(place, this);
                 break;
         }
+    }
+
+    private void loadTodaysPrayerTimes() {
+        changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0);
+
+        maybePrayerTimesOfDay = PrayerTimesOfDay.getPrayerTimesForToday(context, place);
+
+        if (maybePrayerTimesOfDay.isEmpty()) {
+            Log.debug(getClass(), "Today's prayer times for place '%s' wasn't found on database!", place);
+
+            MuezzinAPI.get().getPrayerTimes(place, this);
+        } else {
+            Log.debug(getClass(), "Loaded today's prayer times for place '%s' from database!", place);
+
+            initializeUI();
+        }
+    }
+
+    private void initializeUI() {
+        changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0);
+
+        Optional<String> maybePlaceName = place.getPlaceName(context);
+
+        if (maybePlaceName.isDefined()) {
+            if (muezzinActivity != null) {
+                String gregorianDate = LocalDate.now().toString(FULL_DATE_FORMATTTER);
+                String hijriDate = getHijriDate();
+
+                muezzinActivity.setTitle(maybePlaceName.get());
+                muezzinActivity.setSubtitle(gregorianDate + " / " + hijriDate);
+            }
+
+            Optional<Place> maybeLastPlace = Pref.Places.getLastPlace(context);
+
+            if (maybeLastPlace.isDefined() && !maybeLastPlace.get().equals(place)) {
+                PrayerTimeReminder.reschedulePrayerTimeReminders(context);
+            }
+        }
+
+        if (maybePrayerTimesOfDay.isDefined()) {
+            PrayerTimesOfDay prayerTimes = maybePrayerTimesOfDay.get();
+
+            textViewFajr.setText(prayerTimes.fajr.toString(PrayerTimesOfDay.TIME_FORMATTER));
+            textViewDhuhr.setText(prayerTimes.dhuhr.toString(PrayerTimesOfDay.TIME_FORMATTER));
+            textViewAsr.setText(prayerTimes.asr.toString(PrayerTimesOfDay.TIME_FORMATTER));
+            textViewMaghrib.setText(prayerTimes.maghrib.toString(PrayerTimesOfDay.TIME_FORMATTER));
+            textViewIsha.setText(prayerTimes.isha.toString(PrayerTimesOfDay.TIME_FORMATTER));
+            textViewShuruq.setText(prayerTimes.shuruq.toString(PrayerTimesOfDay.TIME_FORMATTER));
+            textViewQibla.setText(prayerTimes.qibla.toString(PrayerTimesOfDay.TIME_FORMATTER));
+        }
+
+        PrayerTimesWidgetBase.updateAllWidgets(context);
+    }
+
+    private void updateRemainingTime() {
+        if (maybePrayerTimesOfDay.isDefined()) {
+            PrayerTimesOfDay prayerTimes = maybePrayerTimesOfDay.get();
+
+            LocalTime nextPrayerTime  = prayerTimes.nextPrayerTime();
+            String nextPrayerTimeName = PrayerTimesOfDay.prayerTimeLocalizedName(context, prayerTimes.nextPrayerTimeType());
+
+            LocalTime remaining  = RemainingTime.to(nextPrayerTime);
+            String remainingTime = remaining.toString(RemainingTime.FORMATTER);
+
+            boolean isRemainingLessThan45Minutes = remaining.getHourOfDay() == 0 && remaining.getMinuteOfHour() < 45;
+            int color = isRemainingLessThan45Minutes ? redTextColor : defaultTextColor;
+
+            if (isAdded()) {
+                textViewRemainingTimeInfo.setText(getString(R.string.prayerTimes_cardTitle_remainingTime, nextPrayerTimeName));
+                textViewRemainingTime.setText(remainingTime);
+
+                textViewRemainingTimeInfo.setTextColor(color);
+                textViewRemainingTime.setTextColor(color);
+            }
+        }
+    }
+
+    private void scheduleRemainingTimeCounter() {
+        timer = new Timer();
+
+        timerTask = new TimerTask() {
+            @Override public void run() {
+                FragmentActivity activity = getActivity();
+
+                if (activity != null) {
+                    activity.runOnUiThread(() -> updateRemainingTime());
+                }
+            }
+        };
+
+        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    private void cancelRemainingTimeCounter() {
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+
+        if (timerTask != null && timerTask.scheduledExecutionTime() > 0) {
+            timerTask.cancel();
+        }
+    }
+
+    private String getHijriDate() {
+        LocalDateTime hijriNow = LocalDateTime.now(IslamicChronology.getInstance());
+        String originalHijriDate = hijriNow.toString(FULL_DATE_PATTERN, Locale.getDefault());
+
+        String hijriMonthName = getString(
+            getResources().getIdentifier(
+                "hijriMonth" + hijriNow.getMonthOfYear(),
+                "string",
+                getContext().getApplicationInfo().packageName
+            )
+        );
+
+        return originalHijriDate.replaceAll("^(.+) (.+) (.+)$", "$1 " + hijriMonthName + " $3");
     }
 }
