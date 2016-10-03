@@ -29,7 +29,7 @@
     <string name="welcome_skip">Skip</string>
     <string name="welcome_done">Done</string>
     <string name="welcome_title1">Welcome to Muezzin!</string>
-    <string name="welcome_content1">You can track prayer times with Muezzin easily.</string>
+    <string name="welcome_content1">You can easily track prayer times with Muezzin.</string>
     <string name="welcome_title2">Select a Place to Start</string>
     <string name="welcome_content2">Muezzin supports more than 200 countries and their cities.</string>
     <string name="welcome_title3">Set Reminders</string>
