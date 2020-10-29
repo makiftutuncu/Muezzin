@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 
 import com.github.mehmetakiftutuncu.toolbelt.Log;
 import com.github.mehmetakiftutuncu.toolbelt.Optional;

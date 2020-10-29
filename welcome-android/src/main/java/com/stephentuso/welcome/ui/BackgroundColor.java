@@ -1,8 +1,8 @@
 package com.stephentuso.welcome.ui;
 
 import android.graphics.Color;
-import android.support.annotation.ColorInt;
-import android.support.annotation.Nullable;
+import androidx.annotation.ColorInt;
+import androidx.annotation.Nullable;
 
 /**
  * Created by stephentuso on 11/15/15.

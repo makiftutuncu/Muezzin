@@ -1,21 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
         applicationId "com.mehmetakiftutuncu.muezzin"
         minSdkVersion 15
-        targetSdkVersion 24
-        versionCode 5
-        versionName "2.0.1"
+        targetSdkVersion 29
+        versionCode 6
+        versionName "2.1.0"
 
         vectorDrawables.useSupportLibrary = true
-
-        jackOptions {
-            enabled true
-        }
     }
 
     dexOptions {
@@ -44,17 +40,17 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(path: ":welcome-android")
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:cardview-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:preference-v7:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
-    compile 'com.github.arimorty:floatingsearchview:2.0.3'
-    compile 'com.github.Kennyc1012:MultiStateView:1.2.0'
-    compile 'com.github.mehmetakiftutuncu:toolbelt:1.1.0'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'joda-time:joda-time:2.9.4'
-    compile 'net.yslibrary.licenseadapter:licenseadapter:1.2.4'
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation project(path: ":welcome-android")
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'com.google.android.material:material:1.2.1'
+    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.github.arimorty:floatingsearchview:2.0.3'
+    implementation 'com.github.Kennyc1012:MultiStateView:1.2.0'
+    implementation 'com.github.mehmetakiftutuncu:toolbelt:1.1.0'
+    implementation 'com.squareup.okhttp3:okhttp:3.10.0'
+    implementation 'joda-time:joda-time:2.10.8'
+    implementation 'net.yslibrary.licenseadapter:licenseadapter:1.2.4'
 }

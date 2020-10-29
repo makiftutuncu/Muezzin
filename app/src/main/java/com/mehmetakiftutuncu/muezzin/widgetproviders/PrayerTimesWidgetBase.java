@@ -7,7 +7,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.mehmetakiftutuncu.toolbelt.Log;
 import com.mehmetakiftutuncu.muezzin.models.WidgetType;

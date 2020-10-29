@@ -3,7 +3,7 @@ package com.mehmetakiftutuncu.muezzin.models;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.mehmetakiftutuncu.toolbelt.Log;
 import com.github.mehmetakiftutuncu.toolbelt.Optional;

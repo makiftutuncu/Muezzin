@@ -1,8 +1,8 @@
 package com.stephentuso.welcome.ui;
 
 import android.os.Build;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorListener;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.ViewPropertyAnimatorListener;
 import android.view.View;
 
 import com.stephentuso.welcome.util.WelcomeScreenConfiguration;

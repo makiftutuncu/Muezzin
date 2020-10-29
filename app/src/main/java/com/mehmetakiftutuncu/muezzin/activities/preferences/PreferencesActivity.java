@@ -1,7 +1,7 @@
 package com.mehmetakiftutuncu.muezzin.activities.preferences;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.mehmetakiftutuncu.muezzin.R;
 import com.mehmetakiftutuncu.muezzin.fragments.preferences.PreferencesFragment;

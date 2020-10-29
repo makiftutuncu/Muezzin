@@ -1,8 +1,8 @@
 package com.stephentuso.welcome.util;
 
 import android.content.Context;
-import android.support.annotation.AttrRes;
-import android.support.annotation.ColorRes;
+import androidx.annotation.AttrRes;
+import androidx.annotation.ColorRes;
 import android.util.TypedValue;
 
 /**

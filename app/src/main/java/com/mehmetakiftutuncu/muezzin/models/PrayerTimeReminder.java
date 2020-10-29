@@ -2,7 +2,7 @@ package com.mehmetakiftutuncu.muezzin.models;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.mehmetakiftutuncu.muezzin.services.PrayerTimeReminderService;

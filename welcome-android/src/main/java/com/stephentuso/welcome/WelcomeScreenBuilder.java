@@ -1,12 +1,12 @@
 package com.stephentuso.welcome;
 
 import android.content.Context;
-import android.support.annotation.AnimRes;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.LayoutRes;
-import android.support.annotation.StyleRes;
-import android.support.v4.app.Fragment;
+import androidx.annotation.AnimRes;
+import androidx.annotation.ColorRes;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.Fragment;
 
 import com.stephentuso.welcome.ui.BackgroundColor;
 import com.stephentuso.welcome.ui.WelcomeFragmentHolder;

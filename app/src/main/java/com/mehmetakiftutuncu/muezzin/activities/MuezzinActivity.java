@@ -1,7 +1,7 @@
 package com.mehmetakiftutuncu.muezzin.activities;
 
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Created by akif on 04/06/16.
