@@ -3,7 +3,7 @@ package com.mehmetakiftutuncu.muezzin.utilities;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.mehmetakiftutuncu.toolbelt.Optional;
 import com.mehmetakiftutuncu.muezzin.models.City;

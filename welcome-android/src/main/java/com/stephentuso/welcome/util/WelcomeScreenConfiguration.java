@@ -2,9 +2,9 @@ package com.stephentuso.welcome.util;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.AnimRes;
-import android.support.annotation.ColorRes;
-import android.support.v4.app.Fragment;
+import androidx.annotation.AnimRes;
+import androidx.annotation.ColorRes;
+import androidx.fragment.app.Fragment;
 
 import com.stephentuso.welcome.R;
 import com.stephentuso.welcome.ui.BackgroundColor;

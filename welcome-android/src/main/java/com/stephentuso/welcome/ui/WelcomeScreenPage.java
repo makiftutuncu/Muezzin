@@ -1,6 +1,6 @@
 package com.stephentuso.welcome.ui;
 
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.stephentuso.welcome.util.WelcomeScreenConfiguration;
 

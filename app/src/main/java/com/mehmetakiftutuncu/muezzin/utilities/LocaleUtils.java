@@ -1,7 +1,7 @@
 package com.mehmetakiftutuncu.muezzin.utilities;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.text.Collator;
 import java.util.Locale;

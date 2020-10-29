@@ -3,7 +3,7 @@ package com.mehmetakiftutuncu.muezzin.services;
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.github.mehmetakiftutuncu.toolbelt.Log;
 import com.github.mehmetakiftutuncu.toolbelt.Optional;
