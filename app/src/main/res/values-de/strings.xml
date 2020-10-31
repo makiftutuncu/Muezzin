@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<resources>
+    <!-- Application name -->
+    <string name="applicationName">Muezzin</string>
+
+    <!-- Prayer time names -->
+    <string name="prayerTime_fajr">Fajr</string>
+    <string name="prayerTime_dhuhr">Dhuhr</string>
+    <string name="prayerTime_asr">Asr</string>
+    <string name="prayerTime_maghrib">Maghrib</string>
+    <string name="prayerTime_isha">Isha</string>
+    <string name="prayerTime_shuruq">Sonnenaufgang</string>
+    <string name="prayerTime_qibla">Qibla</string>
+
+    <!-- Hijri Month Names -->
+    <string name="hijriMonth1">Muharram</string>
+    <string name="hijriMonth2">Safar</string>
+    <string name="hijriMonth3">Rabi\' al-Awwal</string>
+    <string name="hijriMonth4">Rabi\' al-Akhir</string>
+    <string name="hijriMonth5">Dschumada l-ula</string>
+    <string name="hijriMonth6">Dschumada l-uchra</string>
+    <string name="hijriMonth7">Radschab</string>
+    <string name="hijriMonth8">Schaʿban</string>
+    <string name="hijriMonth9">Ramadan</string>
+    <string name="hijriMonth10">Schawwal</string>
+    <string name="hijriMonth11">Dhu l-qaʿda</string>
+    <string name="hijriMonth12">Dhu l-Hiddscha</string>
+
+    <!-- Welcome -->
+    <string name="welcome_skip">Überspringen</string>
+    <string name="welcome_done">Fertig</string>
+    <string name="welcome_title1">Willkommen zu Muezzin!</string>
+    <string name="welcome_content1">Mit Muezzin kannst du Gebetszeiten leicht verfolgen.</string>
+    <string name="welcome_title2">Wähle ein Ort zum starten aus</string>
+    <string name="welcome_content2">Muezzin unterstützt mehr als 200 Länder, und deren Städte.</string>
+    <string name="welcome_title3">Erinnerungen setzen</string>
+    <string name="welcome_content3">Muezzin kann dich an bevorstehende Gebetszeiten erinnern.</string>
+    <string name="welcome_title4">Startbildschirm-Widget</string>
+    <string name="welcome_content4">Du kannst nun Muezzin-Widgets zu deinem Startbildschirm hinzufügen.</string>
+    <string name="welcome_updateNotice">Aufgrund von Datenänderungen müssen Sie ein einmaliges Setup nach dem Update durchführen.</string>
+
+    <!-- Place selection -->
+    <string name="placeSelection_noPlacesFound">Du hast noch keinen Ort ausgewählt.\n\nVerwende die Taste unten rechts, um einen Ort auszuwählen.</string>
+    <string name="placeSelection_country">Wähle ein Land aus</string>
+    <string name="placeSelection_country_search">Suche für ein Land</string>
+    <string name="placeSelection_city">Wähle eine Stadt aus</string>
+    <string name="placeSelection_city_search">Suche für eine Stadt</string>
+    <string name="placeSelection_district">Wähle einen Bezirk aus</string>
+    <string name="placeSelection_district_search">Suche für einen Bezirk</string>
+
+    <!-- Prayer times -->
+    <string name="prayerTimes_cardTitle_remainingTime">Verbleibende Zeit bis %1$s:</string>
+
+    <!-- States -->
+    <string name="state_loading">Lädt, bitte warten…</string>
+    <string name="state_error">Oops! Ein Fehler ist aufgetreten.\n\nStelle sicher, dass eine Internetverbindung besteht.\n\nDrücke die Taste unten rechts, um es erneut zu versuchen.</string>
+    <string name="state_noData">Oops! Die gesuchten Daten konnten nicht gefunden werden.\n\nDrücke die Taste unten rechts, um einen Download zu versuchen.</string>
+
+    <!-- Reminders -->
+    <string name="reminders_notification_title">Gebetszeit steht bevor</string>
+    <string name="reminders_notification_summary">Weniger als %1$d Minuten bis %2$s Zeit!</string>
+    <string name="reminders_notificationOnPrayerTime_title">Gebetszeit</string>
+    <string name="reminders_notificationOnPrayerTime_summary">Es ist %1$s Zeit!</string>
+
+    <!-- Preferences -->
+    <string name="preferences">Einstellungen</string>
+
+    <string name="preferences_category_general">Allgemeines</string>
+
+    <string name="preferences_place_title">Ausgewählter Ort</string>
+    <string name="preferences_place_noPlacesFound">Kein Ort ausgewählt</string>
+
+    <string name="preferences_reminders_title">Erinnerungen</string>
+    <string name="preferences_reminders_summary">Erinnerungen für Gebetszeiten setzen</string>
+    <string name="preferences_reminders_enabled">Aktiviert</string>
+    <string name="preferences_reminders_sound">Ton</string>
+    <string name="preferences_reminders_silent">Stumm</string>
+    <string name="preferences_reminders_vibration">Vibration</string>
+    <string name="preferences_reminders_remindBeforePrayerTime">Vor Gebetszeit erinnern</string>
+    <string name="preferences_reminders_timeToRemind">Zeit zum Erinnern</string>
+    <string name="preferences_reminders_timeToRemindSummary">%1$d Minuten vor Gebetszeit</string>
+    <string name="preferences_reminders_remindOnPrayerTime">Bei Gebetszeit erinnern</string>
+
+    <string name="preferences_category_more">Mehr</string>
+
+    <string name="preferences_more_title">Über diese App</string>
+    <string name="preferences_more_rate">Bewerten &amp; Kommentieren</string>
+    <string name="preferences_more_feedback">Feedback senden</string>
+    <string name="preferences_more_version">Version</string>
+    <string name="preferences_more_openSource">Open-Source-Lizenzen</string>
+
+    <!-- Widgets -->
+    <string name="widgets_prayertimes_horizontal_label">Muezzin (Horizontal)</string>
+    <string name="widgets_prayertimes_vertical_label">Muezzin (Vertikal)</string>
+    <string name="widgets_prayertimes_big_label">Muezzin (Groß)</string>
+</resources>
