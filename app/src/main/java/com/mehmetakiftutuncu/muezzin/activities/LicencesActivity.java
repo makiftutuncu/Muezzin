@@ -29,7 +29,7 @@ public class LicencesActivity extends AppCompatActivity {
         licences.add(Licenses.fromGitHub("Kennyc1012/MultiStateView", Licenses.LICENSE_APACHE_V2));
 
         // Libraries that are hosted on GitHub, and "LICENSE.md" is provided
-        licences.add(Licenses.fromGitHub("mehmetakiftutuncu/Toolbelt", Licenses.FILE_MD));
+        licences.add(Licenses.fromGitHub("makiftutuncu/Toolbelt", Licenses.FILE_MD));
 
         // Libraries that are hosted on GitHub, and "LICENSE.txt" is provided
         licences.add(Licenses.fromGitHub("arimorty/floatingsearchview"));
