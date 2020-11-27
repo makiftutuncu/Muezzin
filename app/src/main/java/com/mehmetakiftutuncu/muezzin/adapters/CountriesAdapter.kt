@@ -1,0 +1,23 @@
+package com.mehmetakiftutuncu.muezzin.adapters
+
+import android.content.Context
+import android.view.View
+import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CountryViewHolder
+import com.mehmetakiftutuncu.muezzin.fragments.SelectionFragment
+import com.mehmetakiftutuncu.muezzin.models.Country
+import java.util.*
+
+class CountriesAdapter(override val items: List<Country>,
+                       override val listener: SelectionFragment.OnSelectedListener<Country>): SearchableAdapter<Country, CountryViewHolder>(items, listener) {
+    override fun hold(ctx: Context, view: View, listener: SelectionFragment.OnSelectedListener<Country>) =
+        CountryViewHolder(ctx, view, listener)
+
+    override fun set(holder: CountryViewHolder, item: Country) = holder.set(item)
+
+    override fun search(query: String): List<Country> =
+        items.filter { c ->
+            c.name.toLowerCase(Locale.ENGLISH).contains(query) ||
+            c.nameTurkish.toLowerCase(tr).contains(query) ||
+            c.nameNative.toLowerCase(Locale.getDefault()).contains(query)
+        }
+}
