@@ -13,6 +13,7 @@ import com.github.mehmetakiftutuncu.toolbelt.Log
 import com.kennyc.view.MultiStateView
 import com.mehmetakiftutuncu.muezzin.R
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity
+import com.mehmetakiftutuncu.muezzin.extension.themeColor
 import com.mehmetakiftutuncu.muezzin.models.Place
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimesOfDay
@@ -223,16 +224,9 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
         return originalHijriDate.replace("^(.+) (.+) (.+)$".toRegex(), "$1 $hijriMonthName $3")
     }
 
-    private fun loadDefaultTextColor(): Int {
-        val typedValue = TypedValue()
-        val activity = requireActivity()
+    private fun loadDefaultTextColor() =
+        context?.themeColor(android.R.attr.textColorSecondary) ?: resources.getColor(R.color.black)
 
-        activity.theme.resolveAttribute(android.R.attr.textColorSecondary, typedValue, true)
-
-        return activity.obtainStyledAttributes(typedValue.data, IntArray(android.R.attr.textColorSecondary)).use {
-            it.getColor(0, -1)
-        }
-    }
 
     private fun loadRedTextColor(): Int =
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
