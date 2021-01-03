@@ -42,7 +42,7 @@ object CityRepository: Repository() {
 
             cities
         } catch (t: Throwable) {
-            Log.error(CityRepository::class.java, t, "Failed to get cities for country '$countryId' from database!")
+            Log.error(javaClass, t, "Failed to get cities for country '$countryId' from database!")
             emptyList()
         }
 
@@ -64,14 +64,14 @@ object CityRepository: Repository() {
                     setTransactionSuccessful()
                     true
                 } catch (t: Throwable) {
-                    Log.error(CityRepository::class.java, t, "Failed to save cities for country '$countryId' to database, transaction failed!")
+                    Log.error(javaClass, t, "Failed to save cities for country '$countryId' to database, transaction failed!")
                     false
                 } finally {
                     endTransaction()
                 }
             }
         } catch (t: Throwable) {
-            Log.error(CityRepository::class.java, t, "Failed to save cities for country '$countryId' to database!")
+            Log.error(javaClass, t, "Failed to save cities for country '$countryId' to database!")
             false
         }
 }

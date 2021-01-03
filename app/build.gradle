@@ -5,7 +5,7 @@ plugins {
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "30.0.2"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.mehmetakiftutuncu.muezzin"
@@ -21,10 +21,12 @@ android {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "applicationName", "@string/applicationNameRelease"
         }
 
         debug {
             applicationIdSuffix '.test'
+            resValue "string", "applicationName", "@string/applicationNameDebug"
         }
     }
 
@@ -48,9 +50,9 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.multidex:multidex:2.0.1'
-    implementation "androidx.preference:preference-ktx:1.1.1"
+    implementation "androidx.preference:preference:1.1.1"
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.github.arimorty:floatingsearchview:2.1.1'
     implementation 'com.github.Kennyc1012:MultiStateView:1.2.0'

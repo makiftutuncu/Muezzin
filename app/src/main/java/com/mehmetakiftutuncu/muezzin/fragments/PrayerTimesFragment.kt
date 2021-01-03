@@ -1,18 +1,15 @@
 package com.mehmetakiftutuncu.muezzin.fragments
 
-import android.content.Context
-import android.os.Build
 import android.os.Bundle
-import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.core.content.res.use
 import com.github.mehmetakiftutuncu.toolbelt.Log
 import com.kennyc.view.MultiStateView
 import com.mehmetakiftutuncu.muezzin.R
 import com.mehmetakiftutuncu.muezzin.activities.MuezzinActivity
+import com.mehmetakiftutuncu.muezzin.extension.resourceColor
 import com.mehmetakiftutuncu.muezzin.extension.themeColor
 import com.mehmetakiftutuncu.muezzin.models.Place
 import com.mehmetakiftutuncu.muezzin.models.PrayerTimeReminder
@@ -30,7 +27,11 @@ import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 import java.util.*
 
-class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
+class PrayerTimesFragment(): StatefulFragment() {
+    constructor(bundle: Bundle): this() {
+        arguments = bundle
+    }
+
     private lateinit var textViewRemainingTimeInfo: TextView
     private lateinit var textViewRemainingTime: TextView
     private lateinit var textViewFajr: TextView
@@ -40,21 +41,19 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
     private lateinit var textViewIsha: TextView
     private lateinit var textViewShuruq: TextView
 
-    private var defaultTextColor: Int = 0
-    private var redTextColor: Int = 0
+    private val defaultTextColor: Int by lazy { ctx.themeColor(android.R.attr.textColorSecondary) }
+    private val redTextColor: Int by lazy { ctx.resourceColor(R.color.red) }
 
     private val timer = Timer()
 
     private val timerTask = object : TimerTask() {
         override fun run() {
-            activity?.runOnUiThread { updateRemainingTime() }
+            runOnUI { updateRemainingTime() }
         }
     }
 
-    private val place = Place.fromBundle(bundle)
+    private val place: Place? by lazy { arguments?.let { Place.fromBundle(it) } }
     private var times: PrayerTimesOfDay? = null
-
-    private val ctx: Context by lazy { requireActivity() }
 
     override fun onStart() {
         super.onStart()
@@ -82,9 +81,6 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
             textViewAsr               = findViewById(R.id.textView_prayerTimes_asrTime)
             textViewMaghrib           = findViewById(R.id.textView_prayerTimes_maghribTime)
             textViewIsha              = findViewById(R.id.textView_prayerTimes_ishaTime)
-
-            defaultTextColor = loadDefaultTextColor()
-            redTextColor = loadRedTextColor()
         }
 
     override fun changeStateTo(newState: Int, retryAction: Int) {
@@ -117,8 +113,8 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
     private fun initializeUI() {
         changeStateTo(MultiStateView.VIEW_STATE_CONTENT, 0)
 
-        PlaceRepository.getName(ctx, place)?.also { placeName ->
-            activity?.let { it as MuezzinActivity }?.apply {
+        place?.let { PlaceRepository.getName(ctx, it) }?.also { placeName ->
+            (activity as? MuezzinActivity)?.apply {
                 setTitle(placeName)
                 setSubtitle("${LocalDate.now().toString(fullDateFormatter)} / ${getHijriDate()}")
             }
@@ -141,22 +137,24 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
     }
 
     private fun downloadAndSave() {
-        MuezzinAPI.getPrayerTimes(place, { e ->
-            Log.error(javaClass, e, "Failed to download prayer times for place '$place'!")
-            runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
-        }) { newTimes ->
-            if (!PrayerTimesOfDayRepository.save(ctx, place, newTimes)) {
+        place?.also { p ->
+            MuezzinAPI.getPrayerTimes(p, { e ->
+                Log.error(javaClass, e, "Failed to download prayer times for place '$p'!")
                 runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
-            } else {
-                val now = LocalDate.now()
-
-                times = newTimes.find { it.date == now }
-
-                if (times == null) {
-                    Log.error(javaClass, "Did not find today's prayer times in downloaded prayer times!")
-                    runOnUI { changeStateTo(MultiStateView.VIEW_STATE_EMPTY, retryActionDownload) }
+            }) { newTimes ->
+                if (!PrayerTimesOfDayRepository.save(ctx, p, newTimes)) {
+                    runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
                 } else {
-                    runOnUI { initializeUI() }
+                    val now = LocalDate.now()
+
+                    times = newTimes.find { it.date == now }
+
+                    if (times == null) {
+                        Log.error(javaClass, "Did not find today's prayer times in downloaded prayer times!")
+                        runOnUI { changeStateTo(MultiStateView.VIEW_STATE_EMPTY, retryActionDownload) }
+                    } else {
+                        runOnUI { initializeUI() }
+                    }
                 }
             }
         }
@@ -165,7 +163,7 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
     private fun loadPrayerTimes() {
         changeStateTo(MultiStateView.VIEW_STATE_LOADING, 0)
 
-        when (val dbTimes = PrayerTimesOfDayRepository.getForToday(ctx, place)) {
+        when (val dbTimes = place?.let { PrayerTimesOfDayRepository.getForToday(ctx, it) }) {
             null -> {
                 Log.debug(javaClass, "Today's prayer times for place '$place' wasn't found on database!")
                 downloadAndSave()
@@ -223,17 +221,6 @@ class PrayerTimesFragment(bundle: Bundle): StatefulFragment() {
 
         return originalHijriDate.replace("^(.+) (.+) (.+)$".toRegex(), "$1 $hijriMonthName $3")
     }
-
-    private fun loadDefaultTextColor() =
-        context?.themeColor(android.R.attr.textColorSecondary) ?: resources.getColor(R.color.black)
-
-
-    private fun loadRedTextColor(): Int =
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            resources.getColor(R.color.red)
-        } else {
-            resources.getColor(R.color.red, requireActivity().theme)
-        }
 
     companion object {
         private const val fullDatePattern = "dd MMMM YYYY"

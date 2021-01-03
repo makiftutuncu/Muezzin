@@ -1,8 +1,11 @@
 package com.mehmetakiftutuncu.muezzin.activities
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 
 abstract class MuezzinActivity : AppCompatActivity() {
+    protected val ctx: Context by lazy { this }
+
     fun setTitle(title: String) =
         supportActionBar?.apply {
             this.title = title

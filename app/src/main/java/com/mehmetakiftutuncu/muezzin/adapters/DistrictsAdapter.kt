@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.adapters
 
-import android.content.Context
 import android.view.View
 import com.mehmetakiftutuncu.muezzin.R
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.DistrictViewHolder
@@ -14,7 +13,7 @@ class DistrictsAdapter(private val cityId: Int,
                        override val listener: SelectionFragment.OnSelectedListener<District>): SearchableAdapter<District, DistrictViewHolder>(items, listener) {
     override val itemLayoutId: Int = R.layout.item_district
 
-    override fun hold(ctx: Context, view: View, listener: SelectionFragment.OnSelectedListener<District>) =
+    override fun hold(view: View, listener: SelectionFragment.OnSelectedListener<District>) =
         DistrictViewHolder(view, listener)
 
     override fun set(holder: DistrictViewHolder, item: District) = holder.set(item)

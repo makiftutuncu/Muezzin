@@ -1,7 +1,6 @@
 package com.mehmetakiftutuncu.muezzin.activities
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mehmetakiftutuncu.muezzin.R
@@ -9,7 +8,7 @@ import net.yslibrary.licenseadapter.LicenseAdapter
 import net.yslibrary.licenseadapter.Licenses
 import java.util.*
 
-class LicencesActivity: AppCompatActivity() {
+class LicencesActivity: MuezzinActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

@@ -59,7 +59,7 @@ object PrayerTimesOfDayRepository: Repository() {
                 fromCursor(it)
             }
         } catch (t: Throwable) {
-            Log.error(PrayerTimesOfDayRepository::class.java, t, "Failed to get prayer times for place '$place' and for date '$date' from database!")
+            Log.error(javaClass, t, "Failed to get prayer times for place '$place' and for date '$date' from database!")
             null
         }
 
@@ -81,14 +81,14 @@ object PrayerTimesOfDayRepository: Repository() {
                     setTransactionSuccessful()
                     true
                 } catch (t: Throwable) {
-                    Log.error(PrayerTimesOfDayRepository::class.java, t, "Failed to save prayer times for place '$place' to database, transaction failed!")
+                    Log.error(javaClass, t, "Failed to save prayer times for place '$place' to database, transaction failed!")
                     false
                 } finally {
                     endTransaction()
                 }
             }
         } catch (t: Throwable) {
-            Log.error(PrayerTimesOfDayRepository::class.java, t, "Failed to save prayer times for place '$place' to database!")
+            Log.error(javaClass, t, "Failed to save prayer times for place '$place' to database!")
             false
         }
 

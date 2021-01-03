@@ -61,14 +61,11 @@ object PlaceRepository: Repository() {
                     } else {
                         when {
                             fullNameRequired -> {
-                                val countryName = cursor.getString(cursor.getColumnIndex("countryName"))
-                                val cityName    = cursor.getString(cursor.getColumnIndex("cityName"))
+                                val countryName  = cursor.getString(cursor.getColumnIndex("countryName"))
+                                val cityName     = cursor.getString(cursor.getColumnIndex("cityName"))
+                                val districtName = cursor.getColumnIndex("districtName").takeIf { it != -1 }?.let { cursor.getString(it) }
 
-                                val districtName = cursor.getColumnIndex("districtId").takeIf { it != -1 }?.let { i ->
-                                    cursor.getString(i).takeIf { it != cityName }
-                                }
-
-                                if (districtName == null) {
+                                if (districtName == null || districtName == cityName) {
                                     "$cityName, $countryName"
                                 } else {
                                     "$districtName, $cityName, $countryName"
@@ -85,7 +82,7 @@ object PlaceRepository: Repository() {
                 }
             }
         } catch (t: Throwable) {
-            Log.error(PlaceRepository::class.java, t, "Failed to get name for place '$place' from database!")
+            Log.error(javaClass, t, "Failed to get name for place '$place' from database!")
             null
         }
 }

@@ -46,7 +46,7 @@ object CountryRepository: Repository() {
 
             countries.turkeyFirstSorted(ctx)
         } catch (t: Throwable) {
-            Log.error(CountryRepository::class.java, t, "Failed to get countries from database!")
+            Log.error(javaClass, t, "Failed to get countries from database!")
             emptyList()
         }
 
@@ -68,14 +68,14 @@ object CountryRepository: Repository() {
                     setTransactionSuccessful()
                     true
                 } catch (t: Throwable) {
-                    Log.error(CountryRepository::class.java, t, "Failed to save countries to database, transaction failed!")
+                    Log.error(javaClass, t, "Failed to save countries to database, transaction failed!")
                     false
                 } finally {
                     endTransaction()
                 }
             }
         } catch (t: Throwable) {
-            Log.error(CountryRepository::class.java, t, "Failed to save countries to database!")
+            Log.error(javaClass, t, "Failed to save countries to database!")
             false
         }
 }

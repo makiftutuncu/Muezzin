@@ -42,7 +42,7 @@ object DistrictRepository: Repository() {
 
             districts
         } catch (t: Throwable) {
-            Log.error(DistrictRepository::class.java, t, "Failed to get districts for city '$cityId' from database!")
+            Log.error(javaClass, t, "Failed to get districts for city '$cityId' from database!")
             emptyList()
         }
 
@@ -64,14 +64,14 @@ object DistrictRepository: Repository() {
                     setTransactionSuccessful()
                     true
                 } catch (t: Throwable) {
-                    Log.error(DistrictRepository::class.java, t, "Failed to save districts for city '$cityId' to database, transaction failed!")
+                    Log.error(javaClass, t, "Failed to save districts for city '$cityId' to database, transaction failed!")
                     false
                 } finally {
                     endTransaction()
                 }
             }
         } catch (t: Throwable) {
-            Log.error(DistrictRepository::class.java, t, "Failed to save districts for city '$cityId' to database!")
+            Log.error(javaClass, t, "Failed to save districts for city '$cityId' to database!")
             false
         }
 }

@@ -14,18 +14,20 @@ abstract class SearchableAdapter<I: Any, VH: RecyclerView.ViewHolder>(protected 
     private var isSearching: Boolean = false
     private var matchedItems: List<I> = emptyList()
 
+    protected lateinit var ctx: Context
+
     abstract val itemLayoutId: Int
 
-    abstract fun hold(ctx: Context, view: View, listener: SelectionFragment.OnSelectedListener<I>): VH
+    abstract fun hold(view: View, listener: SelectionFragment.OnSelectedListener<I>): VH
 
     abstract fun set(holder: VH, item: I)
 
     abstract fun search(query: String): List<I>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val ctx = parent.context
+        ctx = parent.context
         val view = LayoutInflater.from(ctx).inflate(itemLayoutId, parent, false)
-        return hold(ctx, view, listener)
+        return hold(view, listener)
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) =

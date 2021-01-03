@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Application name -->
-    <string name="applicationName">Müezzin</string>
+    <string name="applicationNameDebug">Müezzin Test</string>
+    <string name="applicationNameRelease">Müezzin</string>
 
     <!-- Prayer time names -->
     <string name="prayerTime_fajr">İmsak</string>
@@ -10,7 +11,6 @@
     <string name="prayerTime_maghrib">Akşam</string>
     <string name="prayerTime_isha">Yatsı</string>
     <string name="prayerTime_shuruq">Güneş</string>
-    <string name="prayerTime_qibla">Kıble</string>
 
     <!-- Hijri Month Names -->
     <string name="hijriMonth1">Muharrem</string>

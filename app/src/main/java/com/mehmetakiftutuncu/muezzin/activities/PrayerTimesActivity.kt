@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.activities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -19,8 +18,6 @@ class PrayerTimesActivity: MuezzinActivity() {
         WelcomeScreenHelper(this, WelcomeActivity::class.java)
     }
 
-    private val ctx: Context by lazy { this }
-
     private var shownWelcomeScreen = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,11 +31,11 @@ class PrayerTimesActivity: MuezzinActivity() {
             shownWelcomeScreen = true
 
             if (Pref.Application.getVersion(ctx) < 4) {
-                // Installed version 2.0 for the first time
+                // Installed version 2.x for the first time after 1.x
                 Toast.makeText(ctx, R.string.welcome_updateNotice, Toast.LENGTH_LONG).show()
                 Pref.edit(ctx) { clear() }
                 welcomeScreenHelper.forceShow()
-                Pref.Application.setVersion(this)
+                Pref.Application.setVersion(ctx)
             } else {
                 welcomeScreenHelper.show(savedInstanceState)
             }

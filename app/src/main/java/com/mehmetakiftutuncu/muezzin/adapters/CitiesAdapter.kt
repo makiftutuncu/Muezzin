@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.adapters
 
-import android.content.Context
 import android.view.View
 import com.mehmetakiftutuncu.muezzin.R
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CityViewHolder
@@ -12,7 +11,7 @@ class CitiesAdapter(override val items: List<City>,
                     override val listener: SelectionFragment.OnSelectedListener<City>): SearchableAdapter<City, CityViewHolder>(items, listener) {
     override val itemLayoutId: Int = R.layout.item_city
 
-    override fun hold(ctx: Context, view: View, listener: SelectionFragment.OnSelectedListener<City>) =
+    override fun hold(view: View, listener: SelectionFragment.OnSelectedListener<City>) =
         CityViewHolder(view, listener)
 
     override fun set(holder: CityViewHolder, item: City) = holder.set(item)

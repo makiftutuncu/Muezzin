@@ -28,10 +28,6 @@ abstract class SelectionFragment<I: Parcelable,
     private lateinit var items: List<I>
     private lateinit var adapter: A
 
-    private val ctx: Context by lazy {
-        requireActivity()
-    }
-
     protected abstract val fragmentId: Int
     protected abstract val multiStateViewId: Int
     protected abstract val recyclerViewId: Int
@@ -137,12 +133,12 @@ abstract class SelectionFragment<I: Parcelable,
 
     private fun downloadAndSave() =
         download(ctx, { error ->
-            Log.error(SelectionFragment::class.java, error, "Cannot download!")
+            Log.error(javaClass, error, "Cannot download!")
             runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
         }) { items ->
             this.items = items
             saveToDB(ctx, items).takeUnless { it }?.also {
-                Log.error(SelectionFragment::class.java, "Cannot save!")
+                Log.error(javaClass, "Cannot save!")
                 runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
             }
 

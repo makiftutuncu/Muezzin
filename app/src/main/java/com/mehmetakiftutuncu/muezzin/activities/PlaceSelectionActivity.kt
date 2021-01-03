@@ -1,6 +1,5 @@
 package com.mehmetakiftutuncu.muezzin.activities
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.PersistableBundle
@@ -23,8 +22,6 @@ class PlaceSelectionActivity: MuezzinActivity() {
     private var districtId: Int? = null
 
     private var startedFromPreferences = false
-
-    private val ctx: Context by lazy { this }
 
     private val districtSelectedListener = object : SelectionFragment.OnSelectedListener<District> {
         override fun onSelected(item: District) {

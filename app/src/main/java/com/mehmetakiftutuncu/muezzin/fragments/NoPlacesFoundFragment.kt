@@ -13,7 +13,7 @@ import com.mehmetakiftutuncu.muezzin.activities.PlaceSelectionActivity
 class NoPlacesFoundFragment: Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View =
         inflater.inflate(R.layout.fragment_noplacesfound, container, false).also {
-            (it.findViewById<View>(R.id.fab_addPlace) as FloatingActionButton).setOnClickListener {
+            it.findViewById<FloatingActionButton>(R.id.fab_addPlace).setOnClickListener {
                 startActivity(Intent(activity, PlaceSelectionActivity::class.java))
             }
         }
