@@ -30,19 +30,7 @@ data class District(val id: Int, val name: String): Comparable<District>, Parcel
 
             override fun newArray(size: Int): Array<District?> = arrayOfNulls(size)
         }
-
-        fun fromJson(id: Int, json: JSONObject): District =
-            json.runCatching {
-                District(id, getString("name"))
-            }.fold(
-                { it },
-                { e -> throw InvalidDistrictJsonException(id, json, e) }
-            )
     }
-
-    class InvalidDistrictJsonException(id: Int,
-                                       json: JSONObject,
-                                       override val cause: Throwable): Exception("Failed to parse district for id '$id' from Json: $json")
 
     class InvalidDistrictsException(countryId: Int,
                                     cityId: Int,

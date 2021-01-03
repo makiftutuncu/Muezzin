@@ -15,29 +15,28 @@ object PlaceRepository: Repository() {
                     CountryRepository.columnName
                 }
 
+            val districtSelectSQL =
+                if (place.districtId == null) "" else ", di.${DistrictRepository.columnName} AS districtName"
+
+            val districtFromSQL =
+                if (place.districtId == null) "" else " JOIN ${DistrictRepository.tableName} AS di ON (ci.${CityRepository.columnId} = di.${DistrictRepository.columnCityId})"
+
+            val districtWhereSQL =
+                if (place.districtId == null) "" else " AND di.${DistrictRepository.columnId} = ${place.districtId}"
+
             val sql =
                 when {
-                    fullNameRequired && place.districtId != null ->
-                        """
-                        SELECT co.$countryColumn AS countryName,
-                               ci.${CityRepository.columnName} AS cityName,
-                               di.${DistrictRepository.columnName} AS districtName
-                        FROM ${CountryRepository.tableName} AS co JOIN
-                             ${CityRepository.tableName} AS ci ON (co.${CountryRepository.columnId} = ci.${CityRepository.columnCountryId}) JOIN
-                             ${DistrictRepository.tableName} AS di ON (ci.${CityRepository.columnId} = di.${DistrictRepository.columnCityId})
-                        WHERE co.${CountryRepository.columnId} = ${place.countryId} AND
-                              ci.${CityRepository.columnId} = ${place.cityId} AND
-                              di.${DistrictRepository.columnId} = ${place.districtId}
-                        """
-
                     fullNameRequired ->
                         """
                         SELECT co.$countryColumn AS countryName,
                                ci.${CityRepository.columnName} AS cityName
+                               $districtSelectSQL
                         FROM ${CountryRepository.tableName} AS co JOIN
                              ${CityRepository.tableName} AS ci ON (co.${CountryRepository.columnId} = ci.${CityRepository.columnCountryId})
+                             $districtFromSQL
                         WHERE co.${CountryRepository.columnId} = ${place.countryId} AND
                               ci.${CityRepository.columnId} = ${place.cityId}
+                              $districtWhereSQL
                         """
 
                     place.districtId != null ->
@@ -65,11 +64,14 @@ object PlaceRepository: Repository() {
                                 val countryName = cursor.getString(cursor.getColumnIndex("countryName"))
                                 val cityName    = cursor.getString(cursor.getColumnIndex("cityName"))
 
-                                if (place.districtId != null) {
-                                    val districtName = cursor.getString(cursor.getColumnIndex("districtId"))
-                                    "$countryName, $cityName, $districtName"
+                                val districtName = cursor.getColumnIndex("districtId").takeIf { it != -1 }?.let { i ->
+                                    cursor.getString(i).takeIf { it != cityName }
+                                }
+
+                                if (districtName == null) {
+                                    "$cityName, $countryName"
                                 } else {
-                                    "$countryName, $cityName"
+                                    "$districtName, $cityName, $countryName"
                                 }
                             }
 

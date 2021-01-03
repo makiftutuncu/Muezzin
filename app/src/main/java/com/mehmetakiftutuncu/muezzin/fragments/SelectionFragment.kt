@@ -79,7 +79,7 @@ abstract class SelectionFragment<I: Parcelable,
     override fun onStart() {
         super.onStart()
 
-        if (this::items.isInitialized) {
+        if (!itemsReady()) {
             load()
         } else {
             updateUI()
@@ -136,16 +136,21 @@ abstract class SelectionFragment<I: Parcelable,
     }
 
     private fun downloadAndSave() =
-        download(ctx, { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }) { items ->
+        download(ctx, { error ->
+            Log.error(SelectionFragment::class.java, error, "Cannot download!")
+            runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
+        }) { items ->
+            this.items = items
             saveToDB(ctx, items).takeUnless { it }?.also {
-                changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload)
+                Log.error(SelectionFragment::class.java, "Cannot save!")
+                runOnUI { changeStateTo(MultiStateView.VIEW_STATE_ERROR, retryActionDownload) }
             }
 
-            updateUI()
+            runOnUI { updateUI() }
         }
 
     private fun updateUI() {
-        if (!this::items.isInitialized || items.isEmpty()) {
+        if (!haveItems()) {
             changeStateTo(MultiStateView.VIEW_STATE_EMPTY, retryActionDownload)
             return
         }
@@ -156,4 +161,8 @@ abstract class SelectionFragment<I: Parcelable,
 
         activity?.setTitle(titleId)
     }
+
+    private fun haveItems() = itemsReady() && items.isNotEmpty()
+
+    private fun itemsReady() = this::items.isInitialized
 }

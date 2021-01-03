@@ -51,7 +51,7 @@ object DistrictRepository: Repository() {
             val sql =
                 """
                 INSERT INTO $tableName('$columnId', '$columnCityId', '$columnName')
-                VALUES ${districts.joinToString(", ") { "(${it.id}, $cityId, ${it.name})" }}
+                VALUES ${districts.joinToString(", ") { "(${it.id}, $cityId, ?)" }}
                 """
 
             val parameters = districts.map { it.name }.toTypedArray()

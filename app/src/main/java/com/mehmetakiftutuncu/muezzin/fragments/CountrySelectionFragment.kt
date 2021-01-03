@@ -19,7 +19,8 @@ class CountrySelectionFragment(override val listener: OnSelectedListener<Country
 
     override val titleId = R.string.placeSelection_country
 
-    override fun loadFromDB(ctx: Context): List<Country> = CountryRepository.get(ctx)
+    override fun loadFromDB(ctx: Context): List<Country> =
+        CountryRepository.get(ctx)
 
     override fun download(ctx: Context, onFail: (Throwable) -> Unit, onSuccess: (List<Country>) -> Unit) =
         MuezzinAPI.getCountries(ctx, onFail, onSuccess)

@@ -2,6 +2,7 @@ package com.mehmetakiftutuncu.muezzin.adapters
 
 import android.content.Context
 import android.view.View
+import com.mehmetakiftutuncu.muezzin.R
 import com.mehmetakiftutuncu.muezzin.adapters.viewholders.CountryViewHolder
 import com.mehmetakiftutuncu.muezzin.fragments.SelectionFragment
 import com.mehmetakiftutuncu.muezzin.models.Country
@@ -9,6 +10,8 @@ import java.util.*
 
 class CountriesAdapter(override val items: List<Country>,
                        override val listener: SelectionFragment.OnSelectedListener<Country>): SearchableAdapter<Country, CountryViewHolder>(items, listener) {
+    override val itemLayoutId: Int = R.layout.item_country
+
     override fun hold(ctx: Context, view: View, listener: SelectionFragment.OnSelectedListener<Country>) =
         CountryViewHolder(ctx, view, listener)
 

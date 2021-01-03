@@ -71,11 +71,11 @@ data class PrayerTimesOfDay(val date: LocalDate,
 
         fun localizedName(ctx: Context, prayerTimeType: PrayerTimeType): String =
             ctx.getString(
-                    ctx.resources.getIdentifier(
-                            "prayerTime_${prayerTimeType.name}",
-                            "string",
-                            ctx.packageName
-                    )
+                ctx.resources.getIdentifier(
+                    "prayerTime_${prayerTimeType.key}",
+                    "string",
+                    ctx.packageName
+                )
             )
 
         fun fromJson(date: LocalDate, json: JSONObject): PrayerTimesOfDay =

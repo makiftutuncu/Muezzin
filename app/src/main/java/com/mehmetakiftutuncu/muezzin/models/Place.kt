@@ -7,7 +7,7 @@ data class Place(val countryId: Int,
                  val cityId: Int,
                  val districtId: Int?) {
     fun toJson(): String =
-        """{"countryId":$countryId,"cityId":$cityId${if (districtId != null) ""","districtId":$districtId""" else ""}"""
+        """{"countryId":$countryId,"cityId":$cityId${if (districtId != null) ""","districtId":$districtId""" else ""}}"""
 
     fun toBundle(): Bundle =
         Bundle().apply {

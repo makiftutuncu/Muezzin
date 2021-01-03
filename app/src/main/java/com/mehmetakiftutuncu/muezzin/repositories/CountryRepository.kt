@@ -4,6 +4,7 @@ import android.content.Context
 import com.github.mehmetakiftutuncu.toolbelt.Log
 import com.mehmetakiftutuncu.muezzin.models.Country
 import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils
+import com.mehmetakiftutuncu.muezzin.utilities.LocaleUtils.turkeyFirstSorted
 
 object CountryRepository: Repository() {
     const val tableName         = "county"
@@ -43,15 +44,7 @@ object CountryRepository: Repository() {
                 Country(id, name, nameTurkish, nameNative)
             }
 
-            countries.sortedWith { c1, c2 ->
-                when {
-                    Country.isTurkey(c1.id) -> -1
-                    Country.isTurkey(c2.id) -> 1
-                    else                    -> c1.compareTo(c2)
-                }
-            }
-
-            countries
+            countries.turkeyFirstSorted(ctx)
         } catch (t: Throwable) {
             Log.error(CountryRepository::class.java, t, "Failed to get countries from database!")
             emptyList()

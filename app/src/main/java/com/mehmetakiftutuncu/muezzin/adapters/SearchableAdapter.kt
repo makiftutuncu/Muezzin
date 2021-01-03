@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.arlib.floatingsearchview.FloatingSearchView
-import com.mehmetakiftutuncu.muezzin.R
 import com.mehmetakiftutuncu.muezzin.fragments.SelectionFragment
 import java.util.*
 
 abstract class SearchableAdapter<I: Any, VH: RecyclerView.ViewHolder>(protected open val items: List<I>,
                                                                       protected open val listener: SelectionFragment.OnSelectedListener<I>): RecyclerView.Adapter<VH>(), FloatingSearchView.OnQueryChangeListener {
-    private var currentItems: List<I> = emptyList()
+    private var isSearching: Boolean = false
+    private var matchedItems: List<I> = emptyList()
+
+    abstract val itemLayoutId: Int
 
     abstract fun hold(ctx: Context, view: View, listener: SelectionFragment.OnSelectedListener<I>): VH
 
@@ -20,17 +22,16 @@ abstract class SearchableAdapter<I: Any, VH: RecyclerView.ViewHolder>(protected 
 
     abstract fun search(query: String): List<I>
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH =
-        parent.context.let { ctx ->
-            LayoutInflater.from(ctx).inflate(R.layout.item_county, parent, false).let {
-                hold(ctx, it, listener)
-            }
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        val ctx = parent.context
+        val view = LayoutInflater.from(ctx).inflate(itemLayoutId, parent, false)
+        return hold(ctx, view, listener)
+    }
 
     override fun onBindViewHolder(holder: VH, position: Int) =
-        set(holder, currentItems[position])
+        set(holder, currentItems()[position])
 
-    override fun getItemCount(): Int = currentItems.size
+    override fun getItemCount(): Int = currentItems().size
 
     override fun onSearchTextChanged(oldQuery: String?, newQuery: String?) {
         if (oldQuery ?: "" == newQuery ?: "") {
@@ -40,14 +41,18 @@ abstract class SearchableAdapter<I: Any, VH: RecyclerView.ViewHolder>(protected 
         val q = newQuery?.trim() ?: ""
 
         if (q.isEmpty()) {
-            currentItems = items
+            isSearching = false
+            matchedItems = emptyList()
             return
         }
 
-        currentItems = search(q)
+        isSearching = true
+        matchedItems = search(q)
 
         notifyDataSetChanged()
     }
+
+    private fun currentItems() = if (isSearching) matchedItems else items
 
     companion object {
         val tr = Locale("tr", "TR")
